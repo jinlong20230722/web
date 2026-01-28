@@ -7,8 +7,8 @@ import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
 export default function Announcement(props) {
   const {
-    toast
-  } = useToast();
+    toast } =
+  useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -21,8 +21,8 @@ export default function Announcement(props) {
     title: '',
     type: 'notice',
     content: '',
-    priority: 'normal'
-  });
+    priority: 'normal' });
+
 
   // 加载公告列表
   const loadAnnouncements = async () => {
@@ -33,19 +33,19 @@ export default function Announcement(props) {
         methodName: 'wedaGetRecordsV2',
         params: {
           filter: {
-            where: {}
-          },
+            where: {} },
+
           select: {
-            $master: true
-          },
+            $master: true },
+
           orderBy: [{
-            publishTime: 'desc'
-          }],
+            publishTime: 'desc' }],
+
           getCount: true,
           pageSize: 100,
-          pageNumber: 1
-        }
-      });
+          pageNumber: 1 } });
+
+
       if (result && result.records) {
         setAnnouncements(result.records);
       }
@@ -54,8 +54,8 @@ export default function Announcement(props) {
       toast({
         title: '加载失败',
         description: error.message || '加载公告列表失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     } finally {
       setLoading(false);
     }
@@ -68,48 +68,48 @@ export default function Announcement(props) {
   const columns = [{
     key: 'index',
     label: '序号',
-    render: (value, row, index) => index + 1
-  }, {
+    render: (value, row, index) => index + 1 },
+  {
     key: 'title',
-    label: '公告标题'
-  }, {
+    label: '公告标题' },
+  {
     key: 'type',
     label: '公告类型',
-    render: value => {
+    render: (value) => {
       const typeMap = {
         notice: '通知',
         training: '培训',
-        commendation: '表彰'
-      };
+        commendation: '表彰' };
+
       return typeMap[value] || value;
-    }
-  }, {
+    } },
+  {
     key: 'publishTime',
-    label: '发布时间'
-  }, {
+    label: '发布时间' },
+  {
     key: 'publisher',
-    label: '发布人'
-  }, {
+    label: '发布人' },
+  {
     key: 'priority',
     label: '优先级',
-    render: value => <span className={`px-2 py-1 rounded-full text-xs ${value === 'high' ? 'bg-red-50 text-red-800' : 'bg-blue-100 text-blue-700'}`}>
+    render: (value) => <span className={`px-2 py-1 rounded-full text-xs ${value === 'high' ? 'bg-red-50 text-red-800' : 'bg-blue-100 text-blue-700'}`}>
           {value === 'high' ? '高' : '普通'}
-        </span>
-  }];
+        </span> }];
+
   const typeOptions = [{
     value: 'all',
-    label: '全部类型'
-  }, {
+    label: '全部类型' },
+  {
     value: 'notice',
-    label: '通知'
-  }, {
+    label: '通知' },
+  {
     value: 'training',
-    label: '培训'
-  }, {
+    label: '培训' },
+  {
     value: 'commendation',
-    label: '表彰'
-  }];
-  const filteredData = announcements.filter(item => {
+    label: '表彰' }];
+
+  const filteredData = announcements.filter((item) => {
     const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase()) || item.content?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || item.type === filterType;
     return matchesSearch && matchesFilter;
@@ -120,25 +120,25 @@ export default function Announcement(props) {
       title: '',
       type: 'notice',
       content: '',
-      priority: 'normal'
-    });
+      priority: 'normal' });
+
     setIsDialogOpen(true);
   };
-  const handleEdit = item => {
+  const handleEdit = (item) => {
     setEditingAnnouncement(item);
     setFormData({
       title: item.title,
       type: item.type,
       content: item.content,
-      priority: item.priority
-    });
+      priority: item.priority });
+
     setIsDialogOpen(true);
   };
-  const handleView = item => {
+  const handleView = (item) => {
     setSelectedAnnouncement(item);
     setIsViewDialogOpen(true);
   };
-  const handleDelete = async item => {
+  const handleDelete = async (item) => {
     if (confirm('确定要删除该公告吗？')) {
       try {
         const result = await props.$w.cloud.callDataSource({
@@ -149,37 +149,37 @@ export default function Announcement(props) {
               where: {
                 $and: [{
                   _id: {
-                    $eq: item._id
-                  }
-                }]
-              }
-            }
-          }
-        });
+                    $eq: item._id } }] } } } });
+
+
+
+
+
+
         if (result && result.count > 0) {
           toast({
             title: '删除成功',
-            description: '公告已删除'
-          });
+            description: '公告已删除' });
+
           loadAnnouncements();
         } else {
           toast({
             title: '删除失败',
             description: '未找到要删除的公告',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
         }
       } catch (error) {
         console.error('删除公告失败:', error);
         toast({
           title: '删除失败',
           description: error.message || '删除公告时发生错误',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const currentUser = props.$w?.auth?.currentUser;
@@ -189,8 +189,8 @@ export default function Announcement(props) {
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
-      });
+        minute: '2-digit' });
+
       if (editingAnnouncement) {
         // 更新公告
         const result = await props.$w.cloud.callDataSource({
@@ -201,31 +201,31 @@ export default function Announcement(props) {
               title: formData.title,
               type: formData.type,
               content: formData.content,
-              priority: formData.priority
-            },
+              priority: formData.priority },
+
             filter: {
               where: {
                 $and: [{
                   _id: {
-                    $eq: editingAnnouncement._id
-                  }
-                }]
-              }
-            }
-          }
-        });
+                    $eq: editingAnnouncement._id } }] } } } });
+
+
+
+
+
+
         if (result && result.count > 0) {
           toast({
             title: '更新成功',
-            description: '公告已更新'
-          });
+            description: '公告已更新' });
+
           loadAnnouncements();
         } else {
           toast({
             title: '更新失败',
             description: '未找到要更新的公告',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
         }
       } else {
         // 新增公告
@@ -239,22 +239,22 @@ export default function Announcement(props) {
               content: formData.content,
               priority: formData.priority,
               publishTime: publishTime,
-              publisher: publisher
-            }
-          }
-        });
+              publisher: publisher } } });
+
+
+
         if (result && result.id) {
           toast({
             title: '发布成功',
-            description: '公告已发布'
-          });
+            description: '公告已发布' });
+
           loadAnnouncements();
         } else {
           toast({
             title: '发布失败',
             description: '发布公告时发生错误',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
         }
       }
       setIsDialogOpen(false);
@@ -263,15 +263,15 @@ export default function Announcement(props) {
       toast({
         title: editingAnnouncement ? '更新失败' : '发布失败',
         description: error.message || '操作时发生错误',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
-  return <PageLayout currentPage="announcement" onPageChange={pageId => {
+  return <PageLayout currentPage="announcement" onPageChange={(pageId) => {
     props.$w?.utils?.navigateTo({
       pageId,
-      params: {}
-    });
+      params: {} });
+
   }} title="公告信息管理" subtitle="发布和管理公告" user={props.$w?.auth?.currentUser}>
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -294,18 +294,18 @@ export default function Announcement(props) {
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="title">公告标题 *</Label>
-                <Input id="title" value={formData.title} onChange={e => setFormData({
+                <Input id="title" value={formData.title} onChange={(e) => setFormData({
                 ...formData,
-                title: e.target.value
-              })} required placeholder="请输入公告标题" />
+                title: e.target.value })}
+              required placeholder="请输入公告标题" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="type">公告类型 *</Label>
-                  <Select value={formData.type} onValueChange={value => setFormData({
+                  <Select value={formData.type} onValueChange={(value) => setFormData({
                   ...formData,
-                  type: value
-                })}>
+                  type: value })}>
+
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -316,28 +316,28 @@ export default function Announcement(props) {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priority">优先级</Label>
-                  <Select value={formData.priority} onValueChange={value => setFormData({
-                  ...formData,
-                  priority: value
-                })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="normal">普通</SelectItem>
-                      <SelectItem value="high">高</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">公告内容 *</Label>
-                <Textarea id="content" value={formData.content} onChange={e => setFormData({
+                <Textarea id="content" value={formData.content} onChange={(e) => setFormData({
                 ...formData,
-                content: e.target.value
-              })} required placeholder="请输入公告内容" rows={6} />
+                content: e.target.value })}
+              required placeholder="请输入公告内容" rows={6} />
               </div>
             </div>
             <DialogFooter>
