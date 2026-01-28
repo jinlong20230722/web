@@ -1,8 +1,7 @@
 // @ts-ignore;
 import React from 'react';
 // @ts-ignore;
-import { Users, Clock, Calendar, AlertCircle, MessageSquare, Megaphone, LayoutDashboard, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';export function Sidebar({
-  currentPage,
+import { Users, Clock, Calendar, AlertCircle, MessageSquare, Megaphone, LayoutDashboard, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';export function Sidebar({ currentPage,
   onPageChange,
   collapsed,
   onToggle })
@@ -81,7 +80,7 @@ import { Users, Clock, Calendar, AlertCircle, MessageSquare, Megaphone, LayoutDa
       <div className="p-4 border-t border-blue-800">
         {!collapsed && <div className="text-center">
             <p className="text-xs text-blue-300">© 2026 天顺保安</p>
-            <p className="text-xs text-blue-400 mt-1">管理系统v1.0.0</p>
+            <p className="text-xs text-blue-400 mt-1">版本 V1.0.0</p>
           </div>}
       </div>
     </div>;
