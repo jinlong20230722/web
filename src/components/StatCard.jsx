@@ -6,16 +6,8 @@ export function StatCard({
   value,
   icon: Icon,
   trend,
-  trendValue,
-  color = 'blue'
+  trendValue
 }) {
-  const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    orange: 'bg-orange-50 text-orange-600',
-    purple: 'bg-purple-50 text-purple-600',
-    red: 'bg-red-50 text-red-600'
-  };
   const trendColor = trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600';
   return <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between">
@@ -28,7 +20,7 @@ export function StatCard({
               {trendValue}
             </p>}
         </div>
-        <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
+        <div className="p-3 rounded-lg bg-gray-100 text-gray-600">
           <Icon size={24} />
         </div>
       </div>

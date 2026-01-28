@@ -461,10 +461,10 @@ export default function DataCockpit(props) {
 
         {/* 统计卡片网格 */}
         {visibleModules.personnelCount || visibleModules.todayAttendance || visibleModules.todayEvents || visibleModules.currentLeave ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {visibleModules.personnelCount && <StatCard title="人员总数" value={loading ? '-' : stats.personnelCount} icon={Users} color="#3B82F6" />}
-            {visibleModules.todayAttendance && <StatCard title="今日打卡" value={loading ? '-' : stats.todayAttendance} icon={Clock} color="#10B981" />}
-            {visibleModules.todayEvents && <StatCard title="今日事件" value={loading ? '-' : stats.todayEvents} icon={AlertCircle} color="#F59E0B" />}
-            {visibleModules.currentLeave && <StatCard title="当前请假" value={loading ? '-' : stats.currentLeave} icon={Calendar} color="#8B5CF6" />}
+            {visibleModules.personnelCount && <StatCard title="人员总数" value={loading ? '-' : stats.personnelCount} icon={Users} />}
+            {visibleModules.todayAttendance && <StatCard title="今日打卡" value={loading ? '-' : stats.todayAttendance} icon={Clock} />}
+            {visibleModules.todayEvents && <StatCard title="今日事件" value={loading ? '-' : stats.todayEvents} icon={AlertCircle} />}
+            {visibleModules.currentLeave && <StatCard title="当前请假" value={loading ? '-' : stats.currentLeave} icon={Calendar} />}
           </div> : null}
 
         {/* 图表区域 */}
