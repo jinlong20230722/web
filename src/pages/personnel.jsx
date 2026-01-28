@@ -708,5 +708,7 @@ export default function Personnel(props) {
           </form>
         </DialogContent>
       </Dialog>
-    </PageLayout>;
+    </>
+    </PageLayout>
+  );
 }
