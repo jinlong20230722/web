@@ -1,7 +1,5 @@
 // @ts-ignore;
 import React from 'react';
-// @ts-ignore;
-import { LucideIcon } from 'lucide-react';
 
 export function StatCard({
   title,
