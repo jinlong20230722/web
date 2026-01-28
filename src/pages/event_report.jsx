@@ -11,8 +11,8 @@ import { getRecords, createRecord, updateRecord, deleteRecord, formatDateTime } 
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 export default function EventReport(props) {
   const {
-    toast
-  } = useToast();
+    toast } =
+  useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,8 +29,8 @@ export default function EventReport(props) {
     address: '',
     reporterId: '',
     reporterName: '',
-    description: ''
-  });
+    description: '' });
+
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
 
   // 加载事件数据
@@ -38,8 +38,8 @@ export default function EventReport(props) {
     setLoading(true);
     try {
       const result = await getRecords('event_report', {}, 100, 1, [{
-        reportTime: 'desc'
-      }]);
+        reportTime: 'desc' }]);
+
       if (result && result.records) {
         setEvents(result.records);
       }
@@ -47,8 +47,8 @@ export default function EventReport(props) {
       toast({
         title: '加载失败',
         description: error.message || '加载事件数据失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     } finally {
       setLoading(false);
     }
@@ -58,54 +58,54 @@ export default function EventReport(props) {
   }, []);
   const columns = [{
     key: '_id',
-    label: 'ID'
-  }, {
+    label: 'ID' },
+  {
     key: 'eventType',
-    label: '事件类型'
-  }, {
+    label: '事件类型' },
+  {
     key: 'address',
-    label: '位置'
-  }, {
+    label: '位置' },
+  {
     key: 'reporterName',
-    label: '上报人'
-  }, {
+    label: '上报人' },
+  {
     key: 'reportTime',
     label: '上报时间',
-    render: value => formatDateTime(value)
-  }, {
+    render: (value) => formatDateTime(value) },
+  {
     key: 'description',
-    label: '描述'
-  }];
+    label: '描述' }];
+
   const filterOptions = [{
     value: 'all',
-    label: '全部状态'
-  }, {
+    label: '全部状态' },
+  {
     value: 'pending',
-    label: '待处理'
-  }, {
+    label: '待处理' },
+  {
     value: 'processing',
-    label: '处理中'
-  }, {
+    label: '处理中' },
+  {
     value: 'resolved',
-    label: '已解决'
-  }];
+    label: '已解决' }];
+
   const eventTypeOptions = [{
     value: 'all',
-    label: '全部类型'
-  }, {
+    label: '全部类型' },
+  {
     value: '安全隐患',
-    label: '安全隐患'
-  }, {
+    label: '安全隐患' },
+  {
     value: '设备故障',
-    label: '设备故障'
-  }, {
+    label: '设备故障' },
+  {
     value: '人员违规',
-    label: '人员违规'
-  }, {
+    label: '人员违规' },
+  {
     value: '其他',
-    label: '其他'
-  }];
-  const filteredData = events.filter(item => {
+    label: '其他' }];
+
+  const filteredData = events.filter((item) => {
     const matchesSearch = item.eventType?.toLowerCase().includes(searchTerm.toLowerCase()) || item.address?.toLowerCase().includes(searchTerm.toLowerCase()) || item.reporterName?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all';
     const matchesEventType = filterEventType === 'all' || item.eventType === filterEventType;
@@ -116,16 +116,16 @@ export default function EventReport(props) {
     const headers = ['序号', '事件类型', '位置', '上报人', '上报时间', '状态', '描述'];
     const csvContent = ['\uFEFF' + headers.join(','), ...filteredData.map((item, index) => [index + 1, item.eventType || '', item.address || '', item.reporterName || '', formatDateTime(item.reportTime) || '', item.status || '待处理', (item.description || '').replace(/,/g, '，').replace(/\n/g, ' ')].join(','))].join('\n');
     const blob = new Blob([csvContent], {
-      type: 'text/csv;charset=utf-8;'
-    });
+      type: 'text/csv;charset=utf-8;' });
+
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `事件上报数据_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     toast({
       title: '导出成功',
-      description: `已导出 ${filteredData.length} 条数据`
-    });
+      description: `已导出 ${filteredData.length} 条数据` });
+
   };
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -142,8 +142,8 @@ export default function EventReport(props) {
     }, {});
     const statusChartData = Object.entries(statusData).map(([name, value]) => ({
       name,
-      value
-    }));
+      value }));
+
     const typeData = filteredData.reduce((acc, item) => {
       const type = item.eventType || '其他';
       acc[type] = (acc[type] || 0) + 1;
@@ -151,8 +151,8 @@ export default function EventReport(props) {
     }, {});
     const typeChartData = Object.entries(typeData).map(([name, value]) => ({
       name,
-      value
-    }));
+      value }));
+
     const monthlyData = filteredData.reduce((acc, item) => {
       if (item.reportTime) {
         const date = new Date(item.reportTime);
@@ -163,110 +163,110 @@ export default function EventReport(props) {
     }, {});
     const monthlyChartData = Object.entries(monthlyData).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => ({
       name,
-      value
-    }));
+      value }));
+
     return {
       statusChartData,
       typeChartData,
-      monthlyChartData
-    };
+      monthlyChartData };
+
   };
   const {
     statusChartData,
     typeChartData,
-    monthlyChartData
-  } = getChartData();
+    monthlyChartData } =
+  getChartData();
   const handleAdd = () => {
     setFormData({
       eventType: '',
       address: '',
       reporterId: '',
       reporterName: '',
-      description: ''
-    });
+      description: '' });
+
     setIsDialogOpen(true);
   };
-  const handleView = item => {
+  const handleView = (item) => {
     setSelectedEvent(item);
     setIsViewDialogOpen(true);
   };
-  const handleProcess = async item => {
+  const handleProcess = async (item) => {
     if (confirm('确定要标记该事件为处理中吗？')) {
       try {
         await updateRecord('event_report', {
-          status: '处理中'
-        }, {
+          status: '处理中' },
+        {
           $and: [{
             _id: {
-              $eq: item._id
-            }
-          }]
-        });
+              $eq: item._id } }] });
+
+
+
         toast({
           title: '更新成功',
-          description: '事件状态已更新为处理中'
-        });
+          description: '事件状态已更新为处理中' });
+
         loadEvents();
       } catch (error) {
         toast({
           title: '更新失败',
           description: error.message || '更新事件状态失败',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleResolve = async item => {
+  const handleResolve = async (item) => {
     if (confirm('确定要标记该事件为已解决吗？')) {
       try {
         await updateRecord('event_report', {
-          status: '已解决'
-        }, {
+          status: '已解决' },
+        {
           $and: [{
             _id: {
-              $eq: item._id
-            }
-          }]
-        });
+              $eq: item._id } }] });
+
+
+
         toast({
           title: '更新成功',
-          description: '事件状态已更新为已解决'
-        });
+          description: '事件状态已更新为已解决' });
+
         loadEvents();
       } catch (error) {
         toast({
           title: '更新失败',
           description: error.message || '更新事件状态失败',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleDelete = async item => {
+  const handleDelete = async (item) => {
     if (confirm('确定要删除该事件记录吗？')) {
       try {
         await deleteRecord('event_report', {
           $and: [{
             _id: {
-              $eq: item._id
-            }
-          }]
-        });
+              $eq: item._id } }] });
+
+
+
         toast({
           title: '删除成功',
-          description: '事件记录已删除'
-        });
+          description: '事件记录已删除' });
+
         loadEvents();
       } catch (error) {
         toast({
           title: '删除失败',
           description: error.message || '删除事件记录失败',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = {
@@ -276,34 +276,34 @@ export default function EventReport(props) {
         reporterName: formData.reporterName,
         description: formData.description,
         reportTime: Date.now(),
-        attachments: []
-      };
+        attachments: [] };
+
       await createRecord('event_report', data);
       toast({
         title: '上报成功',
-        description: '事件已上报'
-      });
+        description: '事件已上报' });
+
       setIsDialogOpen(false);
       loadEvents();
     } catch (error) {
       toast({
         title: '上报失败',
         description: error.message || '上报事件失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
-  return <PageLayout currentPage="event_report" onPageChange={pageId => {
+  return <PageLayout currentPage="event_report" onPageChange={(pageId) => {
     props.$w?.utils?.navigateTo({
       pageId,
-      params: {}
-    });
+      params: {} });
+
   }} title="事件上报管理" subtitle="查看和处理上报事件" user={props.$w?.auth?.currentUser}>
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2">
-          <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-            + 上报事件
-          </Button>
+          
+
+
           <Button onClick={() => setShowCharts(!showCharts)} variant={showCharts ? "default" : "outline"} className={showCharts ? "bg-green-600 hover:bg-green-700" : ""}>
             <TrendingUp className="w-4 h-4 mr-2" />
             {showCharts ? '返回列表' : '统计图表'}
@@ -321,14 +321,14 @@ export default function EventReport(props) {
             <Label className="text-sm text-gray-600 mb-1 block">开始日期</Label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="pl-10" />
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="pl-10" />
             </div>
           </div>
           <div className="flex-1 min-w-[200px]">
             <Label className="text-sm text-gray-600 mb-1 block">结束日期</Label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="pl-10" />
+              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="pl-10" />
             </div>
           </div>
           <div className="flex-1 min-w-[180px]">
@@ -338,7 +338,7 @@ export default function EventReport(props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {eventTypeOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                {eventTypeOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -354,7 +354,7 @@ export default function EventReport(props) {
             <h3 className="text-base font-semibold mb-3">事件状态分布</h3>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie data={statusChartData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={entry => `${entry.name}: ${entry.value}`}>
+                <Pie data={statusChartData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={(entry) => `${entry.name}: ${entry.value}`}>
                   {statusChartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                 </Pie>
                 <Tooltip />
@@ -368,11 +368,11 @@ export default function EventReport(props) {
               <BarChart data={typeChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" tick={{
-              fontSize: 12
-            }} />
+              fontSize: 12 }} />
+
                 <YAxis tick={{
-              fontSize: 12
-            }} />
+              fontSize: 12 }} />
+
                 <Tooltip />
                 <Bar dataKey="value" fill={COLORS[0]} />
               </BarChart>
@@ -385,11 +385,11 @@ export default function EventReport(props) {
               <LineChart data={monthlyChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" tick={{
-              fontSize: 12
-            }} />
+              fontSize: 12 }} />
+
                 <YAxis tick={{
-              fontSize: 12
-            }} />
+              fontSize: 12 }} />
+
                 <Tooltip />
                 <Legend />
                 <Line type="monotone" dataKey="value" stroke={COLORS[0]} strokeWidth={2} />
@@ -408,25 +408,25 @@ export default function EventReport(props) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="reporterName">上报人 *</Label>
-                  <Input id="reporterName" value={formData.reporterName} onChange={e => setFormData({
+                  <Input id="reporterName" value={formData.reporterName} onChange={(e) => setFormData({
                   ...formData,
-                  reporterName: e.target.value
-                })} required />
+                  reporterName: e.target.value })}
+                required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="reporterId">上报人ID *</Label>
-                  <Input id="reporterId" value={formData.reporterId} onChange={e => setFormData({
+                  <Input id="reporterId" value={formData.reporterId} onChange={(e) => setFormData({
                   ...formData,
-                  reporterId: e.target.value
-                })} required />
+                  reporterId: e.target.value })}
+                required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="eventType">事件类型 *</Label>
-                <Select value={formData.eventType} onValueChange={value => setFormData({
+                <Select value={formData.eventType} onValueChange={(value) => setFormData({
                 ...formData,
-                eventType: value
-              })}>
+                eventType: value })}>
+
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -440,17 +440,17 @@ export default function EventReport(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">位置 *</Label>
-                <Input id="address" value={formData.address} onChange={e => setFormData({
+                <Input id="address" value={formData.address} onChange={(e) => setFormData({
                 ...formData,
-                address: e.target.value
-              })} required />
+                address: e.target.value })}
+              required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">事件描述 *</Label>
-                <Textarea id="description" value={formData.description} onChange={e => setFormData({
+                <Textarea id="description" value={formData.description} onChange={(e) => setFormData({
                 ...formData,
-                description: e.target.value
-              })} required />
+                description: e.target.value })}
+              required />
               </div>
             </div>
             <DialogFooter>
