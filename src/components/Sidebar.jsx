@@ -51,7 +51,7 @@ export function Sidebar({
         <div className="flex items-center justify-between">
           {!collapsed && <div>
               <h1 className="text-lg font-bold tracking-wide">天顺保安</h1>
-              <p className="text-xs text-blue-300 mt-0.5">管理平台 v1.0.0</p>
+              
             </div>}
           <button onClick={onToggle} className="p-1.5 hover:bg-blue-800 rounded-lg transition-colors" title={collapsed ? '展开菜单' : '收起菜单'}>
             {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
