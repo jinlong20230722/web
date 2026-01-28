@@ -7,44 +7,44 @@ export function Sidebar({
   currentPage,
   onPageChange,
   collapsed,
-  onToggle
-}) {
+  onToggle })
+{
   const menuItems = [{
     id: 'data_cockpit',
     label: '数据驾驶舱',
     icon: BarChart3,
-    description: '实时监控'
-  }, {
+    description: '实时监控' },
+  {
     id: 'personnel',
     label: '人员信息',
     icon: Users,
-    description: '保安人员管理'
-  }, {
+    description: '保安人员管理' },
+  {
     id: 'attendance',
     label: '打卡签到',
     icon: Clock,
-    description: '考勤记录'
-  }, {
+    description: '考勤记录' },
+  {
     id: 'leave_request',
     label: '请假销假',
     icon: Calendar,
-    description: '请假管理'
-  }, {
+    description: '请假管理' },
+  {
     id: 'event_report',
     label: '事件上报',
     icon: AlertCircle,
-    description: '事件处理'
-  }, {
+    description: '事件处理' },
+  {
     id: 'feedback',
     label: '意见反馈',
     icon: MessageSquare,
-    description: '反馈管理'
-  }, {
+    description: '反馈管理' },
+  {
     id: 'announcement',
     label: '公告信息',
     icon: Megaphone,
-    description: '公告发布'
-  }];
+    description: '公告发布' }];
+
   return <div className={`bg-[#1E3A8A] text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} min-h-screen flex flex-col shadow-xl`}>
       {/* Logo 区域 */}
       <div className="p-4 border-b border-blue-800">
@@ -62,7 +62,7 @@ export function Sidebar({
       {/* 导航菜单 */}
       <nav className="flex-1 p-3 overflow-y-auto">
         <ul className="space-y-1">
-          {menuItems.map(item => {
+          {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPage === item.id;
           return <li key={item.id}>
@@ -71,7 +71,7 @@ export function Sidebar({
                   <Icon size={20} className={isActive ? 'text-white' : 'text-blue-300'} />
                   {!collapsed && <div className="flex flex-col items-start">
                       <span className="text-sm font-medium">{item.label}</span>
-                      <span className="text-xs text-blue-300">{item.description}</span>
+                      
                     </div>}
                 </button>
               </li>;
