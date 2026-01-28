@@ -32,6 +32,11 @@
       "name": "publisher",
       "title": "发布人",
       "type": "String"
+    },
+    {
+      "name": "icon",
+      "title": "公告图标",
+      "type": "String"
     }
   ]
 }
