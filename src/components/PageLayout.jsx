@@ -11,7 +11,8 @@ export function PageLayout({
   onPageChange,
   title,
   subtitle,
-  user
+  user,
+  onSettingsClick
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
 
@@ -26,7 +27,7 @@ export function PageLayout({
       {/* 右侧内容区 */}
       <main className="flex-1 transition-all duration-300 overflow-x-hidden">
         {/* 顶部导航栏 */}
-        <Header title={title} subtitle={subtitle} user={user} />
+        <Header title={title} subtitle={subtitle} user={user} onSettingsClick={onSettingsClick} />
 
         {/* 页面内容区域 */}
         <div className="p-4 md:p-6 lg:p-8">

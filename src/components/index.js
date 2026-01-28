@@ -5,3 +5,4 @@ export * from './Header.jsx';
 export * from './PageLayout.jsx';
 export * from './StatisticsChart.jsx';
 export * from './ExportUtils.jsx';
+export * from './ModuleSettings.jsx';

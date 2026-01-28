@@ -10,6 +10,7 @@ import { PageLayout } from '@/components/PageLayout';
 import { StatisticsChart } from '@/components/StatisticsChart';
 import { StatCard } from '@/components/StatCard';
 import { ExportUtils, DateRangePicker, filterByDateRange } from '@/components/ExportUtils';
+import { ModuleSettings } from '@/components/ModuleSettings';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 export default function DataCockpit(props) {
   const {
@@ -20,6 +21,20 @@ export default function DataCockpit(props) {
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [dateRange, setDateRange] = useState('all');
+  const [showSettings, setShowSettings] = useState(false);
+  const [visibleModules, setVisibleModules] = useState({
+    personnelCount: true,
+    todayAttendance: true,
+    todayEvents: true,
+    currentLeave: true,
+    departmentChart: true,
+    attendanceChart: true,
+    eventTypeChart: true,
+    eventStatusChart: true,
+    leaveTypeChart: true,
+    leaveStatusChart: true,
+    dataInfo: true
+  });
   const [stats, setStats] = useState({
     personnelCount: 0,
     todayAttendance: 0,
@@ -64,6 +79,14 @@ export default function DataCockpit(props) {
         document.exitFullscreen();
       }
     }
+  };
+
+  // 切换模块显示
+  const toggleModule = moduleId => {
+    setVisibleModules(prev => ({
+      ...prev,
+      [moduleId]: !prev[moduleId]
+    }));
   };
 
   // 加载数据驾驶舱数据
@@ -412,7 +435,7 @@ export default function DataCockpit(props) {
       pageId,
       params: {}
     });
-  }} title="数据驾驶舱" subtitle="实时监控关键业务指标" user={props.$w?.auth?.currentUser}>
+  }} title="数据驾驶舱" subtitle="实时监控关键业务指标" user={props.$w?.auth?.currentUser} onSettingsClick={() => setShowSettings(true)}>
       <div ref={cockpitRef} className={`space-y-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-white p-8 overflow-auto' : ''}`}>
         {/* 顶部操作栏 */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -437,158 +460,155 @@ export default function DataCockpit(props) {
         </div>
 
         {/* 统计卡片网格 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="人员总数" value={loading ? '-' : stats.personnelCount} icon={Users} color="#3B82F6" />
-          <StatCard title="今日打卡" value={loading ? '-' : stats.todayAttendance} icon={Clock} color="#10B981" />
-          <StatCard title="今日事件" value={loading ? '-' : stats.todayEvents} icon={AlertCircle} color="#F59E0B" />
-          <StatCard title="当前请假" value={loading ? '-' : stats.currentLeave} icon={Calendar} color="#8B5CF6" />
-        </div>
+        {visibleModules.personnelCount || visibleModules.todayAttendance || visibleModules.todayEvents || visibleModules.currentLeave ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {visibleModules.personnelCount && <StatCard title="人员总数" value={loading ? '-' : stats.personnelCount} icon={Users} color="#3B82F6" />}
+            {visibleModules.todayAttendance && <StatCard title="今日打卡" value={loading ? '-' : stats.todayAttendance} icon={Clock} color="#10B981" />}
+            {visibleModules.todayEvents && <StatCard title="今日事件" value={loading ? '-' : stats.todayEvents} icon={AlertCircle} color="#F59E0B" />}
+            {visibleModules.currentLeave && <StatCard title="当前请假" value={loading ? '-' : stats.currentLeave} icon={Calendar} color="#8B5CF6" />}
+          </div> : null}
 
         {/* 图表区域 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* 部门分布饼图 */}
-          <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">部门分布</h3>
-            <div className="h-80">
-              {chartData.personnelByDepartment.length > 0 ? <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={chartData.personnelByDepartment} cx="50%" cy="50%" labelLine={false} label={({
-                  name,
-                  percent
-                }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
-                      {chartData.personnelByDepartment.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
-            </div>
-          </div>
+        {visibleModules.departmentChart || visibleModules.attendanceChart || visibleModules.eventTypeChart || visibleModules.eventStatusChart || visibleModules.leaveTypeChart || visibleModules.leaveStatusChart ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 部门分布饼图 */}
+            {visibleModules.departmentChart && <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">部门分布</h3>
+                <div className="h-80">
+                  {chartData.personnelByDepartment.length > 0 ? <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={chartData.personnelByDepartment} cx="50%" cy="50%" labelLine={false} label={entry => `${entry.name} ${(entry.percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                          {chartData.personnelByDepartment.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
+                </div>
+              </div>}
 
-          {/* 打卡状态饼图 */}
-          <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">打卡状态</h3>
-            <div className="h-80">
-              {chartData.attendanceByStatus.length > 0 ? <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={chartData.attendanceByStatus} cx="50%" cy="50%" labelLine={false} label={({
-                  name,
-                  percent
-                }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
-                      {chartData.attendanceByStatus.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
-            </div>
-          </div>
+            {/* 打卡状态饼图 */}
+            {visibleModules.attendanceChart && <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">打卡状态</h3>
+                <div className="h-80">
+                  {chartData.attendanceByStatus.length > 0 ? <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={chartData.attendanceByStatus} cx="50%" cy="50%" labelLine={false} label={entry => `${entry.name} ${(entry.percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                          {chartData.attendanceByStatus.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
+                </div>
+              </div>}
 
-          {/* 事件类型柱状图 */}
-          <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">事件类型分布</h3>
-            <div className="h-80">
-              {chartData.eventsByType.length > 0 ? <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.eventsByType}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#3B82F6" />
-                  </BarChart>
-                </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
-            </div>
-          </div>
+            {/* 事件类型柱状图 */}
+            {visibleModules.eventTypeChart && <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">事件类型分布</h3>
+                <div className="h-80">
+                  {chartData.eventsByType.length > 0 ? <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData.eventsByType}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value" fill="#3B82F6" />
+                      </BarChart>
+                    </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
+                </div>
+              </div>}
 
-          {/* 事件状态柱状图 */}
-          <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">事件处理状态</h3>
-            <div className="h-80">
-              {chartData.eventsByStatus.length > 0 ? <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.eventsByStatus}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#10B981" />
-                  </BarChart>
-                </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
-            </div>
-          </div>
+            {/* 事件状态柱状图 */}
+            {visibleModules.eventStatusChart && <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">事件处理状态</h3>
+                <div className="h-80">
+                  {chartData.eventsByStatus.length > 0 ? <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData.eventsByStatus}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value" fill="#10B981" />
+                      </BarChart>
+                    </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
+                </div>
+              </div>}
 
-          {/* 请假类型柱状图 */}
-          <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">请假类型分布</h3>
-            <div className="h-80">
-              {chartData.leaveByType.length > 0 ? <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.leaveByType}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#F59E0B" />
-                  </BarChart>
-                </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
-            </div>
-          </div>
+            {/* 请假类型柱状图 */}
+            {visibleModules.leaveTypeChart && <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">请假类型分布</h3>
+                <div className="h-80">
+                  {chartData.leaveByType.length > 0 ? <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData.leaveByType}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value" fill="#F59E0B" />
+                      </BarChart>
+                    </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
+                </div>
+              </div>}
 
-          {/* 请假状态柱状图 */}
-          <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">请假审批状态</h3>
-            <div className="h-80">
-              {chartData.leaveByStatus.length > 0 ? <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.leaveByStatus}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#8B5CF6" />
-                  </BarChart>
-                </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
-            </div>
-          </div>
-        </div>
+            {/* 请假状态柱状图 */}
+            {visibleModules.leaveStatusChart && <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">请假审批状态</h3>
+                <div className="h-80">
+                  {chartData.leaveByStatus.length > 0 ? <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData.leaveByStatus}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value" fill="#8B5CF6" />
+                      </BarChart>
+                    </ResponsiveContainer> : <div className="flex items-center justify-center h-full text-gray-400">暂无数据</div>}
+                </div>
+              </div>}
+          </div> : null}
 
         {/* 数据说明区域 */}
-        <div className="bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">数据说明</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-3 h-3 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-700">人员总数</p>
-                <p className="text-xs text-gray-500 mt-1">统计所有在职保安人员数量</p>
+        {visibleModules.dataInfo && <div className="bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50 rounded-xl p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">数据说明</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">人员总数</p>
+                  <p className="text-xs text-gray-500 mt-1">统计所有在职保安人员数量</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">今日打卡</p>
+                  <p className="text-xs text-gray-500 mt-1">统计今日已完成打卡的人员数量</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-3 h-3 bg-orange-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">今日事件</p>
+                  <p className="text-xs text-gray-500 mt-1">统计今日上报的事件数量</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-3 h-3 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">当前请假</p>
+                  <p className="text-xs text-gray-500 mt-1">统计当前时间正在请假的人员数量</p>
+                </div>
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-700">今日打卡</p>
-                <p className="text-xs text-gray-500 mt-1">统计今日已完成打卡的人员数量</p>
-              </div>
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-xs text-gray-500">
+                <span className="font-medium">最后更新时间：</span>
+                {lastUpdateTime ? lastUpdateTime.toLocaleString('zh-CN') : '未更新'}
+              </p>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-3 h-3 bg-orange-500 rounded-full mt-1.5 flex-shrink-0"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-700">今日事件</p>
-                <p className="text-xs text-gray-500 mt-1">统计今日上报的事件数量</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-3 h-3 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-700">当前请假</p>
-                <p className="text-xs text-gray-500 mt-1">统计当前时间正在请假的人员数量</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
-              <span className="font-medium">最后更新时间：</span>
-              {lastUpdateTime ? lastUpdateTime.toLocaleString('zh-CN') : '未更新'}
-            </p>
-          </div>
-        </div>
+          </div>}
+
+        {/* 模块设置面板 */}
+        <ModuleSettings isOpen={showSettings} onClose={() => setShowSettings(false)} modules={visibleModules} onToggle={toggleModule} />
       </div>
     </PageLayout>;
 }
