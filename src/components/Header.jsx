@@ -6,8 +6,7 @@ import { Bell, Settings, LogOut, User } from 'lucide-react';
 export function Header({
   title,
   subtitle,
-  user,
-  onSettingsClick
+  user
 }) {
   return <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10 shadow-sm">
       <div className="flex items-center justify-between">
@@ -30,7 +29,7 @@ export function Header({
           </button>
 
           {/* 设置图标 */}
-          <button onClick={onSettingsClick} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <Settings size={20} className="text-gray-600" />
           </button>
 

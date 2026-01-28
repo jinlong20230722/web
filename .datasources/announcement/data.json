@@ -1,0 +1,57 @@
+[
+  {
+    "_id": "1",
+    "title": "关于加强春节期间安全工作的通知",
+    "type": "notice",
+    "content": "为确保春节期间的安全稳定，请各部门加强值班巡逻，做好应急准备。",
+    "priority": "high",
+    "publishTime": "2026-01-27 08:00",
+    "publisher": "管理员",
+    "createdAt": 1737936000000,
+    "updatedAt": 1737936000000
+  },
+  {
+    "_id": "2",
+    "title": "关于开展消防安全培训的通知",
+    "type": "training",
+    "content": "定于2026年2月1日开展消防安全培训，请全体保安人员准时参加。",
+    "priority": "normal",
+    "publishTime": "2026-01-26 10:00",
+    "publisher": "管理员",
+    "createdAt": 1737854400000,
+    "updatedAt": 1737854400000
+  },
+  {
+    "_id": "3",
+    "title": "关于调整巡逻路线的通知",
+    "type": "notice",
+    "content": "根据实际需要，从即日起调整各区域巡逻路线，具体安排详见附件。",
+    "priority": "normal",
+    "publishTime": "2026-01-25 14:30",
+    "publisher": "管理员",
+    "createdAt": 1737778800000,
+    "updatedAt": 1737778800000
+  },
+  {
+    "_id": "4",
+    "title": "关于表彰优秀保安人员的决定",
+    "type": "commendation",
+    "content": "为表彰先进，树立典型，决定对张三、李四等10名优秀保安人员予以表彰。",
+    "priority": "normal",
+    "publishTime": "2026-01-24 09:00",
+    "publisher": "管理员",
+    "createdAt": 1737693600000,
+    "updatedAt": 1737693600000
+  },
+  {
+    "_id": "5",
+    "title": "关于规范着装要求的通知",
+    "type": "notice",
+    "content": "请全体保安人员严格按照规定着装，保持良好形象。",
+    "priority": "high",
+    "publishTime": "2026-01-23 16:00",
+    "publisher": "管理员",
+    "createdAt": 1737624000000,
+    "updatedAt": 1737624000000
+  }
+]

@@ -5,9 +5,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button,
 
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
-import { StatisticsChart } from '@/components/StatisticsChart';
-import { StatCard } from '@/components/StatCard';
-import { ExportUtils, DateRangePicker, filterByDateRange } from '@/components/ExportUtils';
 import { getRecords, createRecord, updateRecord, deleteRecord, formatDateTime } from '@/lib/dataSource';
 export default function Feedback(props) {
   const {
@@ -15,7 +12,6 @@ export default function Feedback(props) {
   } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [dateRange, setDateRange] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -88,47 +84,11 @@ export default function Feedback(props) {
     value: 'processed',
     label: '已处理'
   }];
-  // 根据时间范围筛选数据
-  const filteredByDate = filterByDateRange(feedbacks, dateRange, 'submitTime');
-  const filteredData = filteredByDate.filter(item => {
+  const filteredData = feedbacks.filter(item => {
     const matchesSearch = item.submitterName?.toLowerCase().includes(searchTerm.toLowerCase()) || item.content?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || filterStatus === 'pending' && item.processStatus === '待处理' || filterStatus === 'processed' && item.processStatus === '已处理';
     return matchesSearch && matchesFilter;
   });
-
-  // 统计数据（基于筛选后的数据）
-  const statusStats = filteredByDate.reduce((acc, item) => {
-    const status = item.processStatus || '待处理';
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {});
-  const statusChartData = Object.entries(statusStats).map(([name, value]) => ({
-    name,
-    value
-  }));
-
-  // 按反馈类型统计
-  const typeStats = filteredByDate.reduce((acc, item) => {
-    const type = item.feedbackType || '未知';
-    acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {});
-  const typeChartData = Object.entries(typeStats).map(([name, value]) => ({
-    name,
-    value
-  }));
-
-  // 准备导出数据
-  const exportData = filteredData.map(item => ({
-    ID: item._id || '',
-    反馈人: item.submitterName || '',
-    反馈人ID: item.submitterId || '',
-    反馈类型: item.feedbackType || '',
-    反馈内容: item.content || '',
-    提交时间: formatDateTime(item.submitTime) || '',
-    状态: item.processStatus || ''
-  }));
-  const exportHeaders = ['ID', '反馈人', '反馈人ID', '反馈类型', '反馈内容', '提交时间', '状态'];
   const handleAdd = () => {
     setFormData({
       submitterName: '',
@@ -224,30 +184,16 @@ export default function Feedback(props) {
       params: {}
     });
   }} title="意见反馈管理" subtitle="查看和回复用户反馈" user={props.$w?.auth?.currentUser}>
-      {/* 统计卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <StatCard title="总反馈数" value={filteredByDate.length} color="#3B82F6" />
-        <StatCard title="待处理" value={filteredByDate.filter(f => f.processStatus === '待处理').length} color="#F59E0B" />
-        <StatCard title="已处理" value={filteredByDate.filter(f => f.processStatus === '已处理').length} color="#10B981" />
-        <StatCard title="处理率" value={`${filteredByDate.length > 0 ? Math.round(filteredByDate.filter(f => f.processStatus === '已处理').length / filteredByDate.length * 100) : 0}%`} color="#8B5CF6" />
+      <div className="flex justify-between items-center mb-6">
+        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
+          + 提交反馈
+        </Button>
       </div>
 
-      {/* 统计图表 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <StatisticsChart title="处理状态" data={statusChartData} dataKey="value" nameKey="name" type="pie" color="#3B82F6" />
-        <StatisticsChart title="反馈类型" data={typeChartData} dataKey="value" nameKey="name" type="bar" color="#10B981" />
-      </div>
-
-      {/* 操作栏 */}
-      <div className="flex justify-between items-center mb-4">
-        <DateRangePicker value={dateRange} onChange={setDateRange} label="提交时间" />
-        <ExportUtils data={exportData} filename="反馈记录" headers={exportHeaders} />
-      </div>
-
-      <DataTable columns={columns} data={filteredData} onAdd={handleAdd} onReply={handleReply} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
+      <DataTable columns={columns} data={filteredData} onReply={handleReply} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] w-[95vw]">
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>提交反馈</DialogTitle>
           </DialogHeader>
@@ -307,7 +253,7 @@ export default function Feedback(props) {
       </Dialog>
 
       <Dialog open={isReplyDialogOpen} onOpenChange={setIsReplyDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] w-[95vw]">
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>回复反馈</DialogTitle>
           </DialogHeader>

@@ -1,0 +1,37 @@
+{
+  "name": "announcement",
+  "title": "公告",
+  "schemas": [
+    {
+      "name": "title",
+      "title": "公告标题",
+      "type": "String"
+    },
+    {
+      "name": "type",
+      "title": "公告类型",
+      "type": "String"
+    },
+    {
+      "name": "content",
+      "title": "公告内容",
+      "type": "MultiLineString"
+    },
+    {
+      "name": "priority",
+      "title": "优先级",
+      "type": "String"
+    },
+    {
+      "name": "publishTime",
+      "title": "发布时间",
+      "type": "DateTime",
+      "format": "string"
+    },
+    {
+      "name": "publisher",
+      "title": "发布人",
+      "type": "String"
+    }
+  ]
+}

@@ -33,23 +33,23 @@ export function DataTable({
 }) {
   return <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* Header */}
-      <div className="p-4 md:p-6 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900">{title}</h2>
-          {showAdd && onAdd && <Button onClick={onAdd} className="bg-[#3B82F6] hover:bg-[#2563EB] text-white w-full sm:w-auto">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+          {showAdd && onAdd && <Button onClick={onAdd} className="bg-[#3B82F6] hover:bg-[#2563EB] text-white">
               <Plus size={16} className="mr-2" />
               新增
             </Button>}
         </div>
 
         {/* Search and Filter */}
-        {(showSearch || filterOptions) && <div className="flex flex-col sm:flex-row gap-3">
+        {(showSearch || filterOptions) && <div className="flex gap-3">
             {showSearch && setSearchTerm && <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                 <Input placeholder="搜索..." className="pl-10" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
               </div>}
             {filterOptions && setFilterValue && <Select value={filterValue} onValueChange={setFilterValue}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="筛选" />
                 </SelectTrigger>
                 <SelectContent>
@@ -65,51 +65,51 @@ export function DataTable({
       <div className="overflow-x-auto">
         {loading ? <div className="p-12 text-center text-gray-500">
             加载中...
-          </div> : <table className="w-full min-w-[600px]">
+          </div> : <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {columns.map(column => <th key={column.key} className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {columns.map(column => <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {column.label}
                   </th>)}
-                {showActions && <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {showActions && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     操作
                   </th>}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {data.length === 0 ? <tr>
-                  <td colSpan={columns.length + (showActions ? 1 : 0)} className="px-4 md:px-6 py-12 text-center text-gray-500">
+                  <td colSpan={columns.length + (showActions ? 1 : 0)} className="px-6 py-12 text-center text-gray-500">
                     暂无数据
                   </td>
                 </tr> : data.map((row, index) => <tr key={index} className="hover:bg-blue-50 even:bg-gray-50">
-                    {columns.map(column => <td key={column.key} className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm text-gray-900">
+                    {columns.map(column => <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {column.render ? column.render(row[column.key], row) : row[column.key]}
                       </td>)}
-                    {showActions && <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">
-                        <div className="flex gap-1 md:gap-2">
-                          {onView && <Button variant="ghost" size="sm" onClick={() => onView(row)} className="text-blue-600 hover:text-blue-700 p-1" title="查看">
-                              <Eye size={14} />
+                    {showActions && <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex gap-2">
+                          {onView && <Button variant="ghost" size="sm" onClick={() => onView(row)} className="text-blue-600 hover:text-blue-700" title="查看">
+                              <Eye size={16} />
                             </Button>}
-                          {onEdit && <Button variant="ghost" size="sm" onClick={() => onEdit(row)} className="text-blue-600 hover:text-blue-700 p-1" title="编辑">
-                              <Edit size={14} />
+                          {onEdit && <Button variant="ghost" size="sm" onClick={() => onEdit(row)} className="text-blue-600 hover:text-blue-700" title="编辑">
+                              <Edit size={16} />
                             </Button>}
-                          {onApprove && <Button variant="ghost" size="sm" onClick={() => onApprove(row)} className="text-green-600 hover:text-green-700 p-1" title="通过">
-                              <Check size={14} />
+                          {onApprove && <Button variant="ghost" size="sm" onClick={() => onApprove(row)} className="text-green-600 hover:text-green-700" title="通过">
+                              <Check size={16} />
                             </Button>}
-                          {onReject && <Button variant="ghost" size="sm" onClick={() => onReject(row)} className="text-red-600 hover:text-red-700 p-1" title="拒绝">
-                              <X size={14} />
+                          {onReject && <Button variant="ghost" size="sm" onClick={() => onReject(row)} className="text-red-600 hover:text-red-700" title="拒绝">
+                              <X size={16} />
                             </Button>}
-                          {onProcess && <Button variant="ghost" size="sm" onClick={() => onProcess(row)} className="text-orange-600 hover:text-orange-700 p-1" title="处理中">
-                              <Settings size={14} />
+                          {onProcess && <Button variant="ghost" size="sm" onClick={() => onProcess(row)} className="text-orange-600 hover:text-orange-700" title="处理中">
+                              <Settings size={16} />
                             </Button>}
-                          {onResolve && <Button variant="ghost" size="sm" onClick={() => onResolve(row)} className="text-green-600 hover:text-green-700 p-1" title="已解决">
-                              <Check size={14} />
+                          {onResolve && <Button variant="ghost" size="sm" onClick={() => onResolve(row)} className="text-green-600 hover:text-green-700" title="已解决">
+                              <Check size={16} />
                             </Button>}
-                          {onReply && <Button variant="ghost" size="sm" onClick={() => onReply(row)} className="text-purple-600 hover:text-purple-700 p-1" title="回复">
-                              <MessageCircle size={14} />
+                          {onReply && <Button variant="ghost" size="sm" onClick={() => onReply(row)} className="text-purple-600 hover:text-purple-700" title="回复">
+                              <MessageCircle size={16} />
                             </Button>}
-                          {onDelete && <Button variant="ghost" size="sm" onClick={() => onDelete(row)} className="text-red-600 hover:text-red-700 p-1" title="删除">
-                              <Trash2 size={14} />
+                          {onDelete && <Button variant="ghost" size="sm" onClick={() => onDelete(row)} className="text-red-600 hover:text-red-700" title="删除">
+                              <Trash2 size={16} />
                             </Button>}
                         </div>
                       </td>}
@@ -119,11 +119,11 @@ export function DataTable({
       </div>
 
       {/* Pagination */}
-      {showPagination && pagination && <div className="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="text-sm text-gray-500 text-center sm:text-left">
+      {showPagination && pagination && <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+          <div className="text-sm text-gray-500">
             共 {pagination.total} 条记录，第 {pagination.current} / {pagination.totalPages} 页
           </div>
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.current - 1)} disabled={pagination.current === 1}>
               <ChevronLeft size={16} />
             </Button>
