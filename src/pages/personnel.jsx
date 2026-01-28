@@ -519,7 +519,8 @@ export default function Personnel(props) {
       </div>
 
       {/* 图表视图 */}
-      {showChart ? <div className="space-y-4">
+      {showChart ? (
+        <div className="space-y-4">
           {/* 图表类型切换 */}
           <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
             <button onClick={() => setChartType('status')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${chartType === 'status' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
@@ -614,16 +615,20 @@ export default function Personnel(props) {
               </>
             )}
           </div>
-        </div> : /* 列表视图 */
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-          <Filter className="w-5 h-5 text-gray-600" />
-          人员列表
-          <span className="text-sm font-normal text-gray-500 ml-2">（共 {filteredData.length} 条记录）</span>
-        </h3>
-      </div>
-      <DataTable columns={columns} data={filteredData} onEdit={handleEdit} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
+        </div>
+      ) : (
+        /* 列表视图 */
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Filter className="w-5 h-5 text-gray-600" />
+              人员列表
+              <span className="text-sm font-normal text-gray-500 ml-2">（共 {filteredData.length} 条记录）</span>
+            </h3>
+          </div>
+          <DataTable columns={columns} data={filteredData} onEdit={handleEdit} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
+        </>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
@@ -708,7 +713,6 @@ export default function Personnel(props) {
           </form>
         </DialogContent>
       </Dialog>
-    </>
     </PageLayout>
   );
 }
