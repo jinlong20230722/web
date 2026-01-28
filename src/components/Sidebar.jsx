@@ -66,7 +66,7 @@ export function Sidebar({
           const Icon = item.icon;
           const isActive = currentPage === item.id;
           return <li key={item.id}>
-                <button onClick={() => onPageChange(item.id)} className={`${collapsed ? 'w-[40px]' : 'w-[120px]'} h-[40px] flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-3'} rounded-lg transition-all duration-200 relative whitespace-nowrap overflow-hidden ${isActive ? 'bg-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-800 hover:text-white'}`} title={collapsed ? `${item.label} - ${item.description}` : ''}>
+                <button onClick={() => onPageChange(item.id)} className={`${collapsed ? 'w-[40px]' : 'w-[200px]'} h-[40px] flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-3'} rounded-lg transition-all duration-200 relative whitespace-nowrap overflow-hidden ${isActive ? 'bg-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-800 hover:text-white'}`} title={collapsed ? `${item.label} - ${item.description}` : ''}>
                   {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full shadow-md"></div>}
                   <Icon size={20} className={isActive ? 'text-white' : 'text-blue-300'} />
                   {!collapsed && <div className="flex flex-col items-start">
