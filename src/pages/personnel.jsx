@@ -30,7 +30,7 @@ export default function Personnel(props) {
     phone: '',
     department: '',
     position: '',
-    status: 'active',
+    status: '在职',
     idNumber: '',
     address: ''
   });
@@ -89,10 +89,10 @@ export default function Personnel(props) {
     value: 'all',
     label: '全部状态'
   }, {
-    value: 'active',
+    value: '在职',
     label: '在职'
   }, {
-    value: 'inactive',
+    value: '离职',
     label: '离职'
   }];
 
@@ -256,7 +256,7 @@ export default function Personnel(props) {
   const COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
   const filteredData = personnel.filter(item => {
     const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || item.phone?.includes(searchTerm) || item.department?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || filterStatus === 'active' && item.status === '在职' || filterStatus === 'inactive' && item.status !== '在职';
+    const matchesFilter = filterStatus === 'all' || filterStatus === '在职' && item.status === '在职' || filterStatus === '离职' && item.status === '离职';
 
     // 时间范围筛选
     let matchesDateRange = true;
@@ -291,7 +291,7 @@ export default function Personnel(props) {
       phone: '',
       department: '',
       position: '',
-      status: 'active',
+      status: '在职',
       idNumber: '',
       address: ''
     });
@@ -304,7 +304,7 @@ export default function Personnel(props) {
       phone: item.phone || '',
       department: item.department || '',
       position: item.position || '',
-      status: item.status === '在职' ? 'active' : 'inactive',
+      status: item.status || '在职',
       idNumber: item.idCard || '',
       address: item.registeredResidence || ''
     });
@@ -342,7 +342,7 @@ export default function Personnel(props) {
         phone: formData.phone,
         department: formData.department,
         position: formData.position,
-        status: formData.status === 'active' ? '在职' : '离职',
+        status: formData.status,
         idCard: formData.idNumber,
         registeredResidence: formData.address
       };

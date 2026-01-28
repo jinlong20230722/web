@@ -27,7 +27,7 @@ export default function Announcement(props) {
   const [chartType, setChartType] = useState('type'); // type, priority, trend
   const [formData, setFormData] = useState({
     title: '',
-    type: 'company_notice',
+    type: 'notice',
     content: '',
     priority: 'normal',
     icon: 'Bell',
@@ -104,9 +104,9 @@ export default function Announcement(props) {
     label: '公告类型',
     render: value => {
       const typeMap = {
-        company_notice: '公司通知',
-        commendation: '表扬表彰',
-        industry_news: '行业新闻'
+        notice: '通知',
+        training: '培训',
+        commendation: '表彰'
       };
       return typeMap[value] || value;
     }
@@ -133,14 +133,14 @@ export default function Announcement(props) {
     value: 'all',
     label: '全部类型'
   }, {
-    value: 'company_notice',
-    label: '公司通知'
+    value: 'notice',
+    label: '通知'
+  }, {
+    value: 'training',
+    label: '培训'
   }, {
     value: 'commendation',
-    label: '表扬表彰'
-  }, {
-    value: 'industry_news',
-    label: '行业新闻'
+    label: '表彰'
   }];
   const priorityOptions = [{
     value: 'all',
@@ -204,7 +204,7 @@ export default function Announcement(props) {
         typeCount[a.type] = (typeCount[a.type] || 0) + 1;
       });
       return Object.entries(typeCount).map(([key, value]) => ({
-        name: key === 'company_notice' ? '公司通知' : key === 'commendation' ? '表扬表彰' : '行业新闻',
+        name: key === 'notice' ? '通知' : key === 'training' ? '培训' : key === 'commendation' ? '表彰' : key,
         value
       }));
     } else if (chartType === 'priority') {
@@ -253,7 +253,7 @@ export default function Announcement(props) {
   };
   const handleExportCSV = () => {
     const headers = ['序号', '公告标题', '公告类型', '发布时间', '发布部门', '置顶', '优先级', '公告内容'];
-    const rows = filteredData.map((item, index) => [index + 1, item.title, item.type === 'company_notice' ? '公司通知' : item.type === 'commendation' ? '表扬表彰' : '行业新闻', item.publishTime, item.department, item.isPinned ? '是' : '否', item.priority === 'high' ? '高' : '普通', item.content]);
+    const rows = filteredData.map((item, index) => [index + 1, item.title, item.type === 'notice' ? '通知' : item.type === 'training' ? '培训' : item.type === 'commendation' ? '表彰' : item.type, item.publishTime, item.department, item.isPinned ? '是' : '否', item.priority === 'high' ? '高' : '普通', item.content]);
     const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csvContent], {
       type: 'text/csv;charset=utf-8;'
@@ -277,7 +277,7 @@ export default function Announcement(props) {
     setEditingAnnouncement(null);
     setFormData({
       title: '',
-      type: 'company_notice',
+      type: 'notice',
       content: '',
       priority: 'normal',
       icon: 'Bell',
@@ -636,9 +636,9 @@ export default function Announcement(props) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="company_notice">公司通知</SelectItem>
-                      <SelectItem value="commendation">表扬表彰</SelectItem>
-                      <SelectItem value="industry_news">行业新闻</SelectItem>
+                      <SelectItem value="notice">通知</SelectItem>
+                      <SelectItem value="training">培训</SelectItem>
+                      <SelectItem value="commendation">表彰</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -728,7 +728,7 @@ export default function Announcement(props) {
                 <div>
                   <Label className="text-gray-600">公告类型</Label>
                   <p className="font-medium">
-                    {selectedAnnouncement.type === 'company_notice' ? '公司通知' : selectedAnnouncement.type === 'commendation' ? '表扬表彰' : '行业新闻'}
+                    {selectedAnnouncement.type === 'notice' ? '通知' : selectedAnnouncement.type === 'training' ? '培训' : selectedAnnouncement.type === 'commendation' ? '表彰' : selectedAnnouncement.type}
                   </p>
                 </div>
                 <div>
