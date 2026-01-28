@@ -451,9 +451,9 @@ export default function Personnel(props) {
             
 
 
-            <Button onClick={() => setChartType('pie')} variant={chartType === 'pie' ? 'default' : 'outline'} size="sm">
-              饼图
-            </Button>
+            
+
+
             
 
 
