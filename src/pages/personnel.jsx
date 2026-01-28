@@ -448,9 +448,9 @@ export default function Personnel(props) {
       {showChart ? <div className="space-y-4">
           {/* 图表类型切换 */}
           <div className="flex gap-2">
-            <Button onClick={() => setChartType('bar')} variant={chartType === 'bar' ? 'default' : 'outline'} size="sm">
-              柱状图
-            </Button>
+            
+
+
             <Button onClick={() => setChartType('pie')} variant={chartType === 'pie' ? 'default' : 'outline'} size="sm">
               饼图
             </Button>
