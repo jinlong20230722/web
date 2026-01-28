@@ -2,13 +2,12 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
-// @ts-ignore;
-import { Download } from 'lucide-react';
 
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
 import { StatisticsChart } from '@/components/StatisticsChart';
 import { StatCard } from '@/components/StatCard';
+import { ExportUtils, DateRangePicker, filterByDateRange } from '@/components/ExportUtils';
 import { getRecords, createRecord, updateRecord, deleteRecord, formatDate, formatDateTime } from '@/lib/dataSource';
 export default function LeaveRequest(props) {
   const {
@@ -16,6 +15,7 @@ export default function LeaveRequest(props) {
   } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [dateRange, setDateRange] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -100,14 +100,16 @@ export default function LeaveRequest(props) {
     value: 'rejected',
     label: '已拒绝'
   }];
-  const filteredData = leaveRequests.filter(item => {
+  // 根据时间范围筛选数据
+  const filteredByDate = filterByDateRange(leaveRequests, dateRange, 'startTime');
+  const filteredData = filteredByDate.filter(item => {
     const matchesSearch = item.personnelName?.toLowerCase().includes(searchTerm.toLowerCase()) || item.reason?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || filterStatus === 'pending' && item.approvalStatus === '待审批' || filterStatus === 'approved' && item.approvalStatus === '已通过' || filterStatus === 'rejected' && item.approvalStatus === '已拒绝';
     return matchesSearch && matchesFilter;
   });
 
-  // 统计数据
-  const statusStats = leaveRequests.reduce((acc, item) => {
+  // 统计数据（基于筛选后的数据）
+  const statusStats = filteredByDate.reduce((acc, item) => {
     const status = item.approvalStatus || '待审批';
     acc[status] = (acc[status] || 0) + 1;
     return acc;
@@ -118,7 +120,7 @@ export default function LeaveRequest(props) {
   }));
 
   // 按请假类型统计
-  const typeStats = leaveRequests.reduce((acc, item) => {
+  const typeStats = filteredByDate.reduce((acc, item) => {
     const type = item.leaveType || '未知';
     acc[type] = (acc[type] || 0) + 1;
     return acc;
@@ -128,22 +130,18 @@ export default function LeaveRequest(props) {
     value
   }));
 
-  // 导出 CSV
-  const handleExportCSV = () => {
-    const headers = ['ID', '姓名', '人员ID', '请假类型', '开始时间', '结束时间', '请假原因', '审批状态'];
-    const csvContent = [headers.join(','), ...filteredData.map(item => [item._id || '', item.personnelName || '', item.personnelId || '', item.leaveType || '', formatDateTime(item.startTime) || '', formatDateTime(item.endTime) || '', item.reason || '', item.approvalStatus || ''].join(','))].join('\n');
-    const blob = new Blob(['\ufeff' + csvContent], {
-      type: 'text/csv;charset=utf-8;'
-    });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `请假记录_${new Date().toLocaleDateString('zh-CN')}.csv`;
-    link.click();
-    toast({
-      title: '导出成功',
-      description: '请假记录已导出为 CSV 文件'
-    });
-  };
+  // 准备导出数据
+  const exportData = filteredData.map(item => ({
+    ID: item._id || '',
+    姓名: item.personnelName || '',
+    人员ID: item.personnelId || '',
+    请假类型: item.leaveType || '',
+    开始时间: formatDateTime(item.startTime) || '',
+    结束时间: formatDateTime(item.endTime) || '',
+    请假原因: item.reason || '',
+    审批状态: item.approvalStatus || ''
+  }));
+  const exportHeaders = ['ID', '姓名', '人员ID', '请假类型', '开始时间', '结束时间', '请假原因', '审批状态'];
   const handleAdd = () => {
     setFormData({
       personnelId: '',
@@ -271,10 +269,10 @@ export default function LeaveRequest(props) {
   }} title="请假销假管理" subtitle="处理请假申请和销假记录" user={props.$w?.auth?.currentUser}>
       {/* 统计卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <StatCard title="总请假数" value={leaveRequests.length} color="#3B82F6" />
-        <StatCard title="待审批" value={leaveRequests.filter(l => l.approvalStatus === '待审批').length} color="#F59E0B" />
-        <StatCard title="已通过" value={leaveRequests.filter(l => l.approvalStatus === '已通过').length} color="#10B981" />
-        <StatCard title="已拒绝" value={leaveRequests.filter(l => l.approvalStatus === '已拒绝').length} color="#EF4444" />
+        <StatCard title="总请假数" value={filteredByDate.length} color="#3B82F6" />
+        <StatCard title="待审批" value={filteredByDate.filter(l => l.approvalStatus === '待审批').length} color="#F59E0B" />
+        <StatCard title="已通过" value={filteredByDate.filter(l => l.approvalStatus === '已通过').length} color="#10B981" />
+        <StatCard title="已拒绝" value={filteredByDate.filter(l => l.approvalStatus === '已拒绝').length} color="#EF4444" />
       </div>
 
       {/* 统计图表 */}
@@ -284,11 +282,9 @@ export default function LeaveRequest(props) {
       </div>
 
       {/* 操作栏 */}
-      <div className="flex justify-end mb-4">
-        <Button onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700">
-          <Download className="mr-2" size={16} />
-          导出 CSV
-        </Button>
+      <div className="flex justify-between items-center mb-4">
+        <DateRangePicker value={dateRange} onChange={setDateRange} label="请假时间" />
+        <ExportUtils data={exportData} filename="请假记录" headers={exportHeaders} />
       </div>
 
       <DataTable columns={columns} data={filteredData} onAdd={handleAdd} onView={handleView} onApprove={handleApprove} onReject={handleReject} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />

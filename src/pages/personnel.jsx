@@ -2,13 +2,12 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
-// @ts-ignore;
-import { Download } from 'lucide-react';
 
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
 import { StatisticsChart } from '@/components/StatisticsChart';
 import { StatCard } from '@/components/StatCard';
+import { ExportUtils, DateRangePicker, filterByDateRange } from '@/components/ExportUtils';
 import { getRecords, createRecord, updateRecord, deleteRecord, formatDate } from '@/lib/dataSource';
 export default function Personnel(props) {
   const {
@@ -16,6 +15,7 @@ export default function Personnel(props) {
   } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [dateRange, setDateRange] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPerson, setEditingPerson] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -89,14 +89,16 @@ export default function Personnel(props) {
     value: 'inactive',
     label: '离职'
   }];
-  const filteredData = personnel.filter(item => {
+  // 根据时间范围筛选数据
+  const filteredByDate = filterByDateRange(personnel, dateRange, 'joinDate');
+  const filteredData = filteredByDate.filter(item => {
     const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || item.phone?.includes(searchTerm) || item.department?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || filterStatus === 'active' && item.status === '在职' || filterStatus === 'inactive' && item.status !== '在职';
     return matchesSearch && matchesFilter;
   });
 
-  // 统计数据
-  const departmentStats = personnel.reduce((acc, item) => {
+  // 统计数据（基于筛选后的数据）
+  const departmentStats = filteredByDate.reduce((acc, item) => {
     const dept = item.department || '未分类';
     acc[dept] = (acc[dept] || 0) + 1;
     return acc;
@@ -105,7 +107,7 @@ export default function Personnel(props) {
     name,
     value
   }));
-  const statusStats = personnel.reduce((acc, item) => {
+  const statusStats = filteredByDate.reduce((acc, item) => {
     const status = item.status === '在职' ? '在职' : '离职';
     acc[status] = (acc[status] || 0) + 1;
     return acc;
@@ -115,22 +117,17 @@ export default function Personnel(props) {
     value
   }));
 
-  // 导出 CSV
-  const handleExportCSV = () => {
-    const headers = ['ID', '姓名', '联系电话', '所属部门', '职位', '入职日期', '状态'];
-    const csvContent = [headers.join(','), ...filteredData.map(item => [item._id || '', item.name || '', item.phone || '', item.department || '', item.position || '', formatDate(item.joinDate) || '', item.status || ''].join(','))].join('\n');
-    const blob = new Blob(['\ufeff' + csvContent], {
-      type: 'text/csv;charset=utf-8;'
-    });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `人员信息_${new Date().toLocaleDateString('zh-CN')}.csv`;
-    link.click();
-    toast({
-      title: '导出成功',
-      description: '人员信息已导出为 CSV 文件'
-    });
-  };
+  // 准备导出数据
+  const exportData = filteredData.map(item => ({
+    ID: item._id || '',
+    姓名: item.name || '',
+    联系电话: item.phone || '',
+    所属部门: item.department || '',
+    职位: item.position || '',
+    入职日期: formatDate(item.joinDate) || '',
+    状态: item.status || ''
+  }));
+  const exportHeaders = ['ID', '姓名', '联系电话', '所属部门', '职位', '入职日期', '状态'];
   const handleAdd = () => {
     setEditingPerson(null);
     setFormData({
@@ -230,9 +227,9 @@ export default function Personnel(props) {
   }} title="人员信息管理" subtitle="管理保安人员基本信息" user={props.$w?.auth?.currentUser}>
       {/* 统计卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <StatCard title="总人数" value={personnel.length} color="#3B82F6" />
-        <StatCard title="在职人数" value={personnel.filter(p => p.status === '在职').length} color="#10B981" />
-        <StatCard title="离职人数" value={personnel.filter(p => p.status !== '在职').length} color="#EF4444" />
+        <StatCard title="总人数" value={filteredByDate.length} color="#3B82F6" />
+        <StatCard title="在职人数" value={filteredByDate.filter(p => p.status === '在职').length} color="#10B981" />
+        <StatCard title="离职人数" value={filteredByDate.filter(p => p.status !== '在职').length} color="#EF4444" />
         <StatCard title="部门数量" value={Object.keys(departmentStats).length} color="#F59E0B" />
       </div>
 
@@ -243,11 +240,9 @@ export default function Personnel(props) {
       </div>
 
       {/* 操作栏 */}
-      <div className="flex justify-end mb-4">
-        <Button onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700">
-          <Download className="mr-2" size={16} />
-          导出 CSV
-        </Button>
+      <div className="flex justify-between items-center mb-4">
+        <DateRangePicker value={dateRange} onChange={setDateRange} label="入职时间" />
+        <ExportUtils data={exportData} filename="人员信息" headers={exportHeaders} />
       </div>
 
       <DataTable columns={columns} data={filteredData} onAdd={handleAdd} onEdit={handleEdit} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
