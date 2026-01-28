@@ -24,7 +24,9 @@ export default function Announcement(props) {
     type: 'company_notice',
     content: '',
     priority: 'normal',
-    icon: 'Bell'
+    icon: 'Bell',
+    department: '人事部',
+    isPinned: false
   });
   const iconOptions = [{
     value: 'Bell',
@@ -121,8 +123,14 @@ export default function Announcement(props) {
     key: 'publishTime',
     label: '发布时间'
   }, {
-    key: 'publisher',
-    label: '发布人'
+    key: 'department',
+    label: '发布部门'
+  }, {
+    key: 'isPinned',
+    label: '置顶',
+    render: value => <span className={`px-2 py-1 rounded-full text-xs ${value ? 'bg-orange-50 text-orange-800' : 'bg-gray-50 text-gray-600'}`}>
+          {value ? '是' : '否'}
+        </span>
   }, {
     key: 'priority',
     label: '优先级',
@@ -147,6 +155,12 @@ export default function Announcement(props) {
     const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase()) || item.content?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || item.type === filterType;
     return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    // 置顶的排在前面
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    // 同样置顶状态，按发布时间倒序
+    return new Date(b.publishTime) - new Date(a.publishTime);
   });
   const handleAdd = () => {
     setEditingAnnouncement(null);
@@ -155,7 +169,9 @@ export default function Announcement(props) {
       type: 'company_notice',
       content: '',
       priority: 'normal',
-      icon: 'Bell'
+      icon: 'Bell',
+      department: '人事部',
+      isPinned: false
     });
     setIsDialogOpen(true);
   };
@@ -166,7 +182,9 @@ export default function Announcement(props) {
       type: item.type,
       content: item.content,
       priority: item.priority,
-      icon: item.icon || 'Bell'
+      icon: item.icon || 'Bell',
+      department: item.department || '人事部',
+      isPinned: item.isPinned || false
     });
     setIsDialogOpen(true);
   };
@@ -218,8 +236,6 @@ export default function Announcement(props) {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const currentUser = props.$w?.auth?.currentUser;
-      const publisher = currentUser?.name || currentUser?.nickName || '管理员';
       const publishTime = new Date().toLocaleString('zh-CN', {
         year: 'numeric',
         month: '2-digit',
@@ -238,7 +254,9 @@ export default function Announcement(props) {
               type: formData.type,
               content: formData.content,
               priority: formData.priority,
-              icon: formData.icon
+              icon: formData.icon,
+              department: formData.department,
+              isPinned: formData.isPinned
             },
             filter: {
               where: {
@@ -276,8 +294,9 @@ export default function Announcement(props) {
               content: formData.content,
               priority: formData.priority,
               publishTime: publishTime,
-              publisher: publisher,
-              icon: formData.icon
+              department: formData.department,
+              icon: formData.icon,
+              isPinned: formData.isPinned
             }
           }
         });
@@ -377,8 +396,30 @@ export default function Announcement(props) {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="publisher">发布人</Label>
-                <Input id="publisher" value={props.$w?.auth?.currentUser?.name || props.$w?.auth?.currentUser?.nickName || '管理员'} disabled className="bg-gray-50" />
+                <Label htmlFor="department">发布部门 *</Label>
+                <Select value={formData.department} onValueChange={value => setFormData({
+                ...formData,
+                department: value
+              })}>
+
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="人事部">人事部</SelectItem>
+                      <SelectItem value="品质部">品质部</SelectItem>
+                      <SelectItem value="品宣部">品宣部</SelectItem>
+                      <SelectItem value="运营部">运营部</SelectItem>
+                      <SelectItem value="财务部">财务部</SelectItem>
+                    </SelectContent>
+                  </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input type="checkbox" id="isPinned" checked={formData.isPinned} onChange={e => setFormData({
+                ...formData,
+                isPinned: e.target.checked
+              })} className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                <Label htmlFor="isPinned" className="cursor-pointer">置顶公告</Label>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">公告内容 *</Label>
@@ -433,9 +474,15 @@ export default function Announcement(props) {
                   <p className="font-medium">{selectedAnnouncement.publishTime}</p>
                 </div>
                 <div>
-                  <Label className="text-gray-600">发布人</Label>
-                  <p className="font-medium">{selectedAnnouncement.publisher}</p>
+                  <Label className="text-gray-600">发布部门</Label>
+                  <p className="font-medium">{selectedAnnouncement.department}</p>
                 </div>
+              </div>
+              <div>
+                <Label className="text-gray-600">是否置顶</Label>
+                <p className={`font-medium px-2 py-1 rounded-full text-xs inline-block ${selectedAnnouncement.isPinned ? 'bg-orange-50 text-orange-800' : 'bg-gray-50 text-gray-600'}`}>
+                  {selectedAnnouncement.isPinned ? '是' : '否'}
+                </p>
               </div>
               <div>
                 <Label className="text-gray-600">公告内容</Label>

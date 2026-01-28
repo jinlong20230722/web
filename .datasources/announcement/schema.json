@@ -29,14 +29,19 @@
       "format": "string"
     },
     {
-      "name": "publisher",
-      "title": "发布人",
+      "name": "department",
+      "title": "发布部门",
       "type": "String"
     },
     {
       "name": "icon",
       "title": "公告图标",
       "type": "String"
+    },
+    {
+      "name": "isPinned",
+      "title": "是否置顶",
+      "type": "Boolean"
     }
   ]
 }
