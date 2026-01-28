@@ -161,7 +161,7 @@ export default function EventReport(props) {
       }
       return acc;
     }, {});
-    const monthlyChartData = Object.entries(monthData).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => ({
+    const monthlyChartData = Object.entries(monthlyData).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => ({
       name,
       value
     }));
