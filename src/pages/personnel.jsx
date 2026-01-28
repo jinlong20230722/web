@@ -519,8 +519,7 @@ export default function Personnel(props) {
       </div>
 
       {/* 图表视图 */}
-      {showChart ? (
-        <div className="space-y-4">
+      {showChart ? <div className="space-y-4">
           {/* 图表类型切换 */}
           <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
             <button onClick={() => setChartType('status')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${chartType === 'status' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
@@ -543,8 +542,7 @@ export default function Personnel(props) {
 
           {/* 图表展示区域 */}
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            {chartType === 'status' && (
-              <>
+            {chartType === 'status' && <>
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <PieChartIcon className="w-5 h-5 text-blue-600" />
                   人员状态分布
@@ -558,10 +556,8 @@ export default function Personnel(props) {
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
-              </>
-            )}
-            {chartType === 'department' && (
-              <>
+              </>}
+            {chartType === 'department' && <>
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-blue-600" />
                   部门人员分布
@@ -569,17 +565,19 @@ export default function Personnel(props) {
                 <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={getDepartmentData()}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="name" tick={{
+                fontSize: 12
+              }} />
+                    <YAxis tick={{
+                fontSize: 12
+              }} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
-              </>
-            )}
-            {chartType === 'position' && (
-              <>
+              </>}
+            {chartType === 'position' && <>
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-blue-600" />
                   职位人员分布
@@ -587,17 +585,19 @@ export default function Personnel(props) {
                 <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={getPositionData()}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="name" tick={{
+                fontSize: 12
+              }} />
+                    <YAxis tick={{
+                fontSize: 12
+              }} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
-              </>
-            )}
-            {chartType === 'trend' && (
-              <>
+              </>}
+            {chartType === 'trend' && <>
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <LineChartIcon className="w-5 h-5 text-blue-600" />
                   入职趋势
@@ -605,20 +605,25 @@ export default function Personnel(props) {
                 <ResponsiveContainer width="100%" height={320}>
                   <LineChart data={getJoinTrendData()}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="month" tick={{
+                fontSize: 12
+              }} />
+                    <YAxis tick={{
+                fontSize: 12
+              }} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="count" stroke="#F59E0B" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 7 }} />
+                    <Line type="monotone" dataKey="count" stroke="#F59E0B" strokeWidth={3} dot={{
+                r: 5
+              }} activeDot={{
+                r: 7
+              }} />
                   </LineChart>
                 </ResponsiveContainer>
-              </>
-            )}
+              </>}
           </div>
-        </div>
-      ) : (
-        /* 列表视图 */
-        <>
+        </div> : (/* 列表视图 */
+    <>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <Filter className="w-5 h-5 text-gray-600" />
@@ -627,8 +632,7 @@ export default function Personnel(props) {
             </h3>
           </div>
           <DataTable columns={columns} data={filteredData} onEdit={handleEdit} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
-        </>
-      )}
+        </>)}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
@@ -675,7 +679,6 @@ export default function Personnel(props) {
                 ...formData,
                 idNumber: e.target.value
               })} />
-
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">户籍地址</Label>
@@ -683,7 +686,6 @@ export default function Personnel(props) {
                 ...formData,
                 address: e.target.value
               })} />
-
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">状态</Label>
@@ -691,7 +693,6 @@ export default function Personnel(props) {
                 ...formData,
                 status: value
               })}>
-
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -713,6 +714,5 @@ export default function Personnel(props) {
           </form>
         </DialogContent>
       </Dialog>
-    </PageLayout>
-  );
+    </PageLayout>;
 }
