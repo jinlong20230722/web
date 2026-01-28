@@ -11,8 +11,8 @@ import { getRecords, createRecord, updateRecord, deleteRecord } from '@/lib/data
 import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
 export default function Announcement(props) {
   const {
-    toast
-  } = useToast();
+    toast } =
+  useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
@@ -32,32 +32,32 @@ export default function Announcement(props) {
     priority: 'normal',
     icon: 'Bell',
     department: '人事部',
-    isPinned: false
-  });
+    isPinned: false });
+
   const iconOptions = [{
     value: 'Bell',
     label: '通知铃铛',
-    icon: Bell
-  }, {
+    icon: Bell },
+  {
     value: 'Trophy',
     label: '奖杯',
-    icon: Trophy
-  }, {
+    icon: Trophy },
+  {
     value: 'Newspaper',
     label: '报纸',
-    icon: Newspaper
-  }, {
+    icon: Newspaper },
+  {
     value: 'CheckCircle2',
     label: '对勾',
-    icon: CheckCircle2
-  }];
-  const getIconComponent = iconName => {
+    icon: CheckCircle2 }];
+
+  const getIconComponent = (iconName) => {
     const iconMap = {
       Bell,
       Trophy,
       Newspaper,
-      CheckCircle2
-    };
+      CheckCircle2 };
+
     const IconComponent = iconMap[iconName] || Bell;
     return <IconComponent className="w-5 h-5" />;
   };
@@ -67,8 +67,8 @@ export default function Announcement(props) {
     try {
       setLoading(true);
       const result = await getRecords('announcement', {}, 100, 1, [{
-        publishTime: 'desc'
-      }]);
+        publishTime: 'desc' }]);
+
       if (result && result.records) {
         setAnnouncements(result.records);
       }
@@ -77,8 +77,8 @@ export default function Announcement(props) {
       toast({
         title: '加载失败',
         description: error.message || '加载公告列表失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     } finally {
       setLoading(false);
     }
@@ -91,134 +91,134 @@ export default function Announcement(props) {
   const columns = [{
     key: 'index',
     label: '序号',
-    render: (value, row, index) => index + 1
-  }, {
+    render: (value, row, index) => index + 1 },
+  {
     key: 'title',
     label: '公告标题',
     render: (value, row) => <div className="flex items-center gap-2">
         {getIconComponent(row.icon)}
         <span>{value}</span>
-      </div>
-  }, {
+      </div> },
+  {
     key: 'type',
     label: '公告类型',
-    render: value => {
+    render: (value) => {
       const typeMap = {
         notice: '通知',
         training: '培训',
-        commendation: '表彰'
-      };
+        commendation: '表彰' };
+
       return typeMap[value] || value;
-    }
-  }, {
+    } },
+  {
     key: 'publishTime',
-    label: '发布时间'
-  }, {
+    label: '发布时间' },
+  {
     key: 'department',
-    label: '发布部门'
-  }, {
+    label: '发布部门' },
+  {
     key: 'isPinned',
     label: '置顶',
-    render: value => <span className={`px-2 py-1 rounded-full text-xs ${value ? 'bg-orange-50 text-orange-800' : 'bg-gray-50 text-gray-600'}`}>
+    render: (value) => <span className={`px-2 py-1 rounded-full text-xs ${value ? 'bg-orange-50 text-orange-800' : 'bg-gray-50 text-gray-600'}`}>
           {value ? '是' : '否'}
-        </span>
-  }, {
+        </span> },
+  {
     key: 'priority',
     label: '优先级',
-    render: value => <span className={`px-2 py-1 rounded-full text-xs ${value === 'high' ? 'bg-red-50 text-red-800' : 'bg-blue-100 text-blue-700'}`}>
+    render: (value) => <span className={`px-2 py-1 rounded-full text-xs ${value === 'high' ? 'bg-red-50 text-red-800' : 'bg-blue-100 text-blue-700'}`}>
           {value === 'high' ? '高' : '普通'}
-        </span>
-  }];
+        </span> }];
+
   const typeOptions = [{
     value: 'all',
-    label: '全部类型'
-  }, {
+    label: '全部类型' },
+  {
     value: 'notice',
-    label: '通知'
-  }, {
+    label: '通知' },
+  {
     value: 'training',
-    label: '培训'
-  }, {
+    label: '培训' },
+  {
     value: 'commendation',
-    label: '表彰'
-  }];
+    label: '表彰' }];
+
   const priorityOptions = [{
     value: 'all',
-    label: '全部优先级'
-  }, {
+    label: '全部优先级' },
+  {
     value: 'high',
-    label: '高优先级'
-  }, {
+    label: '高优先级' },
+  {
     value: 'normal',
-    label: '普通'
-  }];
+    label: '普通' }];
+
   const departmentOptions = [{
     value: 'all',
-    label: '全部部门'
-  }, {
+    label: '全部部门' },
+  {
     value: '人事部',
-    label: '人事部'
-  }, {
+    label: '人事部' },
+  {
     value: '品质部',
-    label: '品质部'
-  }, {
+    label: '品质部' },
+  {
     value: '品宣部',
-    label: '品宣部'
-  }, {
+    label: '品宣部' },
+  {
     value: '运营部',
-    label: '运营部'
-  }, {
+    label: '运营部' },
+  {
     value: '财务部',
-    label: '财务部'
-  }];
+    label: '财务部' }];
+
   const chartTypeOptions = [{
     value: 'type',
     label: '公告类型分布',
-    icon: PieChart
-  }, {
+    icon: PieChart },
+  {
     value: 'priority',
     label: '优先级分布',
-    icon: BarChart3
-  }, {
+    icon: BarChart3 },
+  {
     value: 'trend',
     label: '发布趋势',
-    icon: TrendingUp
-  }];
+    icon: TrendingUp }];
+
 
   // 统计数据
   const stats = {
     total: announcements.length,
-    pinned: announcements.filter(a => a.isPinned).length,
-    today: announcements.filter(a => {
+    pinned: announcements.filter((a) => a.isPinned).length,
+    today: announcements.filter((a) => {
       const today = new Date().toLocaleDateString('zh-CN');
       return a.publishTime && a.publishTime.includes(today);
     }).length,
-    highPriority: announcements.filter(a => a.priority === 'high').length
-  };
+    highPriority: announcements.filter((a) => a.priority === 'high').length };
+
 
   // 图表数据
   const getChartData = () => {
     if (chartType === 'type') {
       const typeCount = {};
-      announcements.forEach(a => {
+      announcements.forEach((a) => {
         typeCount[a.type] = (typeCount[a.type] || 0) + 1;
       });
       return Object.entries(typeCount).map(([key, value]) => ({
         name: key === 'notice' ? '通知' : key === 'training' ? '培训' : key === 'commendation' ? '表彰' : key,
-        value
-      }));
+        value }));
+
     } else if (chartType === 'priority') {
       const priorityCount = {};
-      announcements.forEach(a => {
+      announcements.forEach((a) => {
         priorityCount[a.priority] = (priorityCount[a.priority] || 0) + 1;
       });
       return Object.entries(priorityCount).map(([key, value]) => ({
         name: key === 'high' ? '高优先级' : '普通',
-        value
-      }));
+        value }));
+
     } else if (chartType === 'trend') {
       const trendData = {};
-      announcements.forEach(a => {
+      announcements.forEach((a) => {
         if (a.publishTime) {
           const date = a.publishTime.split(' ')[0];
           trendData[date] = (trendData[date] || 0) + 1;
@@ -226,13 +226,13 @@ export default function Announcement(props) {
       });
       return Object.entries(trendData).sort((a, b) => new Date(a[0]) - new Date(b[0])).slice(-7).map(([date, count]) => ({
         date,
-        count
-      }));
+        count }));
+
     }
     return [];
   };
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-  const filteredData = announcements.filter(item => {
+  const filteredData = announcements.filter((item) => {
     const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase()) || item.content?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || item.type === filterType;
     const matchesPriority = filterPriority === 'all' || item.priority === filterPriority;
@@ -254,24 +254,24 @@ export default function Announcement(props) {
   const handleExportCSV = () => {
     const headers = ['序号', '公告标题', '公告类型', '发布时间', '发布部门', '置顶', '优先级', '公告内容'];
     const rows = filteredData.map((item, index) => [index + 1, item.title, item.type === 'notice' ? '通知' : item.type === 'training' ? '培训' : item.type === 'commendation' ? '表彰' : item.type, item.publishTime, item.department, item.isPinned ? '是' : '否', item.priority === 'high' ? '高' : '普通', item.content]);
-    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const csvContent = [headers, ...rows].map((row) => row.join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csvContent], {
-      type: 'text/csv;charset=utf-8;'
-    });
+      type: 'text/csv;charset=utf-8;' });
+
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `公告列表_${new Date().toLocaleDateString('zh-CN')}.csv`;
     link.click();
     toast({
       title: '导出成功',
-      description: '公告列表已导出为CSV文件'
-    });
+      description: '公告列表已导出为CSV文件' });
+
   };
   const handleImportCSV = () => {
     toast({
       title: '导入功能',
-      description: 'CSV导入功能开发中，敬请期待'
-    });
+      description: 'CSV导入功能开发中，敬请期待' });
+
   };
   const handleAdd = () => {
     setEditingAnnouncement(null);
@@ -282,11 +282,11 @@ export default function Announcement(props) {
       priority: 'normal',
       icon: 'Bell',
       department: '人事部',
-      isPinned: false
-    });
+      isPinned: false });
+
     setIsDialogOpen(true);
   };
-  const handleEdit = item => {
+  const handleEdit = (item) => {
     setEditingAnnouncement(item);
     setFormData({
       title: item.title,
@@ -295,48 +295,48 @@ export default function Announcement(props) {
       priority: item.priority,
       icon: item.icon || 'Bell',
       department: item.department || '人事部',
-      isPinned: item.isPinned || false
-    });
+      isPinned: item.isPinned || false });
+
     setIsDialogOpen(true);
   };
-  const handleView = item => {
+  const handleView = (item) => {
     setSelectedAnnouncement(item);
     setIsViewDialogOpen(true);
   };
-  const handleDelete = async item => {
+  const handleDelete = async (item) => {
     if (confirm('确定要删除该公告吗？')) {
       try {
         const result = await deleteRecord('announcement', {
           $and: [{
             _id: {
-              $eq: item._id
-            }
-          }]
-        });
+              $eq: item._id } }] });
+
+
+
         if (result && result.count > 0) {
           toast({
             title: '删除成功',
-            description: '公告已删除'
-          });
+            description: '公告已删除' });
+
           loadAnnouncements();
         } else {
           toast({
             title: '删除失败',
             description: '未找到要删除的公告',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
         }
       } catch (error) {
         console.error('删除公告失败:', error);
         toast({
           title: '删除失败',
           description: error.message || '删除公告时发生错误',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const publishTime = new Date().toLocaleString('zh-CN', {
@@ -344,8 +344,8 @@ export default function Announcement(props) {
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
-      });
+        minute: '2-digit' });
+
       if (editingAnnouncement) {
         // 更新公告
         const result = await updateRecord('announcement', {
@@ -355,26 +355,26 @@ export default function Announcement(props) {
           priority: formData.priority,
           icon: formData.icon,
           department: formData.department,
-          isPinned: formData.isPinned
-        }, {
+          isPinned: formData.isPinned },
+        {
           $and: [{
             _id: {
-              $eq: editingAnnouncement._id
-            }
-          }]
-        });
+              $eq: editingAnnouncement._id } }] });
+
+
+
         if (result && result.count > 0) {
           toast({
             title: '更新成功',
-            description: '公告已更新'
-          });
+            description: '公告已更新' });
+
           loadAnnouncements();
         } else {
           toast({
             title: '更新失败',
             description: '未找到要更新的公告',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
         }
       } else {
         // 新增公告
@@ -386,20 +386,20 @@ export default function Announcement(props) {
           publishTime: publishTime,
           department: formData.department,
           icon: formData.icon,
-          isPinned: formData.isPinned
-        });
+          isPinned: formData.isPinned });
+
         if (result && result.id) {
           toast({
             title: '发布成功',
-            description: '公告已发布'
-          });
+            description: '公告已发布' });
+
           loadAnnouncements();
         } else {
           toast({
             title: '发布失败',
             description: '发布公告时发生错误',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
         }
       }
       setIsDialogOpen(false);
@@ -408,15 +408,15 @@ export default function Announcement(props) {
       toast({
         title: editingAnnouncement ? '更新失败' : '发布失败',
         description: error.message || '操作时发生错误',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
-  return <PageLayout currentPage="announcement" onPageChange={pageId => {
+  return <PageLayout currentPage="announcement" onPageChange={(pageId) => {
     props.$w?.utils?.navigateTo({
       pageId,
-      params: {}
-    });
+      params: {} });
+
   }} title="公告信息管理" subtitle="发布和管理公告" user={props.$w?.auth?.currentUser}>
       {/* 统计概览卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -507,7 +507,7 @@ export default function Announcement(props) {
               公告统计分析
             </h3>
             <div className="flex gap-2">
-              {chartTypeOptions.map(option => <button key={option.value} onClick={() => setChartType(option.value)} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${chartType === option.value ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+              {chartTypeOptions.map((option) => <button key={option.value} onClick={() => setChartType(option.value)} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${chartType === option.value ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                   <option.icon className="w-4 h-4" />
                   {option.label}
                 </button>)}
@@ -518,8 +518,8 @@ export default function Announcement(props) {
               {chartType === 'type' || chartType === 'priority' ? <RechartsPieChart>
                   <Pie data={getChartData()} cx="50%" cy="50%" labelLine={false} label={({
               name,
-              percent
-            }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+              percent }) =>
+            `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
                     {getChartData().map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                   </Pie>
                   <Tooltip />
@@ -552,7 +552,7 @@ export default function Announcement(props) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">搜索关键词</label>
-            <Input placeholder="搜索公告标题或内容" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+            <Input placeholder="搜索公告标题或内容" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">公告类型</label>
@@ -561,20 +561,20 @@ export default function Announcement(props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {typeOptions.map(option => <SelectItem key={option.value} value={option.value}>
+                {typeOptions.map((option) => <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+            
             <Select value={filterPriority} onValueChange={setFilterPriority}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {priorityOptions.map(option => <SelectItem key={option.value} value={option.value}>
+                {priorityOptions.map((option) => <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>)}
               </SelectContent>
@@ -587,7 +587,7 @@ export default function Announcement(props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {departmentOptions.map(option => <SelectItem key={option.value} value={option.value}>
+                {departmentOptions.map((option) => <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>)}
               </SelectContent>
@@ -619,18 +619,18 @@ export default function Announcement(props) {
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="title">公告标题 *</Label>
-                <Input id="title" value={formData.title} onChange={e => setFormData({
+                <Input id="title" value={formData.title} onChange={(e) => setFormData({
                 ...formData,
-                title: e.target.value
-              })} required placeholder="请输入公告标题" />
+                title: e.target.value })}
+              required placeholder="请输入公告标题" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="type">公告类型 *</Label>
-                  <Select value={formData.type} onValueChange={value => setFormData({
+                  <Select value={formData.type} onValueChange={(value) => setFormData({
                   ...formData,
-                  type: value
-                })}>
+                  type: value })}>
+
 
                     <SelectTrigger>
                       <SelectValue />
@@ -644,20 +644,20 @@ export default function Announcement(props) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="icon">公告图标 *</Label>
-                  <Select value={formData.icon} onValueChange={value => setFormData({
+                  <Select value={formData.icon} onValueChange={(value) => setFormData({
                   ...formData,
-                  icon: value
-                })}>
+                  icon: value })}>
+
 
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {iconOptions.map(option => <SelectItem key={option.value} value={option.value}>
+                      {iconOptions.map((option) => <SelectItem key={option.value} value={option.value}>
                           <div className="flex items-center gap-2">
                             {React.createElement(option.icon, {
-                          className: "w-4 h-4"
-                        })}
+                          className: "w-4 h-4" })}
+
                             <span>{option.label}</span>
                           </div>
                         </SelectItem>)}
@@ -667,10 +667,10 @@ export default function Announcement(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="department">发布部门 *</Label>
-                <Select value={formData.department} onValueChange={value => setFormData({
+                <Select value={formData.department} onValueChange={(value) => setFormData({
                 ...formData,
-                department: value
-              })}>
+                department: value })}>
+
 
                     <SelectTrigger>
                       <SelectValue />
@@ -685,18 +685,18 @@ export default function Announcement(props) {
                   </Select>
               </div>
               <div className="flex items-center space-x-2">
-                <input type="checkbox" id="isPinned" checked={formData.isPinned} onChange={e => setFormData({
+                <input type="checkbox" id="isPinned" checked={formData.isPinned} onChange={(e) => setFormData({
                 ...formData,
-                isPinned: e.target.checked
-              })} className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                isPinned: e.target.checked })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                 <Label htmlFor="isPinned" className="cursor-pointer">置顶公告</Label>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">公告内容 *</Label>
-                <Textarea id="content" value={formData.content} onChange={e => setFormData({
+                <Textarea id="content" value={formData.content} onChange={(e) => setFormData({
                 ...formData,
-                content: e.target.value
-              })} required placeholder="请输入公告内容" rows={6} />
+                content: e.target.value })}
+              required placeholder="请输入公告内容" rows={6} />
               </div>
             </div>
             <DialogFooter>
