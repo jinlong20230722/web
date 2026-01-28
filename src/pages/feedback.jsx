@@ -8,8 +8,8 @@ import { PageLayout } from '@/components/PageLayout';
 import { getRecords, createRecord, updateRecord, deleteRecord, formatDateTime } from '@/lib/dataSource';
 export default function Feedback(props) {
   const {
-    toast
-  } = useToast();
+    toast } =
+  useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -22,16 +22,16 @@ export default function Feedback(props) {
     submitterName: '',
     submitterId: '',
     feedbackType: '建议',
-    content: ''
-  });
+    content: '' });
+
 
   // 加载反馈数据
   const loadFeedbacks = async () => {
     setLoading(true);
     try {
       const result = await getRecords('feedback', {}, 100, 1, [{
-        submitTime: 'desc'
-      }]);
+        submitTime: 'desc' }]);
+
       if (result && result.records) {
         setFeedbacks(result.records);
       }
@@ -39,8 +39,8 @@ export default function Feedback(props) {
       toast({
         title: '加载失败',
         description: error.message || '加载反馈数据失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     } finally {
       setLoading(false);
     }
@@ -51,41 +51,41 @@ export default function Feedback(props) {
   const columns = [{
     key: 'index',
     label: '序号',
-    render: (value, row, index) => index + 1
-  }, {
+    render: (value, row, index) => index + 1 },
+  {
     key: 'submitterName',
-    label: '反馈人'
-  }, {
+    label: '反馈人' },
+  {
     key: 'submitterId',
-    label: '反馈人ID'
-  }, {
+    label: '反馈人ID' },
+  {
     key: 'feedbackType',
-    label: '反馈类型'
-  }, {
+    label: '反馈类型' },
+  {
     key: 'content',
-    label: '反馈内容'
-  }, {
+    label: '反馈内容' },
+  {
     key: 'submitTime',
     label: '提交时间',
-    render: value => formatDateTime(value)
-  }, {
+    render: (value) => formatDateTime(value) },
+  {
     key: 'processStatus',
     label: '状态',
-    render: value => <span className={`px-2 py-1 rounded-full text-xs ${value === '已处理' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+    render: (value) => <span className={`px-2 py-1 rounded-full text-xs ${value === '已处理' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
           {value === '已处理' ? '已处理' : '待处理'}
-        </span>
-  }];
+        </span> }];
+
   const filterOptions = [{
     value: 'all',
-    label: '全部状态'
-  }, {
+    label: '全部状态' },
+  {
     value: 'pending',
-    label: '待处理'
-  }, {
+    label: '待处理' },
+  {
     value: 'processed',
-    label: '已处理'
-  }];
-  const filteredData = feedbacks.filter(item => {
+    label: '已处理' }];
+
+  const filteredData = feedbacks.filter((item) => {
     const matchesSearch = item.submitterName?.toLowerCase().includes(searchTerm.toLowerCase()) || item.content?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || filterStatus === 'pending' && item.processStatus === '待处理' || filterStatus === 'processed' && item.processStatus === '已处理';
     return matchesSearch && matchesFilter;
@@ -95,40 +95,40 @@ export default function Feedback(props) {
       submitterName: '',
       submitterId: '',
       feedbackType: '建议',
-      content: ''
-    });
+      content: '' });
+
     setIsDialogOpen(true);
   };
-  const handleReply = item => {
+  const handleReply = (item) => {
     setSelectedFeedback(item);
     setReplyText('');
     setIsReplyDialogOpen(true);
   };
-  const handleDelete = async item => {
+  const handleDelete = async (item) => {
     if (confirm('确定要删除该反馈吗？')) {
       try {
         await deleteRecord('feedback', {
           $and: [{
             _id: {
-              $eq: item._id
-            }
-          }]
-        });
+              $eq: item._id } }] });
+
+
+
         toast({
           title: '删除成功',
-          description: '反馈已删除'
-        });
+          description: '反馈已删除' });
+
         loadFeedbacks();
       } catch (error) {
         toast({
           title: '删除失败',
           description: error.message || '删除反馈失败',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = {
@@ -136,59 +136,59 @@ export default function Feedback(props) {
         submitterId: formData.submitterId,
         feedbackType: formData.feedbackType,
         content: formData.content,
-        processStatus: '待处理'
-      };
+        processStatus: '待处理' };
+
       await createRecord('feedback', data);
       toast({
         title: '提交成功',
-        description: '反馈已提交'
-      });
+        description: '反馈已提交' });
+
       setIsDialogOpen(false);
       loadFeedbacks();
     } catch (error) {
       toast({
         title: '提交失败',
         description: error.message || '提交反馈失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
-  const handleReplySubmit = async e => {
+  const handleReplySubmit = async (e) => {
     e.preventDefault();
     try {
       await updateRecord('feedback', {
-        processStatus: '已处理'
-      }, {
+        processStatus: '已处理' },
+      {
         $and: [{
           _id: {
-            $eq: selectedFeedback._id
-          }
-        }]
-      });
+            $eq: selectedFeedback._id } }] });
+
+
+
       toast({
         title: '回复成功',
-        description: '反馈已标记为已处理'
-      });
+        description: '反馈已标记为已处理' });
+
       setIsReplyDialogOpen(false);
       loadFeedbacks();
     } catch (error) {
       toast({
         title: '回复失败',
         description: error.message || '回复失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
-  return <PageLayout currentPage="feedback" onPageChange={pageId => {
+  return <PageLayout currentPage="feedback" onPageChange={(pageId) => {
     props.$w?.utils?.navigateTo({
       pageId,
-      params: {}
-    });
+      params: {} });
+
   }} title="意见反馈管理" subtitle="查看和回复用户反馈" user={props.$w?.auth?.currentUser}>
       <div className="flex justify-between items-center mb-6">
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-          + 提交反馈
-        </Button>
+        
+
+
       </div>
 
       <DataTable columns={columns} data={filteredData} onReply={handleReply} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
@@ -203,25 +203,25 @@ export default function Feedback(props) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="submitterName">反馈人 *</Label>
-                  <Input id="submitterName" value={formData.submitterName} onChange={e => setFormData({
+                  <Input id="submitterName" value={formData.submitterName} onChange={(e) => setFormData({
                   ...formData,
-                  submitterName: e.target.value
-                })} required />
+                  submitterName: e.target.value })}
+                required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="submitterId">反馈人ID *</Label>
-                  <Input id="submitterId" value={formData.submitterId} onChange={e => setFormData({
+                  <Input id="submitterId" value={formData.submitterId} onChange={(e) => setFormData({
                   ...formData,
-                  submitterId: e.target.value
-                })} required />
+                  submitterId: e.target.value })}
+                required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="feedbackType">反馈类型 *</Label>
-                <Select value={formData.feedbackType} onValueChange={value => setFormData({
+                <Select value={formData.feedbackType} onValueChange={(value) => setFormData({
                 ...formData,
-                feedbackType: value
-              })}>
+                feedbackType: value })}>
+
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -235,10 +235,10 @@ export default function Feedback(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">反馈内容 *</Label>
-                <Textarea id="content" value={formData.content} onChange={e => setFormData({
+                <Textarea id="content" value={formData.content} onChange={(e) => setFormData({
                 ...formData,
-                content: e.target.value
-              })} required />
+                content: e.target.value })}
+              required />
               </div>
             </div>
             <DialogFooter>
@@ -277,7 +277,7 @@ export default function Feedback(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="reply">回复内容</Label>
-                <Textarea id="reply" value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="请输入回复内容..." />
+                <Textarea id="reply" value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="请输入回复内容..." />
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsReplyDialogOpen(false)}>
