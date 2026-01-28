@@ -70,7 +70,7 @@ export function Sidebar({
                   <Icon size={20} className={isActive ? 'text-white' : 'text-blue-300'} />
                   {!collapsed && <div className="flex flex-col items-start">
                       <span className="text-sm font-medium">{item.label}</span>
-                      <span className="text-xs text-blue-300">{item.description}</span>
+                      
                     </div>}
                 </button>
               </li>;
