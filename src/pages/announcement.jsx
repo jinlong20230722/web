@@ -7,6 +7,7 @@ import { Bell, Trophy, Newspaper, CheckCircle2 } from 'lucide-react';
 
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
+import { getRecords, createRecord, updateRecord, deleteRecord } from '@/lib/dataSource';
 export default function Announcement(props) {
   const {
     toast
@@ -60,24 +61,9 @@ export default function Announcement(props) {
   const loadAnnouncements = async () => {
     try {
       setLoading(true);
-      const result = await props.$w.cloud.callDataSource({
-        dataSourceName: 'announcement',
-        methodName: 'wedaGetRecordsV2',
-        params: {
-          filter: {
-            where: {}
-          },
-          select: {
-            $master: true
-          },
-          orderBy: [{
-            publishTime: 'desc'
-          }],
-          getCount: true,
-          pageSize: 100,
-          pageNumber: 1
-        }
-      });
+      const result = await getRecords('announcement', {}, 100, 1, [{
+        publishTime: 'desc'
+      }]);
       if (result && result.records) {
         setAnnouncements(result.records);
       }
@@ -195,20 +181,12 @@ export default function Announcement(props) {
   const handleDelete = async item => {
     if (confirm('确定要删除该公告吗？')) {
       try {
-        const result = await props.$w.cloud.callDataSource({
-          dataSourceName: 'announcement',
-          methodName: 'wedaDeleteV2',
-          params: {
-            filter: {
-              where: {
-                $and: [{
-                  _id: {
-                    $eq: item._id
-                  }
-                }]
-              }
+        const result = await deleteRecord('announcement', {
+          $and: [{
+            _id: {
+              $eq: item._id
             }
-          }
+          }]
         });
         if (result && result.count > 0) {
           toast({
@@ -245,29 +223,20 @@ export default function Announcement(props) {
       });
       if (editingAnnouncement) {
         // 更新公告
-        const result = await props.$w.cloud.callDataSource({
-          dataSourceName: 'announcement',
-          methodName: 'wedaUpdateV2',
-          params: {
-            data: {
-              title: formData.title,
-              type: formData.type,
-              content: formData.content,
-              priority: formData.priority,
-              icon: formData.icon,
-              department: formData.department,
-              isPinned: formData.isPinned
-            },
-            filter: {
-              where: {
-                $and: [{
-                  _id: {
-                    $eq: editingAnnouncement._id
-                  }
-                }]
-              }
+        const result = await updateRecord('announcement', {
+          title: formData.title,
+          type: formData.type,
+          content: formData.content,
+          priority: formData.priority,
+          icon: formData.icon,
+          department: formData.department,
+          isPinned: formData.isPinned
+        }, {
+          $and: [{
+            _id: {
+              $eq: editingAnnouncement._id
             }
-          }
+          }]
         });
         if (result && result.count > 0) {
           toast({
@@ -284,21 +253,15 @@ export default function Announcement(props) {
         }
       } else {
         // 新增公告
-        const result = await props.$w.cloud.callDataSource({
-          dataSourceName: 'announcement',
-          methodName: 'wedaCreateV2',
-          params: {
-            data: {
-              title: formData.title,
-              type: formData.type,
-              content: formData.content,
-              priority: formData.priority,
-              publishTime: publishTime,
-              department: formData.department,
-              icon: formData.icon,
-              isPinned: formData.isPinned
-            }
-          }
+        const result = await createRecord('announcement', {
+          title: formData.title,
+          type: formData.type,
+          content: formData.content,
+          priority: formData.priority,
+          publishTime: publishTime,
+          department: formData.department,
+          icon: formData.icon,
+          isPinned: formData.isPinned
         });
         if (result && result.id) {
           toast({
