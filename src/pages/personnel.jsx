@@ -445,7 +445,7 @@ export default function Personnel(props) {
       </div>
 
       {/* 图表视图 */}
-      {showChart ? <div className="space-y-6">
+      {showChart ? <div className="space-y-4">
           {/* 图表类型切换 */}
           <div className="flex gap-2">
             <Button onClick={() => setChartType('bar')} variant={chartType === 'bar' ? 'default' : 'outline'} size="sm">
@@ -459,65 +459,77 @@ export default function Personnel(props) {
             </Button>
           </div>
 
-          {/* 状态分布饼图 */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">人员状态分布</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={getChartData()} cx="50%" cy="50%" labelLine={false} label={({
-              name,
-              percent
-            }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
-                  {getChartData().map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          {/* 图表网格布局 - 所有图表在一页内显示 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* 状态分布饼图 */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-base font-semibold mb-3">人员状态分布</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie data={getChartData()} cx="50%" cy="50%" labelLine={false} label={entry => `${entry.name} ${(entry.percent * 100).toFixed(0)}%`} outerRadius={60} fill="#8884d8" dataKey="value">
+                    {getChartData().map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
 
-          {/* 部门分布柱状图 */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">部门人员分布</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={getDepartmentData()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#3B82F6" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+            {/* 部门分布柱状图 */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-base font-semibold mb-3">部门人员分布</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={getDepartmentData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" tick={{
+                fontSize: 12
+              }} />
+                  <YAxis tick={{
+                fontSize: 12
+              }} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" fill="#3B82F6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
 
-          {/* 职位分布柱状图 */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">职位人员分布</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={getPositionData()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#10B981" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+            {/* 职位分布柱状图 */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-base font-semibold mb-3">职位人员分布</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={getPositionData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" tick={{
+                fontSize: 12
+              }} />
+                  <YAxis tick={{
+                fontSize: 12
+              }} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" fill="#10B981" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
 
-          {/* 入职趋势折线图 */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">入职趋势</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={getJoinTrendData()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="count" stroke="#F59E0B" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+            {/* 入职趋势折线图 */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-base font-semibold mb-3">入职趋势</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={getJoinTrendData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" tick={{
+                fontSize: 12
+              }} />
+                  <YAxis tick={{
+                fontSize: 12
+              }} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="count" stroke="#F59E0B" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div> : (/* 列表视图 */
     <DataTable columns={columns} data={filteredData} onEdit={handleEdit} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />)}
