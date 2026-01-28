@@ -9,7 +9,7 @@ import { getRecords } from '@/lib/dataSource';
 import { PageLayout } from '@/components/PageLayout';
 import { StatisticsChart } from '@/components/StatisticsChart';
 import { StatCard } from '@/components/StatCard';
-import { ExportButtons, DateRangePicker, filterByDateRange } from '@/components/ExportUtils';
+import { ExportUtils, DateRangePicker, filterByDateRange } from '@/components/ExportUtils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 export default function DataCockpit(props) {
   const {
@@ -432,7 +432,7 @@ export default function DataCockpit(props) {
               {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
               <span>{isFullscreen ? '退出全屏' : '全屏显示'}</span>
             </button>
-            <ExportButtons onExport={handleExport} />
+            <ExportUtils onExport={handleExport} />
           </div>
         </div>
 
