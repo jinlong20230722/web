@@ -65,20 +65,20 @@ export function DataTable({
       <div className="overflow-x-auto">
         {loading ? <div className="p-12 text-center text-gray-500">
             加载中...
-          </div> : <table className="w-full">
+          </div> : <table className="w-full min-w-[1200px]">
             <thead className="bg-gray-50">
               <tr>
-                {columns.map(column => <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {columns.map(column => <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     {column.label}
                   </th>)}
-                {showActions && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {showActions && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     操作
                   </th>}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {data.length === 0 ? <tr>
-                  <td colSpan={columns.length + (showActions ? 1 : 0)} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={columns.length + (showActions ? 1 : 0)} className="px-6 py-12 text-center text-gray-500 whitespace-nowrap">
                     暂无数据
                   </td>
                 </tr> : data.map((row, index) => <tr key={index} className="hover:bg-blue-50 even:bg-gray-50">
