@@ -29,7 +29,7 @@ export function PageLayout({
         <Header title={title} subtitle={subtitle} user={user} />
 
         {/* 页面内容区域 */}
-        <div className="p-6">
+        <div className="p-6 overflow-x-auto">
           {children}
         </div>
       </main>
