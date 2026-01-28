@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
 import { getRecords, createRecord, updateRecord, deleteRecord, formatDate } from '@/lib/dataSource';
@@ -50,8 +51,9 @@ export default function Personnel(props) {
     loadPersonnel();
   }, []);
   const columns = [{
-    key: '_id',
-    label: 'ID'
+    key: 'index',
+    label: '序号',
+    render: (value, row, index) => index + 1
   }, {
     key: 'name',
     label: '姓名'
@@ -75,6 +77,55 @@ export default function Personnel(props) {
           {value === '在职' ? '在职' : '离职'}
         </span>
   }];
+
+  // 统计数据
+  const departmentStats = () => {
+    const stats = {};
+    personnel.forEach(item => {
+      const dept = item.department || '未分类';
+      stats[dept] = (stats[dept] || 0) + 1;
+    });
+    return Object.keys(stats).map(key => ({
+      name: key,
+      count: stats[key]
+    }));
+  };
+  const statusStats = () => {
+    const stats = {
+      '在职': 0,
+      '离职': 0
+    };
+    personnel.forEach(item => {
+      const status = item.status || '离职';
+      stats[status] = (stats[status] || 0) + 1;
+    });
+    return Object.keys(stats).map(key => ({
+      name: key,
+      count: stats[key]
+    }));
+  };
+  const COLORS = ['#3B82F6', '#9CA3AF'];
+
+  // 导出 CSV
+  const handleExportCSV = () => {
+    const headers = ['序号', '姓名', '联系电话', '所属部门', '职位', '入职日期', '状态'];
+    const csvContent = [headers.join(','), ...filteredData.map((item, index) => [index + 1, item.name || '', item.phone || '', item.department || '', item.position || '', formatDate(item.joinDate) || '', item.status || ''].map(field => `"${field}"`).join(','))].join('\n');
+    const blob = new Blob(['\uFEFF' + csvContent], {
+      type: 'text/csv;charset=utf-8;'
+    });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `人员信息_${new Date().toLocaleDateString()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast({
+      title: '导出成功',
+      description: '人员信息已导出为 CSV 文件'
+    });
+  };
   const filterOptions = [{
     value: 'all',
     label: '全部状态'
@@ -187,9 +238,46 @@ export default function Personnel(props) {
       params: {}
     });
   }} title="人员信息管理" subtitle="管理保安人员基本信息" user={props.$w?.auth?.currentUser}>
+      {/* 统计图表区域 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold mb-4">部门人员分布</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={departmentStats()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#3B82F6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold mb-4">人员状态分布</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie data={statusStats()} cx="50%" cy="50%" labelLine={false} label={({
+              name,
+              percent
+            }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="count">
+                {statusStats().map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
         <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
           + 添加人员
+        </Button>
+        <Button onClick={handleExportCSV} variant="outline" className="flex items-center gap-2">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          导出 CSV
         </Button>
       </div>
 
