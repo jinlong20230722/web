@@ -66,8 +66,9 @@ export default function Announcement(props) {
     loadAnnouncements();
   }, []);
   const columns = [{
-    key: '_id',
-    label: 'ID'
+    key: 'index',
+    label: '序号',
+    render: (value, row, index) => index + 1
   }, {
     key: 'title',
     label: '公告标题'
