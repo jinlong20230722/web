@@ -83,7 +83,7 @@ export function DataTable({
                   </td>
                 </tr> : data.map((row, index) => <tr key={index} className="hover:bg-blue-50 even:bg-gray-50">
                     {columns.map(column => <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {column.render ? column.render(row[column.key], row) : row[column.key]}
+                        {column.render ? column.render(row[column.key], row, index) : row[column.key]}
                       </td>)}
                     {showActions && <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex gap-2">

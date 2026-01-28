@@ -49,8 +49,9 @@ export default function Feedback(props) {
     loadFeedbacks();
   }, []);
   const columns = [{
-    key: '_id',
-    label: 'ID'
+    key: 'index',
+    label: '序号',
+    render: (value, row, index) => index + 1
   }, {
     key: 'submitterName',
     label: '反馈人'
