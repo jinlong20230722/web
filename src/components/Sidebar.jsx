@@ -2,7 +2,6 @@
 import React from 'react';
 // @ts-ignore;
 import { Users, Clock, Calendar, AlertCircle, MessageSquare, Megaphone, LayoutDashboard, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
-
 export function Sidebar({
   currentPage,
   onPageChange,
@@ -50,7 +49,7 @@ export function Sidebar({
       <div className="p-4 border-b border-blue-800">
         <div className="flex items-center justify-between">
           {!collapsed && <div>
-              <h1 className="text-lg font-bold tracking-wide">天顺保安</h1>
+              <h1 className="tracking-wide text-[1.8rem] font-semibold">天顺保安</h1>
               
             </div>}
           <button onClick={onToggle} className="p-1.5 hover:bg-blue-800 rounded-lg transition-colors" title={collapsed ? '展开菜单' : '收起菜单'}>
