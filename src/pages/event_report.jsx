@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { TrendingUp, Download, Calendar, Filter, RotateCcw } from 'lucide-react';
+import { TrendingUp, Download, Calendar, Filter, RotateCcw, Plus, FileText, AlertTriangle, Clock, CheckCircle, Upload, Search } from 'lucide-react';
 
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
@@ -11,8 +11,8 @@ import { getRecords, createRecord, updateRecord, deleteRecord, formatDateTime } 
 import { BarChart, Bar, PieChart, Pie, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 export default function EventReport(props) {
   const {
-    toast } =
-  useToast();
+    toast
+  } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -24,22 +24,23 @@ export default function EventReport(props) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [filterEventType, setFilterEventType] = useState('all');
+  const [chartType, setChartType] = useState('status');
   const [formData, setFormData] = useState({
     eventType: '',
     address: '',
     reporterId: '',
     reporterName: '',
-    description: '' });
-
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+    description: ''
+  });
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
 
   // 加载事件数据
   const loadEvents = async () => {
     setLoading(true);
     try {
       const result = await getRecords('event_report', {}, 100, 1, [{
-        reportTime: 'desc' }]);
-
+        reportTime: 'desc'
+      }]);
       if (result && result.records) {
         setEvents(result.records);
       }
@@ -47,8 +48,8 @@ export default function EventReport(props) {
       toast({
         title: '加载失败',
         description: error.message || '加载事件数据失败',
-        variant: 'destructive' });
-
+        variant: 'destructive'
+      });
     } finally {
       setLoading(false);
     }
@@ -58,54 +59,54 @@ export default function EventReport(props) {
   }, []);
   const columns = [{
     key: '_id',
-    label: 'ID' },
-  {
+    label: 'ID'
+  }, {
     key: 'eventType',
-    label: '事件类型' },
-  {
+    label: '事件类型'
+  }, {
     key: 'address',
-    label: '位置' },
-  {
+    label: '位置'
+  }, {
     key: 'reporterName',
-    label: '上报人' },
-  {
+    label: '上报人'
+  }, {
     key: 'reportTime',
     label: '上报时间',
-    render: (value) => formatDateTime(value) },
-  {
+    render: value => formatDateTime(value)
+  }, {
     key: 'description',
-    label: '描述' }];
-
+    label: '描述'
+  }];
   const filterOptions = [{
     value: 'all',
-    label: '全部状态' },
-  {
+    label: '全部状态'
+  }, {
     value: 'pending',
-    label: '待处理' },
-  {
+    label: '待处理'
+  }, {
     value: 'processing',
-    label: '处理中' },
-  {
+    label: '处理中'
+  }, {
     value: 'resolved',
-    label: '已解决' }];
-
+    label: '已解决'
+  }];
   const eventTypeOptions = [{
     value: 'all',
-    label: '全部类型' },
-  {
+    label: '全部类型'
+  }, {
     value: '安全隐患',
-    label: '安全隐患' },
-  {
+    label: '安全隐患'
+  }, {
     value: '设备故障',
-    label: '设备故障' },
-  {
+    label: '设备故障'
+  }, {
     value: '人员违规',
-    label: '人员违规' },
-  {
+    label: '人员违规'
+  }, {
     value: '其他',
-    label: '其他' }];
-
-  const filteredData = events.filter((item) => {
+    label: '其他'
+  }];
+  const filteredData = events.filter(item => {
     const matchesSearch = item.eventType?.toLowerCase().includes(searchTerm.toLowerCase()) || item.address?.toLowerCase().includes(searchTerm.toLowerCase()) || item.reporterName?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all';
     const matchesEventType = filterEventType === 'all' || item.eventType === filterEventType;
@@ -116,16 +117,16 @@ export default function EventReport(props) {
     const headers = ['序号', '事件类型', '位置', '上报人', '上报时间', '状态', '描述'];
     const csvContent = ['\uFEFF' + headers.join(','), ...filteredData.map((item, index) => [index + 1, item.eventType || '', item.address || '', item.reporterName || '', formatDateTime(item.reportTime) || '', item.status || '待处理', (item.description || '').replace(/,/g, '，').replace(/\n/g, ' ')].join(','))].join('\n');
     const blob = new Blob([csvContent], {
-      type: 'text/csv;charset=utf-8;' });
-
+      type: 'text/csv;charset=utf-8;'
+    });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `事件上报数据_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     toast({
       title: '导出成功',
-      description: `已导出 ${filteredData.length} 条数据` });
-
+      description: `已导出 ${filteredData.length} 条数据`
+    });
   };
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -142,8 +143,8 @@ export default function EventReport(props) {
     }, {});
     const statusChartData = Object.entries(statusData).map(([name, value]) => ({
       name,
-      value }));
-
+      value
+    }));
     const typeData = filteredData.reduce((acc, item) => {
       const type = item.eventType || '其他';
       acc[type] = (acc[type] || 0) + 1;
@@ -151,8 +152,8 @@ export default function EventReport(props) {
     }, {});
     const typeChartData = Object.entries(typeData).map(([name, value]) => ({
       name,
-      value }));
-
+      value
+    }));
     const monthlyData = filteredData.reduce((acc, item) => {
       if (item.reportTime) {
         const date = new Date(item.reportTime);
@@ -163,110 +164,110 @@ export default function EventReport(props) {
     }, {});
     const monthlyChartData = Object.entries(monthlyData).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => ({
       name,
-      value }));
-
+      value
+    }));
     return {
       statusChartData,
       typeChartData,
-      monthlyChartData };
-
+      monthlyChartData
+    };
   };
   const {
     statusChartData,
     typeChartData,
-    monthlyChartData } =
-  getChartData();
+    monthlyChartData
+  } = getChartData();
   const handleAdd = () => {
     setFormData({
       eventType: '',
       address: '',
       reporterId: '',
       reporterName: '',
-      description: '' });
-
+      description: ''
+    });
     setIsDialogOpen(true);
   };
-  const handleView = (item) => {
+  const handleView = item => {
     setSelectedEvent(item);
     setIsViewDialogOpen(true);
   };
-  const handleProcess = async (item) => {
+  const handleProcess = async item => {
     if (confirm('确定要标记该事件为处理中吗？')) {
       try {
         await updateRecord('event_report', {
-          status: '处理中' },
-        {
+          status: '处理中'
+        }, {
           $and: [{
             _id: {
-              $eq: item._id } }] });
-
-
-
+              $eq: item._id
+            }
+          }]
+        });
         toast({
           title: '更新成功',
-          description: '事件状态已更新为处理中' });
-
+          description: '事件状态已更新为处理中'
+        });
         loadEvents();
       } catch (error) {
         toast({
           title: '更新失败',
           description: error.message || '更新事件状态失败',
-          variant: 'destructive' });
-
+          variant: 'destructive'
+        });
       }
     }
   };
-  const handleResolve = async (item) => {
+  const handleResolve = async item => {
     if (confirm('确定要标记该事件为已解决吗？')) {
       try {
         await updateRecord('event_report', {
-          status: '已解决' },
-        {
+          status: '已解决'
+        }, {
           $and: [{
             _id: {
-              $eq: item._id } }] });
-
-
-
+              $eq: item._id
+            }
+          }]
+        });
         toast({
           title: '更新成功',
-          description: '事件状态已更新为已解决' });
-
+          description: '事件状态已更新为已解决'
+        });
         loadEvents();
       } catch (error) {
         toast({
           title: '更新失败',
           description: error.message || '更新事件状态失败',
-          variant: 'destructive' });
-
+          variant: 'destructive'
+        });
       }
     }
   };
-  const handleDelete = async (item) => {
+  const handleDelete = async item => {
     if (confirm('确定要删除该事件记录吗？')) {
       try {
         await deleteRecord('event_report', {
           $and: [{
             _id: {
-              $eq: item._id } }] });
-
-
-
+              $eq: item._id
+            }
+          }]
+        });
         toast({
           title: '删除成功',
-          description: '事件记录已删除' });
-
+          description: '事件记录已删除'
+        });
         loadEvents();
       } catch (error) {
         toast({
           title: '删除失败',
           description: error.message || '删除事件记录失败',
-          variant: 'destructive' });
-
+          variant: 'destructive'
+        });
       }
     }
   };
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       const data = {
@@ -276,127 +277,257 @@ export default function EventReport(props) {
         reporterName: formData.reporterName,
         description: formData.description,
         reportTime: Date.now(),
-        attachments: [] };
-
+        attachments: []
+      };
       await createRecord('event_report', data);
       toast({
         title: '上报成功',
-        description: '事件已上报' });
-
+        description: '事件已上报'
+      });
       setIsDialogOpen(false);
       loadEvents();
     } catch (error) {
       toast({
         title: '上报失败',
         description: error.message || '上报事件失败',
-        variant: 'destructive' });
-
+        variant: 'destructive'
+      });
     }
   };
-  return <PageLayout currentPage="event_report" onPageChange={(pageId) => {
+  return <PageLayout currentPage="event_report" onPageChange={pageId => {
     props.$w?.utils?.navigateTo({
       pageId,
-      params: {} });
-
+      params: {}
+    });
   }} title="事件上报管理" subtitle="查看和处理上报事件" user={props.$w?.auth?.currentUser}>
-      <div className="flex justify-between items-center mb-6">
+      {/* 统计概览卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow p-5 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">总事件数</p>
+              <p className="text-3xl font-bold text-blue-600">{events.length}</p>
+              <p className="text-xs text-gray-500 mt-1">累计上报事件</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <FileText className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-5 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">待处理</p>
+              <p className="text-3xl font-bold text-orange-600">{events.filter(e => e.status === '待处理').length}</p>
+              <p className="text-xs text-gray-500 mt-1">需要及时处理</p>
+            </div>
+            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-orange-600" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-5 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">处理中</p>
+              <p className="text-3xl font-bold text-blue-600">{events.filter(e => e.status === '处理中').length}</p>
+              <p className="text-xs text-gray-500 mt-1">正在处理中</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <Clock className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-5 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">已解决</p>
+              <p className="text-3xl font-bold text-green-600">{events.filter(e => e.status === '已解决').length}</p>
+              <p className="text-xs text-gray-500 mt-1">已完成处理</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 操作按钮区域 */}
+      <div className="flex flex-wrap gap-3 mb-6">
         <div className="flex gap-2">
-          
-
-
+          <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            上报事件
+          </Button>
           <Button onClick={() => setShowCharts(!showCharts)} variant={showCharts ? "default" : "outline"} className={showCharts ? "bg-green-600 hover:bg-green-700" : ""}>
             <TrendingUp className="w-4 h-4 mr-2" />
             {showCharts ? '返回列表' : '统计图表'}
           </Button>
+        </div>
+        <div className="w-px bg-gray-300 mx-2"></div>
+        <div className="flex gap-2">
           <Button onClick={handleExportCSV} variant="outline">
             <Download className="w-4 h-4 mr-2" />
             导出 CSV
           </Button>
+          <Button onClick={() => toast({
+          title: '导入功能',
+          description: '导入CSV功能开发中'
+        })} variant="outline">
+            <Upload className="w-4 h-4 mr-2" />
+            导入 CSV
+          </Button>
         </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex flex-wrap gap-4 items-end">
-          <div className="flex-1 min-w-[200px]">
-            <Label className="text-sm text-gray-600 mb-1 block">开始日期</Label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="pl-10" />
-            </div>
-          </div>
-          <div className="flex-1 min-w-[200px]">
-            <Label className="text-sm text-gray-600 mb-1 block">结束日期</Label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="pl-10" />
-            </div>
-          </div>
-          <div className="flex-1 min-w-[180px]">
-            <Label className="text-sm text-gray-600 mb-1 block">事件类型</Label>
-            <Select value={filterEventType} onValueChange={setFilterEventType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {eventTypeOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button onClick={handleResetFilters} variant="outline" className="h-10">
+        <div className="w-px bg-gray-300 mx-2"></div>
+        <div className="flex gap-2">
+          <Button onClick={handleResetFilters} variant="outline">
             <RotateCcw className="w-4 h-4 mr-2" />
             重置筛选
           </Button>
         </div>
       </div>
 
-      {showCharts ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 space-y-4">
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-base font-semibold mb-3">事件状态分布</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={statusChartData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={(entry) => `${entry.name}: ${entry.value}`}>
-                  {statusChartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+      {/* 筛选区域 */}
+      <div className="bg-white rounded-lg shadow p-5 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Filter className="w-5 h-5 text-gray-600" />
+          <h3 className="text-lg font-semibold text-gray-800">筛选条件</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <Label className="text-sm text-gray-600 mb-1 block">开始日期</Label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="pl-10" />
+            </div>
+          </div>
+          <div>
+            <Label className="text-sm text-gray-600 mb-1 block">结束日期</Label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="pl-10" />
+            </div>
+          </div>
+          <div>
+            <Label className="text-sm text-gray-600 mb-1 block">事件类型</Label>
+            <Select value={filterEventType} onValueChange={setFilterEventType}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {eventTypeOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm text-gray-600 mb-1 block">处理状态</Label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {filterOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {showCharts ? <div className="bg-white rounded-lg shadow p-6">
+          {/* 图表类型切换标签 */}
+          <div className="flex gap-2 mb-6">
+            <button onClick={() => setChartType('status')} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${chartType === 'status' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                <span>状态分布</span>
+              </div>
+            </button>
+            <button onClick={() => setChartType('type')} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${chartType === 'type' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" />
+                <span>类型分布</span>
+              </div>
+            </button>
+            <button onClick={() => setChartType('trend')} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${chartType === 'trend' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                <span>上报趋势</span>
+              </div>
+            </button>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-base font-semibold mb-3">事件类型分布</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={typeChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{
-              fontSize: 12 }} />
-
-                <YAxis tick={{
-              fontSize: 12 }} />
-
-                <Tooltip />
-                <Bar dataKey="value" fill={COLORS[0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          {/* 图表展示区域 */}
+          <div className="h-[320px]">
+            {chartType === 'status' && <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  事件状态分布
+                </h3>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={statusChartData} cx="50%" cy="50%" outerRadius={100} dataKey="value" label={entry => `${entry.name}: ${entry.value}`} labelLine={false}>
+                      {statusChartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>}
+            {chartType === 'type' && <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  事件类型分布
+                </h3>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={typeChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{
+                fontSize: 12
+              }} />
+                    <YAxis tick={{
+                fontSize: 12
+              }} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" fill={COLORS[0]} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>}
+            {chartType === 'trend' && <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-green-600" />
+                  事件上报趋势
+                </h3>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={monthlyChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{
+                fontSize: 12
+              }} />
+                    <YAxis tick={{
+                fontSize: 12
+              }} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="value" stroke={COLORS[0]} strokeWidth={3} dot={{
+                r: 4
+              }} activeDot={{
+                r: 6
+              }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>}
           </div>
-
-          <div className="bg-white rounded-lg shadow p-4 lg:col-span-2">
-            <h3 className="text-base font-semibold mb-3">事件上报趋势</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={monthlyChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{
-              fontSize: 12 }} />
-
-                <YAxis tick={{
-              fontSize: 12 }} />
-
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="value" stroke={COLORS[0]} strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+        </div> : <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Search className="w-5 h-5 text-gray-600" />
+              事件列表
+            </h3>
+            <span className="text-sm text-gray-600">共 {filteredData.length} 条记录</span>
           </div>
-        </div> : <DataTable columns={columns} data={filteredData} onView={handleView} onProcess={handleProcess} onResolve={handleResolve} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />}
+          <DataTable columns={columns} data={filteredData} onView={handleView} onProcess={handleProcess} onResolve={handleResolve} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
+        </div>}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
@@ -408,24 +539,25 @@ export default function EventReport(props) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="reporterName">上报人 *</Label>
-                  <Input id="reporterName" value={formData.reporterName} onChange={(e) => setFormData({
+                  <Input id="reporterName" value={formData.reporterName} onChange={e => setFormData({
                   ...formData,
-                  reporterName: e.target.value })}
-                required />
+                  reporterName: e.target.value
+                })} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="reporterId">上报人ID *</Label>
-                  <Input id="reporterId" value={formData.reporterId} onChange={(e) => setFormData({
+                  <Input id="reporterId" value={formData.reporterId} onChange={e => setFormData({
                   ...formData,
-                  reporterId: e.target.value })}
-                required />
+                  reporterId: e.target.value
+                })} required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="eventType">事件类型 *</Label>
-                <Select value={formData.eventType} onValueChange={(value) => setFormData({
+                <Select value={formData.eventType} onValueChange={value => setFormData({
                 ...formData,
-                eventType: value })}>
+                eventType: value
+              })}>
 
                   <SelectTrigger>
                     <SelectValue />
@@ -440,17 +572,17 @@ export default function EventReport(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">位置 *</Label>
-                <Input id="address" value={formData.address} onChange={(e) => setFormData({
+                <Input id="address" value={formData.address} onChange={e => setFormData({
                 ...formData,
-                address: e.target.value })}
-              required />
+                address: e.target.value
+              })} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">事件描述 *</Label>
-                <Textarea id="description" value={formData.description} onChange={(e) => setFormData({
+                <Textarea id="description" value={formData.description} onChange={e => setFormData({
                 ...formData,
-                description: e.target.value })}
-              required />
+                description: e.target.value
+              })} required />
               </div>
             </div>
             <DialogFooter>
