@@ -31,20 +31,18 @@ export function DataTable({
   setFilterValue,
   loading = false
 }) {
-  return <div className="bg-white rounded-lg shadow-sm border border-gray-200 relative">
-      {/* Header - 右上角定位 */}
-      <div className="absolute top-6 right-6 z-10">
-        <div className="flex items-center gap-3">
+  return <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
           {showAdd && onAdd && <Button onClick={onAdd} className="bg-[#3B82F6] hover:bg-[#2563EB] text-white">
               <Plus size={16} className="mr-2" />
               新增
             </Button>}
         </div>
-      </div>
 
-      {/* Search and Filter */}
-      <div className="p-6 border-b border-gray-200">
+        {/* Search and Filter */}
         {(showSearch || filterOptions) && <div className="flex gap-3">
             {showSearch && setSearchTerm && <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
