@@ -45,7 +45,7 @@ export function Sidebar({
     icon: Megaphone,
     description: '公告发布'
   }];
-  return <div className={`bg-[#1E3A8A] text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} min-h-screen flex flex-col shadow-xl`}>
+  return <div className={`bg-[#1E3A8A] text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} h-screen fixed left-0 top-0 flex flex-col shadow-xl z-50`}>
       {/* Logo 区域 */}
       <div className="p-4 border-b border-blue-800">
         <div className="flex items-center justify-between">

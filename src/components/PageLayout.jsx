@@ -19,12 +19,12 @@ export function PageLayout({
   const handlePageChange = pageId => {
     onPageChange?.(pageId);
   };
-  return <div className="flex min-h-screen bg-gray-50">
+  return <div className={`min-h-screen bg-gray-50 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
       {/* 左侧菜单栏 */}
       <Sidebar currentPage={currentPage} onPageChange={handlePageChange} collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
       
       {/* 右侧内容区 */}
-      <main className="flex-1 transition-all duration-300">
+      <main>
         {/* 顶部导航栏 */}
         <Header title={title} subtitle={subtitle} user={user} />
 
