@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { TrendingUp, Download, Calendar, Filter, RotateCcw } from 'lucide-react';
+import { TrendingUp, Download, Calendar, Filter, RotateCcw, Users, UserCheck, UserX, Clock } from 'lucide-react';
 
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DataTable } from '@/components/DataTable';
@@ -289,6 +289,58 @@ export default function LeaveRequest(props) {
       params: {}
     });
   }} title="请假销假管理" subtitle="处理请假申请和销假记录" user={props.$w?.auth?.currentUser}>
+      {/* 统计概览卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium mb-1">总申请数</p>
+              <p className="text-white text-3xl font-bold">{leaveRequests.length}</p>
+              <p className="text-blue-200 text-xs mt-2">全部请假申请</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-yellow-100 text-sm font-medium mb-1">待审批</p>
+              <p className="text-white text-3xl font-bold">{leaveRequests.filter(r => r.approvalStatus === '待审批').length}</p>
+              <p className="text-yellow-200 text-xs mt-2">等待处理</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <Clock className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium mb-1">已通过</p>
+              <p className="text-white text-3xl font-bold">{leaveRequests.filter(r => r.approvalStatus === '已通过').length}</p>
+              <p className="text-green-200 text-xs mt-2">审批通过</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <UserCheck className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm font-medium mb-1">已拒绝</p>
+              <p className="text-white text-3xl font-bold">{leaveRequests.filter(r => r.approvalStatus === '已拒绝').length}</p>
+              <p className="text-red-200 text-xs mt-2">审批拒绝</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <UserX className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2">
           <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
