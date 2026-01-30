@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Download, Upload, TrendingUp, Calendar, Filter } from 'lucide-react';
+import { Download, Upload, TrendingUp, Calendar, Filter, Clock, CheckCircle, AlertCircle, Users } from 'lucide-react';
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { DataTable } from '@/components/DataTable';
@@ -288,6 +288,63 @@ export default function Attendance(props) {
       params: {}
     });
   }} title="打卡签到管理" subtitle="查看和管理打卡记录" user={props.$w?.auth?.currentUser}>
+      {/* 统计概览卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium mb-1">总打卡次数</p>
+              <p className="text-white text-3xl font-bold">{attendance.length}</p>
+              <p className="text-blue-200 text-xs mt-2">全部打卡记录</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <Clock className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium mb-1">正常打卡</p>
+              <p className="text-white text-3xl font-bold">{attendance.filter(a => a.status === '正常').length}</p>
+              <p className="text-green-200 text-xs mt-2">正常签到</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <CheckCircle className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm font-medium mb-1">异常打卡</p>
+              <p className="text-white text-3xl font-bold">{attendance.filter(a => a.status !== '正常').length}</p>
+              <p className="text-red-200 text-xs mt-2">异常签到</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <AlertCircle className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-orange-100 text-sm font-medium mb-1">今日打卡</p>
+              <p className="text-white text-3xl font-bold">{attendance.filter(a => {
+                if (!a.checkInTime) return false;
+                const checkInDate = new Date(a.checkInTime);
+                const today = new Date();
+                return checkInDate.getDate() === today.getDate() && checkInDate.getMonth() === today.getMonth() && checkInDate.getFullYear() === today.getFullYear();
+              }).length}</p>
+              <p className="text-orange-200 text-xs mt-2">今日签到人数</p>
+            </div>
+            <div className="bg-white/20 p-3 rounded-full">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 操作按钮区域 */}
       <div className="flex flex-wrap gap-4 mb-6">
         <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
