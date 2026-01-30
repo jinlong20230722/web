@@ -11,8 +11,8 @@ import { getRecords, createRecord, updateRecord, deleteRecord, formatDateTime } 
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 export default function Feedback(props) {
   const {
-    toast
-  } = useToast();
+    toast } =
+  useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
@@ -32,16 +32,16 @@ export default function Feedback(props) {
     submitterName: '',
     submitterId: '',
     feedbackType: '建议',
-    content: ''
-  });
+    content: '' });
+
 
   // 加载反馈数据
   const loadFeedbacks = async () => {
     setLoading(true);
     try {
       const result = await getRecords('feedback', {}, 100, 1, [{
-        submitTime: 'desc'
-      }]);
+        submitTime: 'desc' }]);
+
       if (result && result.records) {
         setFeedbacks(result.records);
       }
@@ -49,8 +49,8 @@ export default function Feedback(props) {
       toast({
         title: '加载失败',
         description: error.message || '加载反馈数据失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     } finally {
       setLoading(false);
     }
@@ -61,63 +61,63 @@ export default function Feedback(props) {
   const columns = [{
     key: 'index',
     label: '序号',
-    render: (value, row, index) => index + 1
-  }, {
+    render: (value, row, index) => index + 1 },
+  {
     key: 'submitterName',
-    label: '反馈人'
-  }, {
+    label: '反馈人' },
+  {
     key: 'submitterId',
-    label: '反馈人ID'
-  }, {
+    label: '反馈人ID' },
+  {
     key: 'feedbackType',
-    label: '反馈类型'
-  }, {
+    label: '反馈类型' },
+  {
     key: 'content',
     label: '反馈内容',
     render: (value, row) => <div className="flex items-center gap-2">
         <span className="max-w-[200px] truncate">{value || ''}</span>
-        <Button variant="ghost" size="sm" onClick={() => handleView(row)} className="text-blue-600 hover:text-blue-700 p-1 h-6 w-6" title="查看完整内容">
-            <Eye size={14} />
-          </Button>
-      </div>
-  }, {
+        
+
+
+      </div> },
+  {
     key: 'submitTime',
     label: '提交时间',
-    render: value => formatDateTime(value)
-  }, {
+    render: (value) => formatDateTime(value) },
+  {
     key: 'processStatus',
     label: '状态',
-    render: value => <span className={`px-2 py-1 rounded-full text-xs ${value === '已处理' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+    render: (value) => <span className={`px-2 py-1 rounded-full text-xs ${value === '已处理' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
           {value === '已处理' ? '已处理' : '待处理'}
-        </span>
-  }];
+        </span> }];
+
   const filterOptions = [{
     value: 'all',
-    label: '全部状态'
-  }, {
+    label: '全部状态' },
+  {
     value: 'pending',
-    label: '待处理'
-  }, {
+    label: '待处理' },
+  {
     value: 'processed',
-    label: '已处理'
-  }];
+    label: '已处理' }];
+
 
   // 计算统计数据
   const getStats = () => {
     const total = feedbacks.length;
-    const pending = feedbacks.filter(item => item.processStatus === '待处理').length;
-    const processed = feedbacks.filter(item => item.processStatus === '已处理').length;
+    const pending = feedbacks.filter((item) => item.processStatus === '待处理').length;
+    const processed = feedbacks.filter((item) => item.processStatus === '已处理').length;
     const today = new Date().toDateString();
-    const todayNew = feedbacks.filter(item => new Date(item.submitTime).toDateString() === today).length;
+    const todayNew = feedbacks.filter((item) => new Date(item.submitTime).toDateString() === today).length;
     return {
       total,
       pending,
       processed,
-      todayNew
-    };
+      todayNew };
+
   };
   const stats = getStats();
-  const filteredData = feedbacks.filter(item => {
+  const filteredData = feedbacks.filter((item) => {
     const matchesSearch = item.submitterName?.toLowerCase().includes(searchTerm.toLowerCase()) || item.content?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || filterStatus === 'pending' && item.processStatus === '待处理' || filterStatus === 'processed' && item.processStatus === '已处理';
     const matchesType = filterType === 'all' || item.feedbackType === filterType;
@@ -129,44 +129,44 @@ export default function Feedback(props) {
       submitterName: '',
       submitterId: '',
       feedbackType: '建议',
-      content: ''
-    });
+      content: '' });
+
     setIsDialogOpen(true);
   };
-  const handleReply = item => {
+  const handleReply = (item) => {
     setSelectedFeedback(item);
     setReplyText('');
     setIsReplyDialogOpen(true);
   };
-  const handleView = item => {
+  const handleView = (item) => {
     setSelectedFeedback(item);
     setIsViewDialogOpen(true);
   };
-  const handleDelete = async item => {
+  const handleDelete = async (item) => {
     if (confirm('确定要删除该反馈吗？')) {
       try {
         await deleteRecord('feedback', {
           $and: [{
             _id: {
-              $eq: item._id
-            }
-          }]
-        });
+              $eq: item._id } }] });
+
+
+
         toast({
           title: '删除成功',
-          description: '反馈已删除'
-        });
+          description: '反馈已删除' });
+
         loadFeedbacks();
       } catch (error) {
         toast({
           title: '删除失败',
           description: error.message || '删除反馈失败',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     }
   };
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = {
@@ -174,54 +174,54 @@ export default function Feedback(props) {
         submitterId: formData.submitterId,
         feedbackType: formData.feedbackType,
         content: formData.content,
-        processStatus: '待处理'
-      };
+        processStatus: '待处理' };
+
       await createRecord('feedback', data);
       toast({
         title: '提交成功',
-        description: '反馈已提交'
-      });
+        description: '反馈已提交' });
+
       setIsDialogOpen(false);
       loadFeedbacks();
     } catch (error) {
       toast({
         title: '提交失败',
         description: error.message || '提交反馈失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
-  const handleReplySubmit = async e => {
+  const handleReplySubmit = async (e) => {
     e.preventDefault();
     try {
       await updateRecord('feedback', {
-        processStatus: '已处理'
-      }, {
+        processStatus: '已处理' },
+      {
         $and: [{
           _id: {
-            $eq: selectedFeedback._id
-          }
-        }]
-      });
+            $eq: selectedFeedback._id } }] });
+
+
+
       toast({
         title: '回复成功',
-        description: '反馈已标记为已处理'
-      });
+        description: '反馈已标记为已处理' });
+
       setIsReplyDialogOpen(false);
       loadFeedbacks();
     } catch (error) {
       toast({
         title: '回复失败',
         description: error.message || '回复失败',
-        variant: 'destructive'
-      });
+        variant: 'destructive' });
+
     }
   };
   const getChartData = () => {
     const typeData = {};
     const statusData = {};
     const monthlyData = {};
-    filteredData.forEach(item => {
+    filteredData.forEach((item) => {
       const type = item.feedbackType || '其他';
       const status = item.processStatus || '待处理';
       const date = new Date(item.submitTime);
@@ -232,29 +232,29 @@ export default function Feedback(props) {
     });
     const typeChartData = Object.entries(typeData).map(([name, value]) => ({
       name,
-      value
-    }));
+      value }));
+
     const statusChartData = Object.entries(statusData).map(([name, value]) => ({
       name,
-      value
-    }));
+      value }));
+
     const monthlyChartData = Object.entries(monthlyData).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => ({
       name,
-      value
-    }));
+      value }));
+
     return {
       typeChartData,
       statusChartData,
-      monthlyChartData
-    };
+      monthlyChartData };
+
   };
   const handleExportCSV = () => {
     const headers = ['序号', '反馈人', '反馈人ID', '反馈类型', '反馈内容', '提交时间', '状态'];
     const rows = filteredData.map((item, index) => [index + 1, item.submitterName || '', item.submitterId || '', item.feedbackType || '', item.content || '', formatDateTime(item.submitTime) || '', item.processStatus || '']);
-    const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csvContent], {
-      type: 'text/csv;charset=utf-8;'
-    });
+      type: 'text/csv;charset=utf-8;' });
+
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
@@ -265,38 +265,38 @@ export default function Feedback(props) {
     document.body.removeChild(link);
     toast({
       title: '导出成功',
-      description: `已导出 ${filteredData.length} 条数据`
-    });
+      description: `已导出 ${filteredData.length} 条数据` });
+
   };
-  const handleImportCSV = async e => {
+  const handleImportCSV = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async event => {
+    reader.onload = async (event) => {
       try {
         const text = event.target.result;
-        const lines = text.split('\n').filter(line => line.trim());
+        const lines = text.split('\n').filter((line) => line.trim());
         if (lines.length < 2) {
           toast({
             title: '导入失败',
             description: 'CSV 文件为空或格式不正确',
-            variant: 'destructive'
-          });
+            variant: 'destructive' });
+
           return;
         }
         let successCount = 0;
         let errorCount = 0;
         for (let i = 1; i < lines.length; i++) {
           try {
-            const values = lines[i].split(',').map(v => v.replace(/^"|"$/g, '').replace(/""/g, '"'));
+            const values = lines[i].split(',').map((v) => v.replace(/^"|"$/g, '').replace(/""/g, '"'));
             if (values.length >= 4) {
               const data = {
                 submitterName: values[1] || '',
                 submitterId: values[2] || '',
                 feedbackType: values[3] || '建议',
                 content: values[4] || '',
-                processStatus: '待处理'
-              };
+                processStatus: '待处理' };
+
               await createRecord('feedback', data);
               successCount++;
             }
@@ -307,16 +307,16 @@ export default function Feedback(props) {
         }
         toast({
           title: '导入完成',
-          description: `成功导入 ${successCount} 条数据，失败 ${errorCount} 条`
-        });
+          description: `成功导入 ${successCount} 条数据，失败 ${errorCount} 条` });
+
         setIsImportDialogOpen(false);
         loadFeedbacks();
       } catch (error) {
         toast({
           title: '导入失败',
           description: error.message || '解析 CSV 文件失败',
-          variant: 'destructive'
-        });
+          variant: 'destructive' });
+
       }
     };
     reader.readAsText(file);
@@ -329,11 +329,11 @@ export default function Feedback(props) {
     setEndDate('');
     setShowCharts(false);
   };
-  return <PageLayout currentPage="feedback" onPageChange={pageId => {
+  return <PageLayout currentPage="feedback" onPageChange={(pageId) => {
     props.$w?.utils?.navigateTo({
       pageId,
-      params: {}
-    });
+      params: {} });
+
   }} title="意见反馈管理" subtitle="查看和回复用户反馈" user={props.$w?.auth?.currentUser}>
       {/* 统计概览卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -418,11 +418,11 @@ export default function Feedback(props) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Label className="text-sm text-gray-600 mb-1 block">开始日期</Label>
-              <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full" />
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full" />
             </div>
             <div>
               <Label className="text-sm text-gray-600 mb-1 block">结束日期</Label>
-              <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full" />
+              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-full" />
             </div>
             <div>
               <Label className="text-sm text-gray-600 mb-1 block">反馈类型</Label>
@@ -483,12 +483,12 @@ export default function Feedback(props) {
                   <BarChart data={getChartData().typeChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={{
-                fontSize: 12
-              }} />
+                fontSize: 12 }} />
+
 
                     <YAxis tick={{
-                fontSize: 12
-              }} />
+                fontSize: 12 }} />
+
 
                     <Tooltip />
                     <Bar dataKey="value" fill="#3b82f6" />
@@ -504,12 +504,12 @@ export default function Feedback(props) {
                   <BarChart data={getChartData().statusChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={{
-                fontSize: 12
-              }} />
+                fontSize: 12 }} />
+
 
                     <YAxis tick={{
-                fontSize: 12
-              }} />
+                fontSize: 12 }} />
+
 
                     <Tooltip />
                     <Bar dataKey="value" fill="#10b981" />
@@ -525,12 +525,12 @@ export default function Feedback(props) {
                   <LineChart data={getChartData().monthlyChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={{
-                fontSize: 12
-              }} />
+                fontSize: 12 }} />
+
 
                     <YAxis tick={{
-                fontSize: 12
-              }} />
+                fontSize: 12 }} />
+
 
                     <Tooltip />
                     <Legend />
@@ -556,25 +556,25 @@ export default function Feedback(props) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="submitterName">反馈人 *</Label>
-                  <Input id="submitterName" value={formData.submitterName} onChange={e => setFormData({
+                  <Input id="submitterName" value={formData.submitterName} onChange={(e) => setFormData({
                   ...formData,
-                  submitterName: e.target.value
-                })} required />
+                  submitterName: e.target.value })}
+                required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="submitterId">反馈人ID *</Label>
-                  <Input id="submitterId" value={formData.submitterId} onChange={e => setFormData({
+                  <Input id="submitterId" value={formData.submitterId} onChange={(e) => setFormData({
                   ...formData,
-                  submitterId: e.target.value
-                })} required />
+                  submitterId: e.target.value })}
+                required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="feedbackType">反馈类型 *</Label>
-                <Select value={formData.feedbackType} onValueChange={value => setFormData({
+                <Select value={formData.feedbackType} onValueChange={(value) => setFormData({
                 ...formData,
-                feedbackType: value
-              })}>
+                feedbackType: value })}>
+
 
 
                   <SelectTrigger>
@@ -590,10 +590,10 @@ export default function Feedback(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">反馈内容 *</Label>
-                <Textarea id="content" value={formData.content} onChange={e => setFormData({
+                <Textarea id="content" value={formData.content} onChange={(e) => setFormData({
                 ...formData,
-                content: e.target.value
-              })} required />
+                content: e.target.value })}
+              required />
               </div>
             </div>
             <DialogFooter>
@@ -671,7 +671,7 @@ export default function Feedback(props) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="reply">回复内容</Label>
-                <Textarea id="reply" value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="请输入回复内容..." />
+                <Textarea id="reply" value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="请输入回复内容..." />
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsReplyDialogOpen(false)}>
