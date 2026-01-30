@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { TrendingUp, Download, Upload, Calendar, RotateCcw, MessageSquare, Clock, CheckCircle, Plus, FileText, Filter, BarChart3, PieChart, LineChart as LineChartIcon } from 'lucide-react';
+import { TrendingUp, Download, Upload, Calendar, RotateCcw, MessageSquare, Clock, CheckCircle, Plus, FileText, Filter, BarChart3, PieChart, LineChart as LineChartIcon, Eye } from 'lucide-react';
 
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
@@ -23,6 +23,7 @@ export default function Feedback(props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -72,7 +73,13 @@ export default function Feedback(props) {
     label: '反馈类型'
   }, {
     key: 'content',
-    label: '反馈内容'
+    label: '反馈内容',
+    render: (value, row) => <div className="flex items-center gap-2">
+        <span className="max-w-[200px] truncate">{value || ''}</span>
+        <Button variant="ghost" size="sm" onClick={() => handleView(row)} className="text-blue-600 hover:text-blue-700 p-1 h-6 w-6" title="查看完整内容">
+            <Eye size={14} />
+          </Button>
+      </div>
   }, {
     key: 'submitTime',
     label: '提交时间',
@@ -130,6 +137,10 @@ export default function Feedback(props) {
     setSelectedFeedback(item);
     setReplyText('');
     setIsReplyDialogOpen(true);
+  };
+  const handleView = item => {
+    setSelectedFeedback(item);
+    setIsViewDialogOpen(true);
   };
   const handleDelete = async item => {
     if (confirm('确定要删除该反馈吗？')) {
@@ -532,7 +543,7 @@ export default function Feedback(props) {
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-gray-600">共 <span className="font-semibold text-gray-800">{filteredData.length}</span> 条反馈记录</p>
           </div>
-          <DataTable columns={columns} data={filteredData} onReply={handleReply} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
+          <DataTable columns={columns} data={filteredData} onView={handleView} onReply={handleReply} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
         </div>}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -594,6 +605,45 @@ export default function Feedback(props) {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>查看反馈详情</DialogTitle>
+          </DialogHeader>
+          {selectedFeedback && <div className="space-y-4">
+              <div>
+                <Label className="text-gray-600">反馈人</Label>
+                <p className="font-medium">{selectedFeedback.submitterName}</p>
+              </div>
+              <div>
+                <Label className="text-gray-600">反馈人ID</Label>
+                <p className="font-medium">{selectedFeedback.submitterId}</p>
+              </div>
+              <div>
+                <Label className="text-gray-600">反馈类型</Label>
+                <p className="font-medium">{selectedFeedback.feedbackType}</p>
+              </div>
+              <div>
+                <Label className="text-gray-600">反馈内容</Label>
+                <p className="font-medium whitespace-pre-wrap">{selectedFeedback.content}</p>
+              </div>
+              <div>
+                <Label className="text-gray-600">提交时间</Label>
+                <p className="font-medium">{formatDateTime(selectedFeedback.submitTime)}</p>
+              </div>
+              <div>
+                <Label className="text-gray-600">处理状态</Label>
+                <p className="font-medium">{selectedFeedback.processStatus}</p>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsViewDialogOpen(false)}>
+                  关闭
+                </Button>
+              </DialogFooter>
+            </div>}
         </DialogContent>
       </Dialog>
 
