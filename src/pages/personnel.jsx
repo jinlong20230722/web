@@ -31,15 +31,19 @@ export default function Personnel(props) {
     department: '',
     position: '',
     status: '在职',
-    idNumber: '',
-    address: ''
+    idCard: '',
+    address: '',
+    age: '',
+    gender: '男',
+    emergencyName: '',
+    emergencyPhone: ''
   });
 
   // 加载人员数据
   const loadPersonnel = async () => {
     setLoading(true);
     try {
-      const result = await getRecords('personnel', {}, 100, 1, [{
+      const result = await getRecords('EmployeeRegister', {}, 100, 1, [{
         createdAt: 'desc'
       }]);
       if (result && result.records) {
@@ -66,6 +70,12 @@ export default function Personnel(props) {
     key: 'name',
     label: '姓名'
   }, {
+    key: 'gender',
+    label: '性别'
+  }, {
+    key: 'age',
+    label: '年龄'
+  }, {
     key: 'phone',
     label: '联系电话'
   }, {
@@ -75,7 +85,7 @@ export default function Personnel(props) {
     key: 'position',
     label: '职位'
   }, {
-    key: 'joinDate',
+    key: 'createdAt',
     label: '入职日期',
     render: value => formatDate(value)
   }, {
@@ -158,8 +168,8 @@ export default function Personnel(props) {
   // 准备入职趋势数据
   const getJoinTrendData = () => {
     const monthlyCount = filteredData.reduce((acc, item) => {
-      if (item.joinDate) {
-        const date = new Date(item.joinDate);
+      if (item.createdAt) {
+        const date = new Date(item.createdAt);
         const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         acc[month] = (acc[month] || 0) + 1;
       }
@@ -173,8 +183,8 @@ export default function Personnel(props) {
 
   // 导出 CSV
   const handleExportCSV = () => {
-    const headers = ['序号', '姓名', '联系电话', '所属部门', '职位', '入职日期', '状态', '身份证号', '户籍地址'];
-    const csvContent = [headers.join(','), ...filteredData.map((item, index) => [index + 1, item.name || '', item.phone || '', item.department || '', item.position || '', formatDate(item.joinDate) || '', item.status || '', item.idCard || '', item.registeredResidence || ''].map(field => `"${field}"`).join(','))].join('\n');
+    const headers = ['序号', '姓名', '性别', '年龄', '联系电话', '所属部门', '职位', '入职日期', '状态', '身份证号', '地址', '紧急联系人', '紧急联系电话'];
+    const csvContent = [headers.join(','), ...filteredData.map((item, index) => [index + 1, item.name || '', item.gender || '', item.age || '', item.phone || '', item.department || '', item.position || '', formatDate(item.createdAt) || '', item.status || '', item.idCard || '', item.address || '', item.emergencyName || '', item.emergencyPhone || ''].map(field => `"${field}"`).join(','))].join('\n');
     const blob = new Blob(['\ufeff' + csvContent], {
       type: 'text/csv;charset=utf-8;'
     });
@@ -207,14 +217,18 @@ export default function Personnel(props) {
             try {
               const data = {
                 name: cleanValues[1] || '',
-                phone: cleanValues[2] || '',
-                department: cleanValues[3] || '',
-                position: cleanValues[4] || '',
-                status: cleanValues[6] || '在职',
-                idCard: cleanValues[7] || '',
-                registeredResidence: cleanValues[8] || ''
+                gender: cleanValues[2] || '男',
+                age: cleanValues[3] || '',
+                phone: cleanValues[4] || '',
+                department: cleanValues[5] || '',
+                position: cleanValues[6] || '',
+                status: cleanValues[8] || '在职',
+                idCard: cleanValues[9] || '',
+                address: cleanValues[10] || '',
+                emergencyName: cleanValues[11] || '',
+                emergencyPhone: cleanValues[12] || ''
               };
-              await createRecord('personnel', data);
+              await createRecord('EmployeeRegister', data);
               successCount++;
             } catch (err) {
               errorCount++;
@@ -260,13 +274,13 @@ export default function Personnel(props) {
 
     // 时间范围筛选
     let matchesDateRange = true;
-    if (startDate && item.joinDate) {
-      const itemDate = new Date(item.joinDate).setHours(0, 0, 0, 0);
+    if (startDate && item.createdAt) {
+      const itemDate = new Date(item.createdAt).setHours(0, 0, 0, 0);
       const start = new Date(startDate).setHours(0, 0, 0, 0);
       matchesDateRange = matchesDateRange && itemDate >= start;
     }
-    if (endDate && item.joinDate) {
-      const itemDate = new Date(item.joinDate).setHours(23, 59, 59, 999);
+    if (endDate && item.createdAt) {
+      const itemDate = new Date(item.createdAt).setHours(23, 59, 59, 999);
       const end = new Date(endDate).setHours(23, 59, 59, 999);
       matchesDateRange = matchesDateRange && itemDate <= end;
     }
@@ -292,8 +306,12 @@ export default function Personnel(props) {
       department: '',
       position: '',
       status: '在职',
-      idNumber: '',
-      address: ''
+      idCard: '',
+      address: '',
+      age: '',
+      gender: '男',
+      emergencyName: '',
+      emergencyPhone: ''
     });
     setIsDialogOpen(true);
   };
@@ -305,15 +323,19 @@ export default function Personnel(props) {
       department: item.department || '',
       position: item.position || '',
       status: item.status || '在职',
-      idNumber: item.idCard || '',
-      address: item.registeredResidence || ''
+      idCard: item.idCard || '',
+      address: item.address || '',
+      age: item.age || '',
+      gender: item.gender || '男',
+      emergencyName: item.emergencyName || '',
+      emergencyPhone: item.emergencyPhone || ''
     });
     setIsDialogOpen(true);
   };
   const handleDelete = async item => {
     if (confirm('确定要删除该人员吗？')) {
       try {
-        await deleteRecord('personnel', {
+        await deleteRecord('EmployeeRegister', {
           $and: [{
             _id: {
               $eq: item._id
@@ -343,11 +365,15 @@ export default function Personnel(props) {
         department: formData.department,
         position: formData.position,
         status: formData.status,
-        idCard: formData.idNumber,
-        registeredResidence: formData.address
+        idCard: formData.idCard,
+        address: formData.address,
+        age: formData.age,
+        gender: formData.gender,
+        emergencyName: formData.emergencyName,
+        emergencyPhone: formData.emergencyPhone
       };
       if (editingPerson) {
-        await updateRecord('personnel', data, {
+        await updateRecord('EmployeeRegister', data, {
           $and: [{
             _id: {
               $eq: editingPerson._id
@@ -359,7 +385,7 @@ export default function Personnel(props) {
           description: '人员信息已更新'
         });
       } else {
-        await createRecord('personnel', data);
+        await createRecord('EmployeeRegister', data);
         toast({
           title: '添加成功',
           description: '人员信息已添加'
@@ -424,8 +450,8 @@ export default function Personnel(props) {
             <div>
               <p className="text-orange-100 text-sm font-medium mb-1">本月入职</p>
               <p className="text-white text-3xl font-bold">{personnel.filter(p => {
-                if (!p.joinDate) return false;
-                const joinDate = new Date(p.joinDate);
+                if (!p.createdAt) return false;
+                const joinDate = new Date(p.createdAt);
                 const now = new Date();
                 return joinDate.getMonth() === now.getMonth() && joinDate.getFullYear() === now.getFullYear();
               }).length}</p>
@@ -674,18 +700,58 @@ export default function Personnel(props) {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="idNumber">身份证号</Label>
-                <Input id="idNumber" value={formData.idNumber} onChange={e => setFormData({
+                <Label htmlFor="idCard">身份证号</Label>
+                <Input id="idCard" value={formData.idCard} onChange={e => setFormData({
                 ...formData,
-                idNumber: e.target.value
+                idCard: e.target.value
               })} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">户籍地址</Label>
+                <Label htmlFor="address">地址</Label>
                 <Input id="address" value={formData.address} onChange={e => setFormData({
                 ...formData,
                 address: e.target.value
               })} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="gender">性别</Label>
+                  <Select value={formData.gender} onValueChange={value => setFormData({
+                  ...formData,
+                  gender: value
+                })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="男">男</SelectItem>
+                      <SelectItem value="女">女</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="age">年龄</Label>
+                  <Input id="age" value={formData.age} onChange={e => setFormData({
+                  ...formData,
+                  age: e.target.value
+                })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyName">紧急联系人</Label>
+                  <Input id="emergencyName" value={formData.emergencyName} onChange={e => setFormData({
+                  ...formData,
+                  emergencyName: e.target.value
+                })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyPhone">紧急联系电话</Label>
+                  <Input id="emergencyPhone" value={formData.emergencyPhone} onChange={e => setFormData({
+                  ...formData,
+                  emergencyPhone: e.target.value
+                })} />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">状态</Label>
@@ -697,8 +763,8 @@ export default function Personnel(props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">在职</SelectItem>
-                    <SelectItem value="inactive">离职</SelectItem>
+                    <SelectItem value="在职">在职</SelectItem>
+                    <SelectItem value="离职">离职</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
