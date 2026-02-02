@@ -1,0 +1,112 @@
+[
+  {
+    "_id": "1",
+    "submitterName": "张三",
+    "submitterId": "EMP001",
+    "feedbackType": "建议",
+    "content": "建议增加更多的培训课程，提升员工技能水平",
+    "submitTime": 1737936000000,
+    "processStatus": "已处理",
+    "createdAt": 1737936000000,
+    "updatedAt": 1737936000000
+  },
+  {
+    "_id": "2",
+    "submitterName": "李四",
+    "submitterId": "EMP002",
+    "feedbackType": "投诉",
+    "content": "办公区域的空调温度过低，影响工作效率",
+    "submitTime": 1737936600000,
+    "processStatus": "待处理",
+    "createdAt": 1737936600000,
+    "updatedAt": 1737936600000
+  },
+  {
+    "_id": "3",
+    "submitterName": "王五",
+    "submitterId": "EMP003",
+    "feedbackType": "表扬",
+    "content": "感谢安保人员的辛勤工作，保障了公司的安全",
+    "submitTime": 1737937200000,
+    "processStatus": "已处理",
+    "createdAt": 1737937200000,
+    "updatedAt": 1737937200000
+  },
+  {
+    "_id": "4",
+    "submitterName": "赵六",
+    "submitterId": "EMP004",
+    "feedbackType": "建议",
+    "content": "建议优化考勤系统，增加移动端打卡功能",
+    "submitTime": 1737937800000,
+    "processStatus": "待处理",
+    "createdAt": 1737937800000,
+    "updatedAt": 1737937800000
+  },
+  {
+    "_id": "5",
+    "submitterName": "孙七",
+    "submitterId": "EMP005",
+    "feedbackType": "投诉",
+    "content": "食堂的菜品质量有待提高，希望能增加更多选择",
+    "submitTime": 1737938400000,
+    "processStatus": "已处理",
+    "createdAt": 1737938400000,
+    "updatedAt": 1737938400000
+  },
+  {
+    "_id": "6",
+    "submitterName": "周八",
+    "submitterId": "EMP006",
+    "feedbackType": "建议",
+    "content": "建议增加员工休息区，提供更好的休息环境",
+    "submitTime": 1737939000000,
+    "processStatus": "待处理",
+    "createdAt": 1737939000000,
+    "updatedAt": 1737939000000
+  },
+  {
+    "_id": "7",
+    "submitterName": "吴九",
+    "submitterId": "EMP007",
+    "feedbackType": "表扬",
+    "content": "感谢行政部门及时解决了办公设备故障问题",
+    "submitTime": 1737939600000,
+    "processStatus": "已处理",
+    "createdAt": 1737939600000,
+    "updatedAt": 1737939600000
+  },
+  {
+    "_id": "8",
+    "submitterName": "郑十",
+    "submitterId": "EMP008",
+    "feedbackType": "其他",
+    "content": "关于公司年会的建议和想法，希望能提供更多参与机会",
+    "submitTime": 1737940200000,
+    "processStatus": "待处理",
+    "createdAt": 1737940200000,
+    "updatedAt": 1737940200000
+  },
+  {
+    "_id": "9",
+    "submitterName": "钱十一",
+    "submitterId": "EMP009",
+    "feedbackType": "建议",
+    "content": "建议优化会议室预订系统，提高使用效率",
+    "submitTime": 1737940800000,
+    "processStatus": "已处理",
+    "createdAt": 1737940800000,
+    "updatedAt": 1737940800000
+  },
+  {
+    "_id": "10",
+    "submitterName": "陈十二",
+    "submitterId": "EMP010",
+    "feedbackType": "投诉",
+    "content": "网络连接不稳定，影响日常工作，请尽快解决",
+    "submitTime": 1737941400000,
+    "processStatus": "待处理",
+    "createdAt": 1737941400000,
+    "updatedAt": 1737941400000
+  }
+]
