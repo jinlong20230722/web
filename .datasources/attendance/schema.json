@@ -1,6 +1,6 @@
 {
   "name": "attendance",
-  "title": "考勤打卡",
+  "title": "打卡签到",
   "schemas": [
     {
       "name": "personnelId",
@@ -18,15 +18,15 @@
       "type": "String"
     },
     {
+      "name": "status",
+      "title": "状态",
+      "type": "String"
+    },
+    {
       "name": "checkInTime",
       "title": "签到时间",
       "type": "DateTime",
       "format": "timestamp-ms"
-    },
-    {
-      "name": "status",
-      "title": "状态",
-      "type": "String"
     },
     {
       "name": "latitude",
