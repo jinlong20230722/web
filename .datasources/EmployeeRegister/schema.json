@@ -1,0 +1,61 @@
+{
+  "name": "EmployeeRegister",
+  "title": "员工注册",
+  "schemas": [
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "gender",
+      "title": "性别",
+      "type": "String"
+    },
+    {
+      "name": "age",
+      "title": "年龄",
+      "type": "Number"
+    },
+    {
+      "name": "phone",
+      "title": "联系电话",
+      "type": "String"
+    },
+    {
+      "name": "department",
+      "title": "所属部门",
+      "type": "String"
+    },
+    {
+      "name": "position",
+      "title": "职位",
+      "type": "String"
+    },
+    {
+      "name": "status",
+      "title": "状态",
+      "type": "String"
+    },
+    {
+      "name": "idCard",
+      "title": "身份证号",
+      "type": "String"
+    },
+    {
+      "name": "address",
+      "title": "地址",
+      "type": "MultiLineString"
+    },
+    {
+      "name": "emergencyName",
+      "title": "紧急联系人",
+      "type": "String"
+    },
+    {
+      "name": "emergencyPhone",
+      "title": "紧急联系电话",
+      "type": "String"
+    }
+  ]
+}
