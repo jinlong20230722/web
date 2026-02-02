@@ -1,13 +1,17 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
+import { useToast } from '@/components/ui';
 // @ts-ignore;
-import { Download, Upload, TrendingUp, Calendar, Filter, RotateCcw, Users, UserCheck, UserX, UserPlus, BarChart3, PieChart as PieChartIcon, LineChartIcon } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { DataTable } from '@/components/DataTable';
 import { PageLayout } from '@/components/PageLayout';
+import { PersonnelStats } from '@/components/PersonnelStats';
+import { PersonnelFilters } from '@/components/PersonnelFilters';
+import { PersonnelCharts } from '@/components/PersonnelCharts';
+import { PersonnelForm } from '@/components/PersonnelForm';
+import { PersonnelActions } from '@/components/PersonnelActions';
 import { getRecords, createRecord, updateRecord, deleteRecord, formatDate } from '@/lib/dataSource';
 export default function Personnel(props) {
   const {
@@ -39,7 +43,7 @@ export default function Personnel(props) {
     emergencyPhone: ''
   });
 
-  // 加载人员数据
+  // 加载人员数据 - 从 EmployeeRegister 数据模型获取
   const loadPersonnel = async () => {
     setLoading(true);
     try {
@@ -62,6 +66,8 @@ export default function Personnel(props) {
   useEffect(() => {
     loadPersonnel();
   }, []);
+
+  // 表格列定义 - 基于 EmployeeRegister 数据模型字段
   const columns = [{
     key: 'index',
     label: '序号',
@@ -106,7 +112,7 @@ export default function Personnel(props) {
     label: '离职'
   }];
 
-  // 获取部门列表
+  // 获取部门列表 - 从 EmployeeRegister 数据模型动态生成
   const departmentOptions = [{
     value: 'all',
     label: '全部部门'
@@ -115,7 +121,7 @@ export default function Personnel(props) {
     label: dept
   }))];
 
-  // 获取职位列表
+  // 获取职位列表 - 从 EmployeeRegister 数据模型动态生成
   const positionOptions = [{
     value: 'all',
     label: '全部职位'
@@ -124,7 +130,7 @@ export default function Personnel(props) {
     label: pos
   }))];
 
-  // 准备图表数据
+  // 准备图表数据 - 基于 EmployeeRegister 数据模型
   const getChartData = () => {
     const statusCount = filteredData.reduce((acc, item) => {
       const status = item.status === '在职' ? '在职' : '离职';
@@ -136,8 +142,6 @@ export default function Personnel(props) {
       value
     }));
   };
-
-  // 准备部门分布数据
   const getDepartmentData = () => {
     const deptCount = filteredData.reduce((acc, item) => {
       if (item.department) {
@@ -150,8 +154,6 @@ export default function Personnel(props) {
       value
     }));
   };
-
-  // 准备职位分布数据
   const getPositionData = () => {
     const posCount = filteredData.reduce((acc, item) => {
       if (item.position) {
@@ -164,8 +166,6 @@ export default function Personnel(props) {
       value
     }));
   };
-
-  // 准备入职趋势数据
   const getJoinTrendData = () => {
     const monthlyCount = filteredData.reduce((acc, item) => {
       if (item.createdAt) {
@@ -181,7 +181,7 @@ export default function Personnel(props) {
     })).sort((a, b) => a.month.localeCompare(b.month));
   };
 
-  // 导出 CSV
+  // 导出 CSV - 基于 EmployeeRegister 数据模型字段
   const handleExportCSV = () => {
     const headers = ['序号', '姓名', '性别', '年龄', '联系电话', '所属部门', '职位', '入职日期', '状态', '身份证号', '地址', '紧急联系人', '紧急联系电话'];
     const csvContent = [headers.join(','), ...filteredData.map((item, index) => [index + 1, item.name || '', item.gender || '', item.age || '', item.phone || '', item.department || '', item.position || '', formatDate(item.createdAt) || '', item.status || '', item.idCard || '', item.address || '', item.emergencyName || '', item.emergencyPhone || ''].map(field => `"${field}"`).join(','))].join('\n');
@@ -198,7 +198,7 @@ export default function Personnel(props) {
     });
   };
 
-  // 导入 CSV
+  // 导入 CSV - 基于 EmployeeRegister 数据模型字段
   const handleImportCSV = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -206,7 +206,7 @@ export default function Personnel(props) {
     reader.onload = async event => {
       try {
         const text = event.target.result;
-        const lines = text.split('\n').slice(1); // 跳过标题行
+        const lines = text.split('\n').slice(1);
         let successCount = 0;
         let errorCount = 0;
         for (const line of lines) {
@@ -249,7 +249,7 @@ export default function Personnel(props) {
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // 重置文件输入
+    e.target.value = '';
   };
 
   // 重置筛选
@@ -266,13 +266,12 @@ export default function Personnel(props) {
     });
   };
 
-  // 图表颜色配置
-  const COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
+  // 数据筛选逻辑 - 基于 EmployeeRegister 数据模型字段
   const filteredData = personnel.filter(item => {
     const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || item.phone?.includes(searchTerm) || item.department?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || filterStatus === '在职' && item.status === '在职' || filterStatus === '离职' && item.status === '离职';
 
-    // 时间范围筛选
+    // 时间范围筛选 - 使用 createdAt 字段
     let matchesDateRange = true;
     if (startDate && item.createdAt) {
       const itemDate = new Date(item.createdAt).setHours(0, 0, 0, 0);
@@ -298,6 +297,8 @@ export default function Personnel(props) {
     }
     return matchesSearch && matchesFilter && matchesDateRange && matchesDepartment && matchesPosition;
   });
+
+  // 添加人员
   const handleAdd = () => {
     setEditingPerson(null);
     setFormData({
@@ -315,6 +316,8 @@ export default function Personnel(props) {
     });
     setIsDialogOpen(true);
   };
+
+  // 编辑人员
   const handleEdit = item => {
     setEditingPerson(item);
     setFormData({
@@ -332,6 +335,8 @@ export default function Personnel(props) {
     });
     setIsDialogOpen(true);
   };
+
+  // 删除人员 - 从 EmployeeRegister 数据模型删除
   const handleDelete = async item => {
     if (confirm('确定要删除该人员吗？')) {
       try {
@@ -356,6 +361,8 @@ export default function Personnel(props) {
       }
     }
   };
+
+  // 提交表单 - 保存到 EmployeeRegister 数据模型
   const handleSubmit = async e => {
     e.preventDefault();
     try {
@@ -407,378 +414,31 @@ export default function Personnel(props) {
       params: {}
     });
   }} title="人员信息管理" subtitle="管理保安人员基本信息" user={props.$w?.auth?.currentUser}>
-      {/* 统计概览卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-blue-100 text-sm font-medium mb-1">总人数</p>
-              <p className="text-white text-3xl font-bold">{personnel.length}</p>
-              <p className="text-blue-200 text-xs mt-2">全部人员</p>
-            </div>
-            <div className="bg-white/20 p-3 rounded-full">
-              <Users className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-green-100 text-sm font-medium mb-1">在职人数</p>
-              <p className="text-white text-3xl font-bold">{personnel.filter(p => p.status === '在职').length}</p>
-              <p className="text-green-200 text-xs mt-2">正常工作</p>
-            </div>
-            <div className="bg-white/20 p-3 rounded-full">
-              <UserCheck className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-100 text-sm font-medium mb-1">离职人数</p>
-              <p className="text-white text-3xl font-bold">{personnel.filter(p => p.status !== '在职').length}</p>
-              <p className="text-gray-200 text-xs mt-2">已离职</p>
-            </div>
-            <div className="bg-white/20 p-3 rounded-full">
-              <UserX className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-orange-100 text-sm font-medium mb-1">本月入职</p>
-              <p className="text-white text-3xl font-bold">{personnel.filter(p => {
-                if (!p.createdAt) return false;
-                const joinDate = new Date(p.createdAt);
-                const now = new Date();
-                return joinDate.getMonth() === now.getMonth() && joinDate.getFullYear() === now.getFullYear();
-              }).length}</p>
-              <p className="text-orange-200 text-xs mt-2">新入职人员</p>
-            </div>
-            <div className="bg-white/20 p-3 rounded-full">
-              <UserPlus className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 统计概览卡片 - 基于 EmployeeRegister 数据模型 */}
+      <PersonnelStats personnel={personnel} />
 
       {/* 操作按钮区域 */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-          + 添加人员
-        </Button>
-        <div className="w-px h-8 bg-gray-300 mx-2" />
-        <Button onClick={() => setShowChart(!showChart)} variant="outline" className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4" />
-          {showChart ? '返回列表' : '统计图表'}
-        </Button>
-        <Button onClick={handleExportCSV} variant="outline" className="flex items-center gap-2">
-          <Download className="w-4 h-4" />
-          导出 CSV
-        </Button>
-        <div className="relative">
-          <input type="file" accept=".csv" onChange={handleImportCSV} className="hidden" id="csv-import" />
-          <Button onClick={() => document.getElementById('csv-import').click()} variant="outline" className="flex items-center gap-2">
-            <Upload className="w-4 h-4" />
-            导入 CSV
-          </Button>
-        </div>
-        <div className="w-px h-8 bg-gray-300 mx-2" />
-        <Button onClick={handleResetFilters} variant="outline" size="sm" className="flex items-center gap-2">
-          <RotateCcw className="w-4 h-4" />
-          重置筛选
-        </Button>
-      </div>
+      <PersonnelActions onAdd={handleAdd} onToggleChart={() => setShowChart(!showChart)} showChart={showChart} onExportCSV={handleExportCSV} onResetFilters={handleResetFilters} />
 
-      {/* 筛选区域 */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-lg mb-6 border border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="text-sm font-semibold text-gray-700">筛选条件</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              入职日期开始
-            </label>
-            <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              入职日期结束
-            </label>
-            <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              所属部门
-            </label>
-            <Select value={filterDepartment} onValueChange={setFilterDepartment}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {departmentOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              职位
-            </label>
-            <Select value={filterPosition} onValueChange={setFilterPosition}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {positionOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+      {/* 筛选区域 - 基于 EmployeeRegister 数据模型字段 */}
+      <PersonnelFilters startDate={startDate} endDate={endDate} filterDepartment={filterDepartment} filterPosition={filterPosition} setStartDate={setStartDate} setEndDate={setEndDate} setFilterDepartment={setFilterDepartment} setFilterPosition={setFilterPosition} departmentOptions={departmentOptions} positionOptions={positionOptions} />
 
-      {/* 图表视图 */}
-      {showChart ? <div className="space-y-4">
-          {/* 图表类型切换 */}
-          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
-            <button onClick={() => setChartType('status')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${chartType === 'status' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <PieChartIcon className="w-4 h-4" />
-              状态分布
-            </button>
-            <button onClick={() => setChartType('department')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${chartType === 'department' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <BarChart3 className="w-4 h-4" />
-              部门分布
-            </button>
-            <button onClick={() => setChartType('position')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${chartType === 'position' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <BarChart3 className="w-4 h-4" />
-              职位分布
-            </button>
-            <button onClick={() => setChartType('trend')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${chartType === 'trend' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <LineChartIcon className="w-4 h-4" />
-              入职趋势
-            </button>
-          </div>
-
-          {/* 图表展示区域 */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            {chartType === 'status' && <>
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <PieChartIcon className="w-5 h-5 text-blue-600" />
-                  人员状态分布
-                </h3>
-                <ResponsiveContainer width="100%" height={320}>
-                  <PieChart>
-                    <Pie data={getChartData()} cx="50%" cy="50%" labelLine={false} label={entry => `${entry.name} ${(entry.percent * 100).toFixed(0)}%`} outerRadius={100} fill="#8884d8" dataKey="value">
-                      {getChartData().map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </>}
-            {chartType === 'department' && <>
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-blue-600" />
-                  部门人员分布
-                </h3>
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={getDepartmentData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{
-                fontSize: 12
-              }} />
-                    <YAxis tick={{
-                fontSize: 12
-              }} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </>}
-            {chartType === 'position' && <>
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-blue-600" />
-                  职位人员分布
-                </h3>
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={getPositionData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{
-                fontSize: 12
-              }} />
-                    <YAxis tick={{
-                fontSize: 12
-              }} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </>}
-            {chartType === 'trend' && <>
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <LineChartIcon className="w-5 h-5 text-blue-600" />
-                  入职趋势
-                </h3>
-                <ResponsiveContainer width="100%" height={320}>
-                  <LineChart data={getJoinTrendData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" tick={{
-                fontSize: 12
-              }} />
-                    <YAxis tick={{
-                fontSize: 12
-              }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="count" stroke="#F59E0B" strokeWidth={3} dot={{
-                r: 5
-              }} activeDot={{
-                r: 7
-              }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </>}
-          </div>
-        </div> : (/* 列表视图 */
+      {/* 图表视图 - 基于 EmployeeRegister 数据模型 */}
+      {showChart ? <PersonnelCharts chartType={chartType} setChartType={setChartType} getChartData={getChartData} getDepartmentData={getDepartmentData} getPositionData={getPositionData} getJoinTrendData={getJoinTrendData} /> : (/* 列表视图 */
     <>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <Filter className="w-5 h-5 text-gray-600" />
               人员列表
-              <span className="text-sm font-normal text-gray-500 ml-2">（共 {filteredData.length} 条记录）</span>
+              <span className="text-sm font-normal text-gray-500 ml-2">
+                （共 {filteredData.length} 条记录）
+              </span>
             </h3>
           </div>
           <DataTable columns={columns} data={filteredData} onEdit={handleEdit} onDelete={handleDelete} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterOptions={filterOptions} filterValue={filterStatus} setFilterValue={setFilterStatus} loading={loading} />
         </>)}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{editingPerson ? '编辑人员' : '添加人员'}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">姓名 *</Label>
-                  <Input id="name" value={formData.name} onChange={e => setFormData({
-                  ...formData,
-                  name: e.target.value
-                })} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">联系电话 *</Label>
-                  <Input id="phone" value={formData.phone} onChange={e => setFormData({
-                  ...formData,
-                  phone: e.target.value
-                })} required />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="department">所属部门 *</Label>
-                  <Input id="department" value={formData.department} onChange={e => setFormData({
-                  ...formData,
-                  department: e.target.value
-                })} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="position">职位 *</Label>
-                  <Input id="position" value={formData.position} onChange={e => setFormData({
-                  ...formData,
-                  position: e.target.value
-                })} required />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="idCard">身份证号</Label>
-                <Input id="idCard" value={formData.idCard} onChange={e => setFormData({
-                ...formData,
-                idCard: e.target.value
-              })} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">地址</Label>
-                <Input id="address" value={formData.address} onChange={e => setFormData({
-                ...formData,
-                address: e.target.value
-              })} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="gender">性别</Label>
-                  <Select value={formData.gender} onValueChange={value => setFormData({
-                  ...formData,
-                  gender: value
-                })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="男">男</SelectItem>
-                      <SelectItem value="女">女</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="age">年龄</Label>
-                  <Input id="age" value={formData.age} onChange={e => setFormData({
-                  ...formData,
-                  age: e.target.value
-                })} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyName">紧急联系人</Label>
-                  <Input id="emergencyName" value={formData.emergencyName} onChange={e => setFormData({
-                  ...formData,
-                  emergencyName: e.target.value
-                })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyPhone">紧急联系电话</Label>
-                  <Input id="emergencyPhone" value={formData.emergencyPhone} onChange={e => setFormData({
-                  ...formData,
-                  emergencyPhone: e.target.value
-                })} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">状态</Label>
-                <Select value={formData.status} onValueChange={value => setFormData({
-                ...formData,
-                status: value
-              })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="在职">在职</SelectItem>
-                    <SelectItem value="离职">离职</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                取消
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                {editingPerson ? '更新' : '添加'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* 人员表单对话框 - 基于 EmployeeRegister 数据模型字段 */}
+      <PersonnelForm isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} editingPerson={editingPerson} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} />
     </PageLayout>;
 }

@@ -3,3 +3,8 @@ export * from './DataTable.jsx';
 export * from './StatCard.jsx';
 export * from './Header.jsx';
 export * from './PageLayout.jsx';
+export * from './PersonnelStats.jsx';
+export * from './PersonnelFilters.jsx';
+export * from './PersonnelCharts.jsx';
+export * from './PersonnelForm.jsx';
+export * from './PersonnelActions.jsx';
