@@ -19,7 +19,6 @@
     ],
     "register_time": 1738454400000,
     "employment_status": "在职",
-    "resignation_time": null,
     "createdAt": 1738454400000,
     "updatedAt": 1738454400000
   },
@@ -43,10 +42,9 @@
       "https://example.com/cert-2-3.jpg"
     ],
     "register_time": 1738540800000,
-    "employment_status": "离职",
-    "resignation_time": 1738890000000,
+    "employment_status": "在职",
     "createdAt": 1738540800000,
-    "updatedAt": 1738890000000
+    "updatedAt": 1738540800000
   },
   {
     "_id": "3",
@@ -70,7 +68,6 @@
     ],
     "register_time": 1738627200000,
     "employment_status": "在职",
-    "resignation_time": null,
     "createdAt": 1738627200000,
     "updatedAt": 1738627200000
   },
@@ -92,10 +89,9 @@
       "https://example.com/cert-4-1.jpg"
     ],
     "register_time": 1738713600000,
-    "employment_status": "离职",
-    "resignation_time": 1739062800000,
+    "employment_status": "在职",
     "createdAt": 1738713600000,
-    "updatedAt": 1739062800000
+    "updatedAt": 1738713600000
   },
   {
     "_id": "5",
@@ -120,7 +116,6 @@
     ],
     "register_time": 1738800000000,
     "employment_status": "在职",
-    "resignation_time": null,
     "createdAt": 1738800000000,
     "updatedAt": 1738800000000
   }

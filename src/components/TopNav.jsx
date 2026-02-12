@@ -6,8 +6,7 @@ import { Bell, User, LogOut, Settings } from 'lucide-react';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';
 
 export function TopNav({
-  currentUser,
-  onLogout
+  currentUser
 }) {
   return <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
       {/* 左侧标题 */}
@@ -38,7 +37,16 @@ export function TopNav({
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>我的账户</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600" onClick={onLogout}>
+            <DropdownMenuItem>
+              <User className="mr-2" size={16} />
+              <span>个人中心</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings className="mr-2" size={16} />
+              <span>系统设置</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-red-600">
               <LogOut className="mr-2" size={16} />
               <span>退出登录</span>
             </DropdownMenuItem>
