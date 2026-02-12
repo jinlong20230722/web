@@ -5,6 +5,7 @@ import { X, Save } from 'lucide-react';
 // @ts-ignore;
 import { Button, Input, Dialog, DialogContent, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, useToast } from '@/components/ui';
 
+import ImageUpload from '@/components/ImageUpload';
 export default function PersonnelAddModal({
   onClose,
   onSuccess,
@@ -19,10 +20,14 @@ export default function PersonnelAddModal({
     gender: '',
     age: '',
     id_number: '',
+    id_address: '',
     department: '',
     position: '',
     emergency_contact_name: '',
-    emergency_contact_phone: ''
+    emergency_contact_phone: '',
+    id_card_front_image: [],
+    id_card_back_image: [],
+    certificate_images: []
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -89,6 +94,14 @@ export default function PersonnelAddModal({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  // 处理图片上传
+  const handleImageUpload = (field, files) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: files
+    }));
+  };
   const handleSubmit = async e => {
     e.preventDefault();
     if (!validateForm()) {
@@ -106,10 +119,14 @@ export default function PersonnelAddModal({
             gender: formData.gender,
             age: Number(formData.age),
             id_number: formData.id_number,
+            id_address: formData.id_address,
             department: formData.department,
             position: formData.position,
             emergency_contact_name: formData.emergency_contact_name,
             emergency_contact_phone: formData.emergency_contact_phone,
+            id_card_front_image: formData.id_card_front_image,
+            id_card_back_image: formData.id_card_back_image,
+            certificate_images: formData.certificate_images,
             employment_status: '在职',
             register_time: Date.now()
           }
@@ -196,6 +213,12 @@ export default function PersonnelAddModal({
               {errors.id_number && <p className="text-sm text-red-500">{errors.id_number}</p>}
             </div>
 
+            {/* 身份证地址 */}
+            <div className="space-y-2 col-span-2">
+              <Label className="text-sm font-medium">身份证地址</Label>
+              <Input value={formData.id_address} onChange={e => handleInputChange('id_address', e.target.value)} placeholder="请输入身份证地址" />
+            </div>
+
             {/* 所属部门 */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">所属部门 <span className="text-red-500">*</span></Label>
@@ -229,6 +252,21 @@ export default function PersonnelAddModal({
               <Label className="text-sm font-medium">紧急联系人电话 <span className="text-red-500">*</span></Label>
               <Input value={formData.emergency_contact_phone} onChange={e => handleInputChange('emergency_contact_phone', e.target.value)} placeholder="请输入11位手机号" maxLength={11} className={errors.emergency_contact_phone ? 'border-red-500' : ''} />
               {errors.emergency_contact_phone && <p className="text-sm text-red-500">{errors.emergency_contact_phone}</p>}
+            </div>
+          </div>
+
+          {/* 图片上传区域 */}
+          <div className="border-t pt-4">
+            <h3 className="text-lg font-semibold mb-4">证件照片上传</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* 身份证正面 */}
+              <ImageUpload label="身份证正面照片" value={formData.id_card_front_image} onChange={files => handleImageUpload('id_card_front_image', files)} accept="image/*" />
+
+              {/* 身份证反面 */}
+              <ImageUpload label="身份证反面照片" value={formData.id_card_back_image} onChange={files => handleImageUpload('id_card_back_image', files)} accept="image/*" />
+
+              {/* 证书照片 */}
+              <ImageUpload label="证书照片" value={formData.certificate_images} onChange={files => handleImageUpload('certificate_images', files)} multiple={true} maxCount={5} accept="image/*" />
             </div>
           </div>
 
