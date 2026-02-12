@@ -224,60 +224,60 @@ export default function RoleManagement(props) {
             </Table>
           </div>
         </main>
+      </div>
 
-        {/* 编辑角色对话框 */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>修改用户角色</DialogTitle>
-            <DialogDescription>
-              为 {selectedUser?.name} 分配角色
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>当前角色</Label>
-              <div className="flex items-center gap-2">
-                <User size={16} className="text-gray-400" />
-                <span className="font-medium">{selectedUser && getRoleBadge(selectedUser.role)}</span>
+      {/* 编辑角色对话框 */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>修改用户角色</DialogTitle>
+              <DialogDescription>
+                为 {selectedUser?.name} 分配角色
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>当前角色</Label>
+                <div className="flex items-center gap-2">
+                  <User size={16} className="text-gray-400" />
+                  <span className="font-medium">{selectedUser && getRoleBadge(selectedUser.role)}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>选择新角色</Label>
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="选择角色" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">管理员</SelectItem>
+                    <SelectItem value="manager">部门经理</SelectItem>
+                    <SelectItem value="staff">普通员工</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-blue-800">
+                  <strong>角色说明：</strong>
+                </p>
+                <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                  <li>• 管理员：拥有所有权限</li>
+                  <li>• 部门经理：可查看数据、审批请假</li>
+                  <li>• 普通员工：只能查看数据</li>
+                </ul>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>选择新角色</Label>
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger>
-                  <SelectValue placeholder="选择角色" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">管理员</SelectItem>
-                  <SelectItem value="manager">部门经理</SelectItem>
-                  <SelectItem value="staff">普通员工</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-800">
-                <strong>角色说明：</strong>
-              </p>
-              <ul className="text-sm text-blue-700 mt-2 space-y-1">
-                <li>• 管理员：拥有所有权限</li>
-                <li>• 部门经理：可查看数据、审批请假</li>
-                <li>• 普通员工：只能查看数据</li>
-              </ul>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              <X size={16} className="mr-2" />
-              取消
-            </Button>
-            <Button onClick={handleSaveRole}>
-              <Save size={16} className="mr-2" />
-              保存
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                <X size={16} className="mr-2" />
+                取消
+              </Button>
+              <Button onClick={handleSaveRole}>
+                <Save size={16} className="mr-2" />
+                保存
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
     </div>;
 }
