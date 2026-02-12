@@ -224,10 +224,9 @@ export default function RoleManagement(props) {
             </Table>
           </div>
         </main>
-      </div>
 
-      {/* 编辑角色对话框 */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        {/* 编辑角色对话框 */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>修改用户角色</DialogTitle>
@@ -279,5 +278,6 @@ export default function RoleManagement(props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>;
 }
