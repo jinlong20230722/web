@@ -1,0 +1,64 @@
+{
+  "name": "leave_request",
+  "title": "请假销假",
+  "schemas": [
+    {
+      "name": "personnel_id",
+      "title": "人员ID",
+      "type": "String"
+    },
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "phone",
+      "title": "手机号",
+      "type": "String"
+    },
+    {
+      "name": "department",
+      "title": "所属部门",
+      "type": "String"
+    },
+    {
+      "name": "position",
+      "title": "职务",
+      "type": "String"
+    },
+    {
+      "name": "start_time",
+      "title": "请假开始时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "end_time",
+      "title": "请假结束时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "reason",
+      "title": "请假原因",
+      "type": "String"
+    },
+    {
+      "name": "approval_status",
+      "title": "审批状态",
+      "type": "String"
+    },
+    {
+      "name": "approver_role",
+      "title": "审批角色",
+      "type": "String"
+    },
+    {
+      "name": "submit_time",
+      "title": "提交时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    }
+  ]
+}

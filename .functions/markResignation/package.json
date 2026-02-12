@@ -1,0 +1,9 @@
+{
+  "name": "markResignation",
+  "version": "1.0.0",
+  "description": "标记人员离职的云函数",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.10.0"
+  }
+}

@@ -1,0 +1,172 @@
+[
+  {
+    "_id": "1",
+    "personnel_id": "1",
+    "name": "张三",
+    "event_type": "培训演习",
+    "event_time": 1739059200000,
+    "address": "北京市东城区某某街道1号",
+    "image_files": [
+      "https://example.com/event-1-1.jpg",
+      "https://example.com/event-1-2.jpg"
+    ],
+    "video_file": "https://example.com/event-1.mp4",
+    "description": "参加消防培训演习活动",
+    "create_time": 1739059200000,
+    "createdAt": 1739059200000,
+    "updatedAt": 1739059200000
+  },
+  {
+    "_id": "2",
+    "personnel_id": "2",
+    "name": "李四",
+    "event_type": "治安事件",
+    "event_time": 1739145600000,
+    "address": "北京市西城区某某街道2号",
+    "image_files": [
+      "https://example.com/event-2-1.jpg"
+    ],
+    "video_file": "https://example.com/event-2.mp4",
+    "description": "发现可疑人员并及时上报",
+    "create_time": 1739145600000,
+    "createdAt": 1739145600000,
+    "updatedAt": 1739145600000
+  },
+  {
+    "_id": "3",
+    "personnel_id": "3",
+    "name": "王五",
+    "event_type": "好人好事",
+    "event_time": 1739232000000,
+    "address": "北京市朝阳区某某街道3号",
+    "image_files": [
+      "https://example.com/event-3-1.jpg",
+      "https://example.com/event-3-2.jpg",
+      "https://example.com/event-3-3.jpg"
+    ],
+    "video_file": "https://example.com/event-3.mp4",
+    "description": "帮助迷路老人找到家人",
+    "create_time": 1739232000000,
+    "createdAt": 1739232000000,
+    "updatedAt": 1739232000000
+  },
+  {
+    "_id": "4",
+    "personnel_id": "4",
+    "name": "赵六",
+    "event_type": "设施故障",
+    "event_time": 1739318400000,
+    "address": "北京市海淀区某某街道4号",
+    "image_files": [
+      "https://example.com/event-4-1.jpg"
+    ],
+    "video_file": "https://example.com/event-4.mp4",
+    "description": "监控设备故障需要维修",
+    "create_time": 1739318400000,
+    "createdAt": 1739318400000,
+    "updatedAt": 1739318400000
+  },
+  {
+    "_id": "5",
+    "personnel_id": "5",
+    "name": "孙七",
+    "event_type": "临时勤务",
+    "event_time": 1739404800000,
+    "address": "北京市丰台区某某街道5号",
+    "image_files": [
+      "https://example.com/event-5-1.jpg",
+      "https://example.com/event-5-2.jpg"
+    ],
+    "video_file": "https://example.com/event-5.mp4",
+    "description": "执行临时安保勤务任务",
+    "create_time": 1739404800000,
+    "createdAt": 1739404800000,
+    "updatedAt": 1739404800000
+  },
+  {
+    "_id": "6",
+    "personnel_id": "1",
+    "name": "张三",
+    "event_type": "警保联动",
+    "event_time": 1739491200000,
+    "address": "北京市东城区某某街道6号",
+    "image_files": [
+      "https://example.com/event-6-1.jpg",
+      "https://example.com/event-6-2.jpg",
+      "https://example.com/event-6-3.jpg"
+    ],
+    "video_file": "https://example.com/event-6.mp4",
+    "description": "配合警方处理突发事件",
+    "create_time": 1739491200000,
+    "createdAt": 1739491200000,
+    "updatedAt": 1739491200000
+  },
+  {
+    "_id": "7",
+    "personnel_id": "2",
+    "name": "李四",
+    "event_type": "培训演习",
+    "event_time": 1739577600000,
+    "address": "北京市西城区某某街道7号",
+    "image_files": [
+      "https://example.com/event-7-1.jpg"
+    ],
+    "video_file": "https://example.com/event-7.mp4",
+    "description": "参加应急演练活动",
+    "create_time": 1739577600000,
+    "createdAt": 1739577600000,
+    "updatedAt": 1739577600000
+  },
+  {
+    "_id": "8",
+    "personnel_id": "3",
+    "name": "王五",
+    "event_type": "好人好事",
+    "event_time": 1739664000000,
+    "address": "北京市朝阳区某某街道8号",
+    "image_files": [
+      "https://example.com/event-8-1.jpg",
+      "https://example.com/event-8-2.jpg"
+    ],
+    "video_file": "https://example.com/event-8.mp4",
+    "description": "协助处理交通事故",
+    "create_time": 1739664000000,
+    "createdAt": 1739664000000,
+    "updatedAt": 1739664000000
+  },
+  {
+    "_id": "9",
+    "personnel_id": "4",
+    "name": "赵六",
+    "event_type": "治安事件",
+    "event_time": 1739750400000,
+    "address": "北京市海淀区某某街道9号",
+    "image_files": [
+      "https://example.com/event-9-1.jpg",
+      "https://example.com/event-9-2.jpg",
+      "https://example.com/event-9-3.jpg",
+      "https://example.com/event-9-4.jpg"
+    ],
+    "video_file": "https://example.com/event-9.mp4",
+    "description": "发现违规行为并及时制止",
+    "create_time": 1739750400000,
+    "createdAt": 1739750400000,
+    "updatedAt": 1739750400000
+  },
+  {
+    "_id": "10",
+    "personnel_id": "5",
+    "name": "孙七",
+    "event_type": "设施故障",
+    "event_time": 1739836800000,
+    "address": "北京市丰台区某某街道10号",
+    "image_files": [
+      "https://example.com/event-10-1.jpg"
+    ],
+    "video_file": "https://example.com/event-10.mp4",
+    "description": "门禁系统故障需要维修",
+    "create_time": 1739836800000,
+    "createdAt": 1739836800000,
+    "updatedAt": 1739836800000
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "name": "personnel",
+  "title": "人员信息",
+  "schemas": [
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "phone",
+      "title": "手机号",
+      "type": "String"
+    },
+    {
+      "name": "department",
+      "title": "所属部门",
+      "type": "String"
+    },
+    {
+      "name": "position",
+      "title": "职务",
+      "type": "String"
+    },
+    {
+      "name": "emergency_contact_name",
+      "title": "紧急联系人姓名",
+      "type": "String"
+    },
+    {
+      "name": "emergency_contact_phone",
+      "title": "紧急联系人电话",
+      "type": "String"
+    },
+    {
+      "name": "id_number",
+      "title": "身份证号码",
+      "type": "String"
+    },
+    {
+      "name": "id_address",
+      "title": "身份证详细地址",
+      "type": "String"
+    },
+    {
+      "name": "gender",
+      "title": "性别",
+      "type": "String"
+    },
+    {
+      "name": "age",
+      "title": "年龄",
+      "type": "Number"
+    },
+    {
+      "name": "id_card_front_image",
+      "title": "身份证正面照片",
+      "type": "File"
+    },
+    {
+      "name": "id_card_back_image",
+      "title": "身份证反面照片",
+      "type": "File"
+    },
+    {
+      "name": "certificate_images",
+      "title": "相关证件图片",
+      "type": "Array",
+      "items": {
+        "type": "File"
+      }
+    },
+    {
+      "name": "register_time",
+      "title": "入职登记提交时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "employment_status",
+      "title": "在职状态",
+      "type": "String"
+    },
+    {
+      "name": "resignation_time",
+      "title": "离职时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    }
+  ]
+}

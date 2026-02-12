@@ -1,0 +1,56 @@
+{
+  "name": "event_report",
+  "title": "事件上报",
+  "schemas": [
+    {
+      "name": "personnel_id",
+      "title": "人员ID",
+      "type": "String"
+    },
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "event_type",
+      "title": "事件类型",
+      "type": "String"
+    },
+    {
+      "name": "event_time",
+      "title": "事件上报时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "address",
+      "title": "事件地址",
+      "type": "String"
+    },
+    {
+      "name": "image_files",
+      "title": "事件照片",
+      "type": "Array",
+      "items": {
+        "type": "File"
+      }
+    },
+    {
+      "name": "video_file",
+      "title": "事件视频",
+      "type": "File"
+    },
+    {
+      "name": "description",
+      "title": "事件说明",
+      "type": "String"
+    },
+    {
+      "name": "create_time",
+      "title": "创建时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    }
+  ]
+}

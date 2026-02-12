@@ -1,0 +1,63 @@
+{
+  "name": "resignation",
+  "title": "离职申请",
+  "schemas": [
+    {
+      "name": "personnel_id",
+      "title": "人员ID",
+      "type": "String"
+    },
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "department",
+      "title": "部门",
+      "type": "String"
+    },
+    {
+      "name": "position",
+      "title": "职位",
+      "type": "String"
+    },
+    {
+      "name": "phone",
+      "title": "电话",
+      "type": "String"
+    },
+    {
+      "name": "apply_time",
+      "title": "申请时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "status",
+      "title": "申请状态",
+      "type": "String"
+    },
+    {
+      "name": "approver_department",
+      "title": "审批部门",
+      "type": "String"
+    },
+    {
+      "name": "approver_role",
+      "title": "审批人角色",
+      "type": "String"
+    },
+    {
+      "name": "approve_time",
+      "title": "审批时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "reject_reason",
+      "title": "拒绝原因",
+      "type": "String"
+    }
+  ]
+}

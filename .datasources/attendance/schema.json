@@ -1,0 +1,56 @@
+{
+  "name": "attendance",
+  "title": "打卡签到",
+  "schemas": [
+    {
+      "name": "personnel_id",
+      "title": "人员ID",
+      "type": "String"
+    },
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "phone",
+      "title": "手机号",
+      "type": "String"
+    },
+    {
+      "name": "check_in_time",
+      "title": "打卡时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    },
+    {
+      "name": "address",
+      "title": "打卡地址",
+      "type": "String"
+    },
+    {
+      "name": "status",
+      "title": "打卡状态",
+      "type": "String"
+    },
+    {
+      "name": "image_files",
+      "title": "打卡照片",
+      "type": "Array",
+      "items": {
+        "type": "File"
+      }
+    },
+    {
+      "name": "video_file",
+      "title": "打卡视频",
+      "type": "File"
+    },
+    {
+      "name": "create_time",
+      "title": "创建时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
+    }
+  ]
+}
