@@ -5,7 +5,6 @@ import { X, Save } from 'lucide-react';
 // @ts-ignore;
 import { Button, Input, Dialog, DialogContent, DialogHeader, DialogTitle, useToast } from '@/components/ui';
 
-import ImageUpload from '@/components/ImageUpload';
 export default function PersonnelEditModal({
   record,
   onClose,
@@ -63,10 +62,7 @@ export default function PersonnelEditModal({
         id_address: record.id_address || '',
         gender: record.gender || '',
         age: record.age || '',
-        employment_status: record.employment_status || '在职',
-        id_card_front_image: record.id_card_front_image || [],
-        id_card_back_image: record.id_card_back_image || [],
-        certificate_images: record.certificate_images || []
+        employment_status: record.employment_status || '在职'
       });
     }
   }, [record]);
@@ -94,10 +90,7 @@ export default function PersonnelEditModal({
             id_address: formData.id_address,
             gender: formData.gender,
             age: formData.age ? Number(formData.age) : null,
-            employment_status: formData.employment_status,
-            id_card_front_image: formData.id_card_front_image,
-            id_card_back_image: formData.id_card_back_image,
-            certificate_images: formData.certificate_images
+            employment_status: formData.employment_status
           },
           filter: {
             where: {
@@ -146,14 +139,6 @@ export default function PersonnelEditModal({
         [field]: ''
       }));
     }
-  };
-
-  // 处理图片上传
-  const handleImageUpload = (field, files) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: files
-    }));
   };
   if (!record) return null;
   return <Dialog open={true} onOpenChange={onClose}>
@@ -232,21 +217,6 @@ export default function PersonnelEditModal({
                 <label className="block text-sm font-medium text-gray-700 mb-1">电话</label>
                 <Input value={formData.emergency_contact_phone} onChange={e => handleChange('emergency_contact_phone', e.target.value)} placeholder="请输入紧急联系人电话" />
               </div>
-            </div>
-          </div>
-
-          {/* 证件照片 */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">证件照片</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* 身份证正面 */}
-              <ImageUpload label="身份证正面照片" value={formData.id_card_front_image} onChange={files => handleImageUpload('id_card_front_image', files)} accept="image/*" />
-
-              {/* 身份证反面 */}
-              <ImageUpload label="身份证反面照片" value={formData.id_card_back_image} onChange={files => handleImageUpload('id_card_back_image', files)} accept="image/*" />
-
-              {/* 证书照片 */}
-              <ImageUpload label="证书照片" value={formData.certificate_images} onChange={files => handleImageUpload('certificate_images', files)} multiple={true} maxCount={5} accept="image/*" />
             </div>
           </div>
 

@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, Eye, Clock, MapPin, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Eye, Clock as ClockIcon, MapPin, Calendar, CheckCircle, XCircle } from 'lucide-react';
 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { Pagination } from '@/components/Pagination';
-import { hasPermission, getDataFilter } from '@/lib/permissions';
+import { EmptyState } from '@/components/EmptyState';
+import { TableSkeleton } from '@/components/TableSkeleton';
 export default function Attendance(props) {
   const [attendanceList, setAttendanceList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,8 +33,26 @@ export default function Attendance(props) {
   const {
     currentUser
   } = props.$w.auth;
-  const canViewAttendance = hasPermission(currentUser, 'view:attendance');
-  const canViewAttendanceDetail = hasPermission(currentUser, 'view:attendance_detail');
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
 
   // 获取图片临时 URL
   const getImageUrl = async fileId => {
@@ -240,7 +259,7 @@ export default function Attendance(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="attendance" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800">签到打卡</h2>
@@ -270,50 +289,48 @@ export default function Attendance(props) {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="bg-gray-50">
-                <TableRow>
-                  <TableHead className="font-semibold">姓名</TableHead>
-                  <TableHead className="font-semibold">手机号</TableHead>
-                  <TableHead className="font-semibold">打卡时间</TableHead>
-                  <TableHead className="font-semibold">打卡地址</TableHead>
-                  <TableHead className="font-semibold">打卡状态</TableHead>
-                  <TableHead className="font-semibold text-right">操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      加载中...
-                    </TableCell>
-                  </TableRow> : attendanceList.length === 0 ? <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      暂无数据
-                    </TableCell>
-                  </TableRow> : attendanceList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{record.name}</TableCell>
-                      <TableCell>{record.phone}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Clock size={16} className="text-gray-400" />
-                          {formatTime(record.check_in_time)}
-                        </div>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">姓名</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[130px]">手机号</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[180px]">打卡时间</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[200px]">打卡地址</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">打卡状态</TableHead>
+                    <TableHead className="font-semibold text-right whitespace-nowrap min-w-[80px]">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? <TableSkeleton columns={6} rows={5} /> : attendanceList.length === 0 ? <TableRow>
+                      <TableCell colSpan={6}>
+                        <EmptyState title="暂无打卡数据" description="当前没有打卡记录" icon={ClockIcon} />
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <MapPin size={16} className="text-gray-400" />
-                          <span className="max-w-[200px] truncate">{record.address}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(record.status)}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleView(record)}>
-                          <Eye size={16} />
-                        </Button>
-                      </TableCell>
-                    </TableRow>)}
-              </TableBody>
-            </Table>
+                    </TableRow> : attendanceList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium whitespace-nowrap">{record.name}</TableCell>
+                        <TableCell className="whitespace-nowrap">{record.phone}</TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <ClockIcon size={16} className="text-gray-400" />
+                            {formatTime(record.check_in_time)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <MapPin size={16} className="text-gray-400" />
+                            <span className="max-w-[200px] truncate" title={record.address}>{record.address}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">{getStatusBadge(record.status)}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          <Button variant="ghost" size="sm" onClick={() => handleView(record)} title="查看详情">
+                            <Eye size={16} />
+                          </Button>
+                        </TableCell>
+                      </TableRow>)}
+                </TableBody>
+              </Table>
+            </div>
 
             <Pagination currentPage={pagination.page} totalPages={Math.ceil(pagination.total / pagination.pageSize)} totalRecords={pagination.total} pageSize={pagination.pageSize} onPageChange={page => setPagination(prev => ({
             ...prev,

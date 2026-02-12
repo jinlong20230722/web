@@ -80,6 +80,12 @@
       "name": "employment_status",
       "title": "在职状态",
       "type": "String"
+    },
+    {
+      "name": "resignation_time",
+      "title": "离职时间",
+      "type": "DateTime",
+      "format": "timestamp-ms"
     }
   ]
 }

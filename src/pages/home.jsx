@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 // @ts-ignore;
 import { Users, Clock, Calendar, AlertTriangle, MessageSquare, Megaphone, TrendingUp, Shield, CheckCircle } from 'lucide-react';
+// @ts-ignore;
+import { useToast } from '@/components/ui';
 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
@@ -9,6 +11,29 @@ export default function Home(props) {
   const {
     currentUser
   } = props.$w.auth;
+  const {
+    toast
+  } = useToast();
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
   const stats = [{
     title: '总人员数',
     value: '128',
@@ -90,7 +115,7 @@ export default function Home(props) {
       <Sidebar currentPage="home" $w={props.$w} />
       
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         
         <main className="flex-1 p-6 overflow-auto">
           {/* 欢迎横幅 */}

@@ -331,11 +331,11 @@ export default function AttendanceManagement(props) {
             </div>
           </div>
           <div className="flex gap-3 mt-4">
-            <Button onClick={loadData} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={loadData} className="bg-blue-600 hover:bg-blue-700" title="查询数据">
               <Search className="w-4 h-4 mr-2" />
               查询
             </Button>
-            <Button onClick={handleResetFilters} variant="outline">
+            <Button onClick={handleResetFilters} variant="outline" title="重置筛选条件">
               重置
             </Button>
           </div>
@@ -347,7 +347,7 @@ export default function AttendanceManagement(props) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input placeholder="搜索姓名、电话、地址..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} onKeyPress={e => e.key === 'Enter' && loadData()} className="pl-10" />
           </div>
-          <Button onClick={handleExportExcel} disabled={exporting} className="bg-emerald-600 hover:bg-emerald-700">
+          <Button onClick={handleExportExcel} disabled={exporting} className="bg-emerald-600 hover:bg-emerald-700" title="导出Excel文件">
             <Download className="w-4 h-4 mr-2" />
             {exporting ? '导出中...' : '导出 Excel'}
           </Button>
@@ -355,28 +355,29 @@ export default function AttendanceManagement(props) {
 
         {/* 数据表格 */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => handleSort('name')}>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    姓名
-                    {sortField === 'name' && <span className="text-xs text-slate-500">
-                        {sortOrder === 'asc' ? '↑' : '↓'}
-                      </span>}
-                  </div>
-                </TableHead>
-                <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => handleSort('phone')}>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    电话
-                    {sortField === 'phone' && <span className="text-xs text-slate-500">
-                        {sortOrder === 'asc' ? '↑' : '↓'}
-                      </span>}
-                  </div>
-                </TableHead>
-                <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => handleSort('check_in_time')}>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50">
+                  <TableHead className="cursor-pointer hover:bg-slate-100 whitespace-nowrap min-w-[100px]" onClick={() => handleSort('name')}>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      姓名
+                      {sortField === 'name' && <span className="text-xs text-slate-500">
+                          {sortOrder === 'asc' ? '↑' : '↓'}
+                        </span>}
+                    </div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer hover:bg-slate-100 whitespace-nowrap min-w-[130px]" onClick={() => handleSort('phone')}>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      电话
+                      {sortField === 'phone' && <span className="text-xs text-slate-500">
+                          {sortOrder === 'asc' ? '↑' : '↓'}
+                        </span>}
+                    </div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer hover:bg-slate-100 whitespace-nowrap min-w-[180px]" onClick={() => handleSort('check_in_time')}>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     打卡时间
@@ -438,6 +439,7 @@ export default function AttendanceManagement(props) {
                   </TableRow>)}
             </TableBody>
           </Table>
+          </div>
 
           {/* 分页 */}
           <div className="flex items-center justify-between px-6 py-4 border-t">

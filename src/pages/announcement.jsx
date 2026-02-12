@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Textarea, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, Plus, Edit, Trash2, Eye, Megaphone, Calendar, User, Building2, Bell, AlertTriangle, Award } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Megaphone as MegaphoneIcon, Calendar, User, Building2, Bell, AlertTriangle, Award } from 'lucide-react';
 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import AnnouncementEditModal from '@/components/AnnouncementEditModal';
 import { Pagination } from '@/components/Pagination';
+import { EmptyState } from '@/components/EmptyState';
+import { TableSkeleton } from '@/components/TableSkeleton';
 import { hasPermission, getUserRole } from '@/lib/permissions';
 const iconMap = {
   bell: Bell,
@@ -44,6 +46,26 @@ export default function Announcement(props) {
   const canCreateAnnouncement = hasPermission(currentUser, 'create:announcement');
   const canEditAnnouncement = hasPermission(currentUser, 'edit:announcement');
   const canDeleteAnnouncement = hasPermission(currentUser, 'delete:announcement');
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
   const loadAnnouncementList = async () => {
     setLoading(true);
     try {
@@ -153,7 +175,7 @@ export default function Announcement(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="announcement" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800">公告管理</h2>
@@ -168,7 +190,7 @@ export default function Announcement(props) {
                   <Input placeholder="搜索标题或内容..." value={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} className="pl-10" />
                 </div>
               </div>
-              {canCreateAnnouncement && <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsCreateDialogOpen(true)}>
+              {canCreateAnnouncement && <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsCreateDialogOpen(true)} title="发布新公告">
                 <Plus className="mr-2" size={16} />
                 发布公告
               </Button>}
@@ -176,69 +198,67 @@ export default function Announcement(props) {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="bg-gray-50">
-                <TableRow>
-                  <TableHead className="font-semibold w-12">图标</TableHead>
-                  <TableHead className="font-semibold">公告标题</TableHead>
-                  <TableHead className="font-semibold">发布部门</TableHead>
-                  <TableHead className="font-semibold">发布人</TableHead>
-                  <TableHead className="font-semibold">发布时间</TableHead>
-                  <TableHead className="font-semibold text-right">操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                      加载中...
-                    </TableCell>
-                  </TableRow> : announcementList.length === 0 ? <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      暂无数据
-                    </TableCell>
-                  </TableRow> : announcementList.map(record => {
-                const IconComponent = iconMap[record.icon] || Bell;
-                const iconColor = iconColorMap[record.icon] || 'text-gray-500';
-                return <TableRow key={record._id} className="hover:bg-gray-50">
-                      <TableCell>
-                        <IconComponent className={`h-5 w-5 ${iconColor}`} />
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[60px]">图标</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[200px]">公告标题</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">发布部门</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">发布人</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[180px]">发布时间</TableHead>
+                    <TableHead className="font-semibold text-right whitespace-nowrap min-w-[200px]">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? <TableSkeleton columns={6} rows={5} /> : announcementList.length === 0 ? <TableRow>
+                      <TableCell colSpan={6}>
+                        <EmptyState title="暂无公告数据" description="当前没有公告信息" icon={MegaphoneIcon} />
                       </TableCell>
-                      <TableCell className="font-medium">{record.title}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Building2 size={16} className="text-gray-400" />
-                          <span className="text-sm">{record.publisher_department || '-'}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <User size={16} className="text-gray-400" />
-                          {record.publisher}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} className="text-gray-400" />
-                          {formatTime(record.publish_time)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleView(record)}>
-                            <Eye size={16} />
-                          </Button>
-                          {canEditAnnouncement && <Button variant="ghost" size="sm" onClick={() => handleEdit(record)}>
-                            <Edit size={16} />
-                          </Button>}
-                          {canDeleteAnnouncement && <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(record)}>
-                            <Trash2 size={16} />
-                          </Button>}
-                        </div>
-                      </TableCell>
-                    </TableRow>;
-              })}
-              </TableBody>
-            </Table>
+                    </TableRow> : announcementList.map(record => {
+                  const IconComponent = iconMap[record.icon] || Bell;
+                  const iconColor = iconColorMap[record.icon] || 'text-gray-500';
+                  return <TableRow key={record._id} className="hover:bg-gray-50">
+                        <TableCell className="whitespace-nowrap">
+                          <IconComponent className={`h-5 w-5 ${iconColor}`} />
+                        </TableCell>
+                        <TableCell className="font-medium whitespace-nowrap">{record.title}</TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Building2 size={16} className="text-gray-400" />
+                            <span className="text-sm">{record.publisher_department || '-'}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <User size={16} className="text-gray-400" />
+                            {record.publisher}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Calendar size={16} className="text-gray-400" />
+                            {formatTime(record.publish_time)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => handleView(record)} title="查看详情">
+                              <Eye size={16} />
+                            </Button>
+                            {canEditAnnouncement && <Button variant="ghost" size="sm" onClick={() => handleEdit(record)} title="编辑公告">
+                              <Edit size={16} />
+                            </Button>}
+                            {canDeleteAnnouncement && <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(record)} title="删除公告">
+                              <Trash2 size={16} />
+                            </Button>}
+                          </div>
+                        </TableCell>
+                      </TableRow>;
+                })}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
           {/* 分页 */}

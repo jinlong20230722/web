@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, Eye, AlertTriangle, MapPin, Calendar, User } from 'lucide-react';
+import { Search, Eye, AlertTriangle, MapPin, Calendar, User, FileText } from 'lucide-react';
 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { Pagination } from '@/components/Pagination';
-import { hasPermission, getDataFilter } from '@/lib/permissions';
+import { EmptyState } from '@/components/EmptyState';
+import { TableSkeleton } from '@/components/TableSkeleton';
 export default function Event(props) {
   const [eventList, setEventList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,8 +32,26 @@ export default function Event(props) {
   const {
     currentUser
   } = props.$w.auth;
-  const canViewEvent = hasPermission(currentUser, 'view:event');
-  const canViewEventDetail = hasPermission(currentUser, 'view:event_detail');
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
 
   // 获取图片临时 URL
   const getImageUrl = async fileId => {
@@ -231,7 +250,7 @@ export default function Event(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="event" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800">事件管理</h2>
@@ -264,50 +283,50 @@ export default function Event(props) {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="bg-gray-50">
-                <TableRow>
-                  <TableHead className="font-semibold">上报人</TableHead>
-                  <TableHead className="font-semibold">事件类型</TableHead>
-                  <TableHead className="font-semibold">事件时间</TableHead>
-                  <TableHead className="font-semibold">事件地址</TableHead>
-                  <TableHead className="font-semibold">事件说明</TableHead>
-                  <TableHead className="font-semibold text-right">操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      加载中...
-                    </TableCell>
-                  </TableRow> : eventList.length === 0 ? <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      暂无数据
-                    </TableCell>
-                  </TableRow> : eventList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{record.name}</TableCell>
-                      <TableCell>{getTypeBadge(record.event_type)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} className="text-gray-400" />
-                          {formatTime(record.event_time)}
-                        </div>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">上报人</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">事件类型</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[180px]">事件时间</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[200px]">事件地址</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[200px]">事件说明</TableHead>
+                    <TableHead className="font-semibold text-right whitespace-nowrap min-w-[80px]">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? <TableSkeleton columns={6} rows={5} /> : eventList.length === 0 ? <TableRow>
+                      <TableCell colSpan={6}>
+                        <EmptyState title="暂无事件数据" description="当前没有事件上报记录" icon={FileText} />
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <MapPin size={16} className="text-gray-400" />
-                          <span className="max-w-[200px] truncate">{record.address}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[200px] truncate">{record.description}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleView(record)}>
-                          <Eye size={16} />
-                        </Button>
-                      </TableCell>
-                    </TableRow>)}
-              </TableBody>
-            </Table>
+                    </TableRow> : eventList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium whitespace-nowrap">{record.name}</TableCell>
+                        <TableCell className="whitespace-nowrap">{getTypeBadge(record.event_type)}</TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Calendar size={16} className="text-gray-400" />
+                            {formatTime(record.event_time)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <MapPin size={16} className="text-gray-400" />
+                            <span className="max-w-[200px] truncate" title={record.address}>{record.address}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="max-w-[200px] truncate block" title={record.description}>{record.description}</span>
+                        </TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          <Button variant="ghost" size="sm" onClick={() => handleView(record)} title="查看详情">
+                            <Eye size={16} />
+                          </Button>
+                        </TableCell>
+                      </TableRow>)}
+                </TableBody>
+              </Table>
+            </div>
 
             <Pagination currentPage={pagination.page} totalPages={Math.ceil(pagination.total / pagination.pageSize)} totalRecords={pagination.total} pageSize={pagination.pageSize} onPageChange={page => setPagination(prev => ({
             ...prev,

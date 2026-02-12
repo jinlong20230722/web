@@ -31,7 +31,8 @@
     {
       "name": "status",
       "title": "打卡状态",
-      "type": "String"
+      "type": "String",
+      "enum": ["正常", "异常"]
     },
     {
       "name": "image_files",

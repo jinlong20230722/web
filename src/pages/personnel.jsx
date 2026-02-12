@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, Plus, Edit, Trash2, Eye, User, Phone, Building, Briefcase } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, User, Phone, Building, Briefcase, UserPlus, Trash } from 'lucide-react';
 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import PersonnelDetailModal from '@/components/PersonnelDetailModal';
 import PersonnelAddModal from '@/components/PersonnelAddModal';
 import { Pagination } from '@/components/Pagination';
+import { EmptyState } from '@/components/EmptyState';
+import { TableSkeleton } from '@/components/TableSkeleton';
 import { hasPermission, getUserRole } from '@/lib/permissions';
 export default function Personnel(props) {
   const [personnelList, setPersonnelList] = useState([]);
@@ -39,6 +41,26 @@ export default function Personnel(props) {
   const canEditPersonnel = hasPermission(currentUser, 'edit:personnel');
   const canDeletePersonnel = hasPermission(currentUser, 'delete:personnel');
   const canViewPersonnel = hasPermission(currentUser, 'view:personnel');
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
 
   // 加载人员列表
   const loadPersonnelList = async () => {
@@ -218,7 +240,7 @@ export default function Personnel(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="personnel" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           {/* 页面标题 */}
           <div className="mb-6">
@@ -244,7 +266,7 @@ export default function Personnel(props) {
                   {departments.map(dept => <SelectItem key={dept} value={dept}>{dept}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {canAddPersonnel && <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsAddDialogOpen(true)}>
+              {canAddPersonnel && <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsAddDialogOpen(true)} title="添加新人员">
                 <Plus className="mr-2" size={16} />
                 添加人员
               </Button>}
@@ -253,62 +275,60 @@ export default function Personnel(props) {
 
           {/* 数据表格 */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="bg-gray-50">
-                <TableRow>
-                  <TableHead className="font-semibold">姓名</TableHead>
-                  <TableHead className="font-semibold">手机号</TableHead>
-                  <TableHead className="font-semibold">部门</TableHead>
-                  <TableHead className="font-semibold">职务</TableHead>
-                  <TableHead className="font-semibold">性别</TableHead>
-                  <TableHead className="font-semibold">年龄</TableHead>
-                  <TableHead className="font-semibold">在职状态</TableHead>
-                  <TableHead className="font-semibold text-right">操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                      加载中...
-                    </TableCell>
-                  </TableRow> : personnelList.length === 0 ? <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                      暂无数据
-                    </TableCell>
-                  </TableRow> : personnelList.map(person => {
-                const status = getEmploymentStatus(person._id);
-                return <TableRow key={person._id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{person.name}</TableCell>
-                        <TableCell>{person.phone}</TableCell>
-                        <TableCell>{person.department}</TableCell>
-                        <TableCell>{person.position}</TableCell>
-                        <TableCell>{person.gender}</TableCell>
-                        <TableCell>{person.age}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${status === '在职' ? 'bg-green-100 text-green-800' : status === '已离职' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                            {status}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => handleView(person)}>
-                              <Eye size={16} />
-                            </Button>
-                            {canEditPersonnel && <Button variant="ghost" size="sm" onClick={() => handleEdit(person)}>
-                              <Edit size={16} />
-                            </Button>}
-                            {canDeletePersonnel && <Button variant="ghost" size="sm" onClick={() => {
-                        setSelectedRecord(person);
-                        setIsDeleteDialogOpen(true);
-                      }}>
-                              <Trash2 size={16} className="text-red-500" />
-                            </Button>}
-                          </div>
-                        </TableCell>
-                      </TableRow>;
-              })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">姓名</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[130px]">手机号</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">部门</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">职务</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[80px]">性别</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[80px]">年龄</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">在职状态</TableHead>
+                    <TableHead className="font-semibold text-right whitespace-nowrap min-w-[180px]">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? <TableSkeleton columns={8} rows={5} /> : personnelList.length === 0 ? <TableRow>
+                      <TableCell colSpan={8}>
+                        <EmptyState title="暂无人员数据" description="当前没有人员信息，点击下方按钮添加新人员" actionText="添加人员" onAction={() => setIsAddDialogOpen(true)} icon={UserPlus} />
+                      </TableCell>
+                    </TableRow> : personnelList.map(person => {
+                  const status = getEmploymentStatus(person._id);
+                  return <TableRow key={person._id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium whitespace-nowrap">{person.name}</TableCell>
+                          <TableCell className="whitespace-nowrap">{person.phone}</TableCell>
+                          <TableCell className="whitespace-nowrap">{person.department}</TableCell>
+                          <TableCell className="whitespace-nowrap">{person.position}</TableCell>
+                          <TableCell className="whitespace-nowrap">{person.gender}</TableCell>
+                          <TableCell className="whitespace-nowrap">{person.age}</TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${status === '在职' ? 'bg-green-100 text-green-800' : status === '已离职' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                              {status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right whitespace-nowrap">
+                            <div className="flex justify-end gap-2">
+                              <Button variant="ghost" size="sm" onClick={() => handleView(person)} title="查看详情">
+                                <Eye size={16} />
+                              </Button>
+                              {canEditPersonnel && <Button variant="ghost" size="sm" onClick={() => handleEdit(person)} title="编辑人员">
+                                <Edit size={16} />
+                              </Button>}
+                              {canDeletePersonnel && <Button variant="ghost" size="sm" onClick={() => {
+                          setSelectedRecord(person);
+                          setIsDeleteDialogOpen(true);
+                        }} title="删除人员">
+                                <Trash2 size={16} className="text-red-500" />
+                              </Button>}
+                            </div>
+                          </TableCell>
+                        </TableRow>;
+                })}
+                </TableBody>
+              </Table>
+            </div>
 
             {/* 分页 */}
             <Pagination currentPage={pagination.page} totalPages={Math.ceil(pagination.total / pagination.pageSize)} totalRecords={pagination.total} pageSize={pagination.pageSize} onPageChange={page => setPagination(prev => ({

@@ -21,6 +21,26 @@ export default function RoleManagement(props) {
   const {
     currentUser
   } = props.$w.auth;
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
 
   // 检查是否有权限访问
   if (!hasPermission(currentUser, 'manage:roles')) {
@@ -49,10 +69,11 @@ export default function RoleManagement(props) {
         }
       });
 
-      // 为每个用户添加角色信息（这里假设 role 字段存储在 personnel 表中）
+      // 注意：personnel 表中目前没有 role 字段
+      // 需要先在 personnel 表中添加 role 字段才能实现角色管理功能
       const users = (result.records || []).map(user => ({
         ...user,
-        role: user.role || 'staff' // 默认为普通员工
+        role: 'staff' // 暂时默认为普通员工
       }));
       setUserList(users);
     } catch (error) {
@@ -72,12 +93,26 @@ export default function RoleManagement(props) {
   // 打开编辑对话框
   const handleEdit = user => {
     setSelectedUser(user);
-    setSelectedRole(user.role || 'staff');
+    setSelectedRole('staff'); // 暂时固定为 staff
     setIsEditDialogOpen(true);
+    toast({
+      title: '功能受限',
+      description: 'personnel 表中缺少 role 字段，角色管理功能暂时不可用',
+      variant: 'destructive'
+    });
   };
 
-  // 保存角色
+  // 保存角色（暂时禁用）
   const handleSaveRole = async () => {
+    toast({
+      title: '功能受限',
+      description: 'personnel 表中缺少 role 字段，无法保存角色信息',
+      variant: 'destructive'
+    });
+    setIsEditDialogOpen(false);
+    return;
+    
+    /* 原有代码（待 personnel 表添加 role 字段后启用）
     try {
       await props.$w.cloud.callDataSource({
         dataSourceName: 'personnel',
@@ -131,7 +166,7 @@ export default function RoleManagement(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="roleManagement" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           {/* 页面标题 */}
           <div className="mb-6">

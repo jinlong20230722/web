@@ -8,6 +8,8 @@ import { Search, Eye, Calendar, User, Building, Briefcase, CheckCircle, XCircle 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { Pagination } from '@/components/Pagination';
+import { EmptyState } from '@/components/EmptyState';
+import { TableSkeleton } from '@/components/TableSkeleton';
 import { hasPermission, getUserRole } from '@/lib/permissions';
 export default function Leave(props) {
   const [leaveList, setLeaveList] = useState([]);
@@ -32,6 +34,33 @@ export default function Leave(props) {
   } = props.$w.auth;
   const userRole = getUserRole(currentUser);
   const canApproveLeave = hasPermission(currentUser, 'approve:leave');
+  const handleLogout = async () => {
+    try {
+      const tcb = await props.$w.cloud.getCloudInstance();
+      await tcb.auth().signOut();
+      await tcb.auth().signInAnonymously();
+      await props.$w.auth.getUserInfo({
+        force: true
+      });
+      toast({
+        title: '退出成功',
+        description: '您已成功退出登录'
+      });
+    } catch (error) {
+      toast({
+        title: '退出失败',
+        description: error.message || '退出登录时发生错误',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // 人员数据缓存
+  const [personnelCache, setPersonnelCache] = useState({
+    data: null,
+    timestamp: null
+  });
+  const CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
   const loadLeaveList = async () => {
     setLoading(true);
     try {
@@ -62,28 +91,44 @@ export default function Leave(props) {
         }
       });
 
-      // 加载人员数据
-      const personnelResult = await props.$w.cloud.callDataSource({
-        dataSourceName: 'personnel',
-        methodName: 'wedaGetRecordsV2',
-        params: {
-          select: {
-            $master: true
-          },
-          pageSize: 1000
-        }
-      });
-      setPersonnelData(personnelResult.records || []);
+      // 加载人员数据（带缓存）
+      let personnelRecords = [];
+      const now = Date.now();
+
+      // 检查缓存是否有效
+      if (personnelCache.data && personnelCache.timestamp && now - personnelCache.timestamp < CACHE_DURATION) {
+        personnelRecords = personnelCache.data;
+      } else {
+        // 缓存过期或不存在，重新加载
+        const personnelResult = await props.$w.cloud.callDataSource({
+          dataSourceName: 'personnel',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            select: {
+              $master: true
+            },
+            pageSize: 1000
+          }
+        });
+        personnelRecords = personnelResult.records || [];
+
+        // 更新缓存
+        setPersonnelCache({
+          data: personnelRecords,
+          timestamp: now
+        });
+      }
+      setPersonnelData(personnelRecords);
 
       // 关联数据：将 personnel 表的姓名、部门、职务关联到 leave_request 数据
       const leaveRecords = result.records || [];
       const mergedData = leaveRecords.map(record => {
         // 尝试通过 _id 匹配
-        let personnel = personnelResult.records.find(p => p._id === record.personnel_id);
+        let personnel = personnelRecords.find(p => p._id === record.personnel_id);
 
         // 如果没找到，尝试通过字符串转换匹配
         if (!personnel) {
-          personnel = personnelResult.records.find(p => String(p._id) === String(record.personnel_id));
+          personnel = personnelRecords.find(p => String(p._id) === String(record.personnel_id));
         }
         return {
           ...record,
@@ -190,7 +235,7 @@ export default function Leave(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="leave" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} />
+        <TopNav currentUser={currentUser} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800">请假管理</h2>
@@ -220,57 +265,57 @@ export default function Leave(props) {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="bg-gray-50">
-                <TableRow>
-                  <TableHead className="font-semibold">姓名</TableHead>
-                  <TableHead className="font-semibold">部门</TableHead>
-                  <TableHead className="font-semibold">职务</TableHead>
-                  <TableHead className="font-semibold">请假时间</TableHead>
-                  <TableHead className="font-semibold">请假原因</TableHead>
-                  <TableHead className="font-semibold">审批状态</TableHead>
-                  <TableHead className="font-semibold text-right">操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                      加载中...
-                    </TableCell>
-                  </TableRow> : leaveList.length === 0 ? <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                      暂无数据
-                    </TableCell>
-                  </TableRow> : leaveList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{record.name}</TableCell>
-                      <TableCell>{record.department}</TableCell>
-                      <TableCell>{record.position}</TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div>开始：{formatTime(record.start_time)}</div>
-                          <div>结束：{formatTime(record.end_time)}</div>
-                        </div>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">姓名</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">部门</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">职务</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[200px]">请假时间</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[200px]">请假原因</TableHead>
+                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">审批状态</TableHead>
+                    <TableHead className="font-semibold text-right whitespace-nowrap min-w-[200px]">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? <TableSkeleton columns={7} rows={5} /> : leaveList.length === 0 ? <TableRow>
+                      <TableCell colSpan={7}>
+                        <EmptyState title="暂无请假数据" description="当前没有请假申请记录" icon={Calendar} />
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate">{record.reason}</TableCell>
-                      <TableCell>{getStatusBadge(record.approval_status)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleView(record)}>
-                            <Eye size={16} />
-                          </Button>
-                          {canApproveLeave && record.approval_status === '待审批' && <>
-                              <Button variant="ghost" size="sm" onClick={() => handleApprove(record, 'approve')}>
-                                <CheckCircle size={16} className="text-green-500" />
-                              </Button>
-                              <Button variant="ghost" size="sm" onClick={() => handleApprove(record, 'reject')}>
-                                <XCircle size={16} className="text-red-500" />
-                              </Button>
-                            </>}
-                        </div>
-                      </TableCell>
-                    </TableRow>)}
-              </TableBody>
-            </Table>
+                    </TableRow> : leaveList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium whitespace-nowrap">{record.name}</TableCell>
+                        <TableCell className="whitespace-nowrap">{record.department}</TableCell>
+                        <TableCell className="whitespace-nowrap">{record.position}</TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="text-sm">
+                            <div>开始：{formatTime(record.start_time)}</div>
+                            <div>结束：{formatTime(record.end_time)}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="max-w-[200px] truncate block" title={record.reason}>{record.reason}</span>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">{getStatusBadge(record.approval_status)}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => handleView(record)} title="查看详情">
+                              <Eye size={16} />
+                            </Button>
+                            {canApproveLeave && record.approval_status === '待审批' && <>
+                                <Button variant="ghost" size="sm" onClick={() => handleApprove(record, 'approve')} title="审批通过">
+                                  <CheckCircle size={16} className="text-green-500" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleApprove(record, 'reject')} title="审批拒绝">
+                                  <XCircle size={16} className="text-red-500" />
+                                </Button>
+                              </>}
+                          </div>
+                        </TableCell>
+                      </TableRow>)}
+                </TableBody>
+              </Table>
+            </div>
 
             <Pagination currentPage={pagination.page} totalPages={Math.ceil(pagination.total / pagination.pageSize)} totalRecords={pagination.total} pageSize={pagination.pageSize} onPageChange={page => setPagination(prev => ({
             ...prev,
