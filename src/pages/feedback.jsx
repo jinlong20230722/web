@@ -3,13 +3,12 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, Eye, MessageSquare, Calendar, Phone, MessageCircle } from 'lucide-react';
+import { Search, Eye, MessageSquare, Calendar, Phone } from 'lucide-react';
 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { Pagination } from '@/components/Pagination';
-import { EmptyState } from '@/components/EmptyState';
-import { TableSkeleton } from '@/components/TableSkeleton';
+import { hasPermission, getDataFilter } from '@/lib/permissions';
 export default function Feedback(props) {
   const [feedbackList, setFeedbackList] = useState([]);
   const [personnelData, setPersonnelData] = useState([]);
@@ -29,33 +28,8 @@ export default function Feedback(props) {
   const {
     currentUser
   } = props.$w.auth;
-  const handleLogout = async () => {
-    try {
-      const tcb = await props.$w.cloud.getCloudInstance();
-      await tcb.auth().signOut();
-      await tcb.auth().signInAnonymously();
-      await props.$w.auth.getUserInfo({
-        force: true
-      });
-      toast({
-        title: '退出成功',
-        description: '您已成功退出登录'
-      });
-    } catch (error) {
-      toast({
-        title: '退出失败',
-        description: error.message || '退出登录时发生错误',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // 人员数据缓存
-  const [personnelCache, setPersonnelCache] = useState({
-    data: null,
-    timestamp: null
-  });
-  const CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
+  const canViewFeedback = hasPermission(currentUser, 'view:feedback');
+  const canViewFeedbackDetail = hasPermission(currentUser, 'view:feedback_detail');
   const loadFeedbackList = async () => {
     setLoading(true);
     try {
@@ -86,44 +60,28 @@ export default function Feedback(props) {
         }
       });
 
-      // 加载人员数据（带缓存）
-      let personnelRecords = [];
-      const now = Date.now();
-
-      // 检查缓存是否有效
-      if (personnelCache.data && personnelCache.timestamp && now - personnelCache.timestamp < CACHE_DURATION) {
-        personnelRecords = personnelCache.data;
-      } else {
-        // 缓存过期或不存在，重新加载
-        const personnelResult = await props.$w.cloud.callDataSource({
-          dataSourceName: 'personnel',
-          methodName: 'wedaGetRecordsV2',
-          params: {
-            select: {
-              $master: true
-            },
-            pageSize: 1000
-          }
-        });
-        personnelRecords = personnelResult.records || [];
-
-        // 更新缓存
-        setPersonnelCache({
-          data: personnelRecords,
-          timestamp: now
-        });
-      }
-      setPersonnelData(personnelRecords);
+      // 加载人员数据
+      const personnelResult = await props.$w.cloud.callDataSource({
+        dataSourceName: 'personnel',
+        methodName: 'wedaGetRecordsV2',
+        params: {
+          select: {
+            $master: true
+          },
+          pageSize: 1000
+        }
+      });
+      setPersonnelData(personnelResult.records || []);
 
       // 关联数据：将 personnel 表的姓名、部门关联到 feedback 数据
       const feedbackRecords = result.records || [];
       const mergedData = feedbackRecords.map(record => {
         // 尝试通过 _id 匹配
-        let personnel = personnelRecords.find(p => p._id === record.personnel_id);
+        let personnel = personnelResult.records.find(p => p._id === record.personnel_id);
 
         // 如果没找到，尝试通过字符串转换匹配
         if (!personnel) {
-          personnel = personnelRecords.find(p => String(p._id) === String(record.personnel_id));
+          personnel = personnelResult.records.find(p => String(p._id) === String(record.personnel_id));
         }
         return {
           ...record,
@@ -193,7 +151,7 @@ export default function Feedback(props) {
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="feedback" $w={props.$w} />
       <div className="flex-1 flex flex-col">
-        <TopNav currentUser={currentUser} onLogout={handleLogout} />
+        <TopNav currentUser={currentUser} />
         <main className="flex-1 p-6 overflow-auto">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800">反馈管理</h2>
@@ -224,52 +182,52 @@ export default function Feedback(props) {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-gray-50">
-                  <TableRow>
-                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">反馈类型</TableHead>
-                    <TableHead className="font-semibold whitespace-nowrap min-w-[100px]">姓名</TableHead>
-                    <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">部门</TableHead>
-                    <TableHead className="font-semibold whitespace-nowrap min-w-[300px]">反馈内容</TableHead>
-                    <TableHead className="font-semibold whitespace-nowrap min-w-[130px]">联系电话</TableHead>
-                    <TableHead className="font-semibold whitespace-nowrap min-w-[180px]">提交时间</TableHead>
-                    <TableHead className="font-semibold text-right whitespace-nowrap min-w-[80px]">操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? <TableSkeleton columns={7} rows={5} /> : feedbackList.length === 0 ? <TableRow>
-                      <TableCell colSpan={7}>
-                        <EmptyState title="暂无反馈数据" description="当前没有意见反馈记录" icon={MessageCircle} />
+            <Table>
+              <TableHeader className="bg-gray-50">
+                <TableRow>
+                  <TableHead className="font-semibold">反馈类型</TableHead>
+                  <TableHead className="font-semibold">姓名</TableHead>
+                  <TableHead className="font-semibold">部门</TableHead>
+                  <TableHead className="font-semibold">反馈内容</TableHead>
+                  <TableHead className="font-semibold">联系电话</TableHead>
+                  <TableHead className="font-semibold">提交时间</TableHead>
+                  <TableHead className="font-semibold text-right">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                      加载中...
+                    </TableCell>
+                  </TableRow> : feedbackList.length === 0 ? <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                      暂无数据
+                    </TableCell>
+                  </TableRow> : feedbackList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
+                      <TableCell>{getTypeBadge(record.feedback_type)}</TableCell>
+                      <TableCell className="font-medium">{record.name}</TableCell>
+                      <TableCell>{record.department}</TableCell>
+                      <TableCell className="max-w-[300px] truncate">{record.content}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Phone size={16} className="text-gray-400" />
+                          {record.phone}
+                        </div>
                       </TableCell>
-                    </TableRow> : feedbackList.map(record => <TableRow key={record._id} className="hover:bg-gray-50">
-                        <TableCell className="whitespace-nowrap">{getTypeBadge(record.feedback_type)}</TableCell>
-                        <TableCell className="font-medium whitespace-nowrap">{record.name}</TableCell>
-                        <TableCell className="whitespace-nowrap">{record.department}</TableCell>
-                        <TableCell>
-                          <span className="max-w-[300px] truncate block" title={record.content}>{record.content}</span>
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <Phone size={16} className="text-gray-400" />
-                            {record.phone}
-                          </div>
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <Calendar size={16} className="text-gray-400" />
-                            {formatTime(record.submit_time)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right whitespace-nowrap">
-                          <Button variant="ghost" size="sm" onClick={() => handleView(record)} title="查看详情">
-                            <Eye size={16} />
-                          </Button>
-                        </TableCell>
-                      </TableRow>)}
-                </TableBody>
-              </Table>
-            </div>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Calendar size={16} className="text-gray-400" />
+                          {formatTime(record.submit_time)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" onClick={() => handleView(record)}>
+                          <Eye size={16} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>)}
+              </TableBody>
+            </Table>
 
             <div className="flex items-center justify-between px-4 py-3 border-t">
               <div className="text-sm text-gray-500">

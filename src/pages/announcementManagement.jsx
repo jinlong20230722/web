@@ -24,6 +24,7 @@ export default function AnnouncementManagement({
     direction: 'desc'
   });
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -47,6 +48,11 @@ export default function AnnouncementManagement({
 
       // 构建查询条件
       const where = {};
+
+      // 状态筛选
+      if (statusFilter !== 'all') {
+        where.status = statusFilter;
+      }
 
       // 搜索关键词
       if (searchKeyword) {
@@ -81,7 +87,7 @@ export default function AnnouncementManagement({
   };
   useEffect(() => {
     loadAnnouncements();
-  }, [pagination.current, sortConfig]);
+  }, [pagination.current, sortConfig, statusFilter]);
 
   // 搜索处理
   const handleSearch = () => {

@@ -1,7 +1,7 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { Search, Filter, Eye, Edit, UserX, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown, FileText } from 'lucide-react';
+import { Search, Filter, Eye, Edit, UserX, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 // @ts-ignore;
 import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useToast } from '@/components/ui';
 
@@ -9,8 +9,6 @@ import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import PersonnelDetailModal from '@/components/PersonnelDetailModal';
 import PersonnelEditModal from '@/components/PersonnelEditModal';
-import { EmptyState } from '@/components/EmptyState';
-import { TableSkeleton } from '@/components/TableSkeleton';
 export default function PersonnelLedger(props) {
   const {
     toast
@@ -36,26 +34,6 @@ export default function PersonnelLedger(props) {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const handleLogout = async () => {
-    try {
-      const tcb = await props.$w.cloud.getCloudInstance();
-      await tcb.auth().signOut();
-      await tcb.auth().signInAnonymously();
-      await props.$w.auth.getUserInfo({
-        force: true
-      });
-      toast({
-        title: '退出成功',
-        description: '您已成功退出登录'
-      });
-    } catch (error) {
-      toast({
-        title: '退出失败',
-        description: error.message || '退出登录时发生错误',
-        variant: 'destructive'
-      });
-    }
-  };
 
   // 加载数据
   const loadData = async () => {
@@ -263,7 +241,7 @@ export default function PersonnelLedger(props) {
       {/* 主内容区 */}
       <div className="flex-1 flex flex-col">
         {/* 顶部标题栏 */}
-        <TopNav currentUser={props.$w.auth.currentUser} onLogout={handleLogout} />
+        <TopNav currentUser={props.$w.auth.currentUser} />
 
         {/* 页面内容 */}
         <div className="p-6">
@@ -396,12 +374,12 @@ export default function PersonnelLedger(props) {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? <tr>
-                  <td colSpan="7">
-                    <TableSkeleton columns={7} rows={5} />
+                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                    加载中...
                   </td>
                 </tr> : data.length === 0 ? <tr>
-                  <td colSpan="7">
-                    <EmptyState title="暂无人员数据" description="当前没有人员信息" icon={FileText} />
+                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                    暂无数据
                   </td>
                 </tr> : data.map(record => <tr key={record._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -426,13 +404,13 @@ export default function PersonnelLedger(props) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => handleViewDetail(record)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" title="查看详情">
+                        <Button variant="ghost" size="sm" onClick={() => handleViewDetail(record)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleEdit(record)} className="text-green-600 hover:text-green-700 hover:bg-green-50" title="编辑人员">
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(record)} className="text-green-600 hover:text-green-700 hover:bg-green-50">
                           <Edit className="w-4 h-4" />
                         </Button>
-                        {record.employment_status === '在职' && <Button variant="ghost" size="sm" onClick={() => handleMarkResign(record)} className="text-red-600 hover:text-red-700 hover:bg-red-50" title="标记离职">
+                        {record.employment_status === '在职' && <Button variant="ghost" size="sm" onClick={() => handleMarkResign(record)} className="text-red-600 hover:text-red-700 hover:bg-red-50">
                             <UserX className="w-4 h-4" />
                           </Button>}
                       </div>
