@@ -48,7 +48,9 @@ export default function AttendanceManagement(props) {
         if (!where.check_in_time) {
           where.check_in_time = {};
         }
-        where.check_in_time.$lte = new Date(filters.endDate + ' 23:59:59').getTime();
+        const endDate = new Date(filters.endDate);
+        endDate.setHours(23, 59, 59, 999);
+        where.check_in_time.$lte = endDate.getTime();
       }
 
       // 模糊搜索
@@ -143,7 +145,9 @@ export default function AttendanceManagement(props) {
         if (!where.check_in_time) {
           where.check_in_time = {};
         }
-        where.check_in_time.$lte = new Date(filters.endDate + ' 23:59:59').getTime();
+        const endDate = new Date(filters.endDate);
+        endDate.setHours(23, 59, 59, 999);
+        where.check_in_time.$lte = endDate.getTime();
       }
       const result = await props.$w.cloud.callDataSource({
         dataSourceName: 'attendance',
