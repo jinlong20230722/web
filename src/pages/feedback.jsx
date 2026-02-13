@@ -114,7 +114,7 @@ export default function Feedback(props) {
   const getTypeBadge = type => {
     const config = {
       '建议': {
-        bg: 'bg-blue-100',
+        bg: 'bg-slate-100',
         text: 'text-blue-800'
       },
       '投诉': {
@@ -122,7 +122,7 @@ export default function Feedback(props) {
         text: 'text-red-800'
       },
       '咨询': {
-        bg: 'bg-green-100',
+        bg: 'bg-emerald-100',
         text: 'text-green-800'
       },
       '其他': {

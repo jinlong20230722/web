@@ -161,7 +161,7 @@ export default function Leave(props) {
         text: 'text-yellow-800'
       },
       '已通过': {
-        bg: 'bg-green-100',
+        bg: 'bg-emerald-100',
         text: 'text-green-800'
       },
       '已拒绝': {
@@ -346,7 +346,7 @@ export default function Leave(props) {
             <Button variant="outline" onClick={() => setIsApproveDialogOpen(false)}>
               取消
             </Button>
-            <Button onClick={submitApproval} className={approveAction === 'approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}>
+            <Button onClick={submitApproval} className={approveAction === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}>
               {approveAction === 'approve' ? '通过' : '拒绝'}
             </Button>
           </DialogFooter>

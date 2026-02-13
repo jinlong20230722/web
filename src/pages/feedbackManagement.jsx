@@ -111,7 +111,7 @@ export default function FeedbackManagement(props) {
   // 获取反馈类型颜色
   const getFeedbackTypeColor = type => {
     const colors = {
-      '建议': 'bg-blue-100 text-blue-800 border-blue-200',
+      '建议': 'bg-slate-100 text-slate-800 border-slate-200',
       '投诉': 'bg-red-100 text-red-800 border-red-200',
       '其他': 'bg-gray-100 text-gray-800 border-gray-200'
     };
@@ -150,7 +150,7 @@ export default function FeedbackManagement(props) {
   };
   return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* 顶部导航栏 */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -216,8 +216,8 @@ export default function FeedbackManagement(props) {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-50 to-blue-100">
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-blue-100" onClick={() => handleSort('feedback_type')}>
+                    <tr className="bg-gradient-to-r from-slate-50 to-slate-100">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-slate-100" onClick={() => handleSort('feedback_type')}>
                         <div className="flex items-center space-x-1">
                           <span>反馈类型</span>
                           {sortConfig.key === 'feedback_type' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
@@ -229,7 +229,7 @@ export default function FeedbackManagement(props) {
                       <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                         联系电话
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-blue-100" onClick={() => handleSort('submit_time')}>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-slate-100" onClick={() => handleSort('submit_time')}>
                         <div className="flex items-center space-x-1">
                           <span>提交时间</span>
                           {sortConfig.key === 'submit_time' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
@@ -242,7 +242,7 @@ export default function FeedbackManagement(props) {
                   </thead>
                   <tbody>
                     {data.map((record, index) => <React.Fragment key={record._id}>
-                        <tr className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                        <tr className={`border-b border-gray-100 hover:bg-slate-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                           <td className="px-6 py-4">
                             <Badge className={getFeedbackTypeColor(record.feedback_type)}>
                               {record.feedback_type || '-'}
@@ -266,13 +266,13 @@ export default function FeedbackManagement(props) {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <Button variant="ghost" size="sm" onClick={() => toggleRow(record._id)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                            <Button variant="ghost" size="sm" onClick={() => toggleRow(record._id)} className="text-slate-600 hover:text-slate-700 hover:bg-slate-50">
                               {expandedRows.has(record._id) ? '收起' : '查看详情'}
                             </Button>
                           </td>
                         </tr>
                         {/* 展开行 */}
-                        {expandedRows.has(record._id) && <tr className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                        {expandedRows.has(record._id) && <tr className="bg-gradient-to-r from-slate-50 to-slate-100">
                             <td colSpan="5" className="px-6 py-4">
                               <div className="space-y-4">
                                 <div>

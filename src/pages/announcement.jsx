@@ -168,7 +168,7 @@ export default function Announcement(props) {
                   <Input placeholder="搜索标题或内容..." value={searchKeyword} onChange={e => setSearchKeyword(e.target.value)} className="pl-10" />
                 </div>
               </div>
-              {canCreateAnnouncement && <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsCreateDialogOpen(true)}>
+              {canCreateAnnouncement && <Button className="bg-slate-600 hover:bg-slate-700" onClick={() => setIsCreateDialogOpen(true)}>
                 <Plus className="mr-2" size={16} />
                 发布公告
               </Button>}

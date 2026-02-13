@@ -218,7 +218,7 @@ export default function Attendance(props) {
     };
     const config = {
       '正常': {
-        bg: 'bg-green-100',
+        bg: 'bg-emerald-100',
         text: 'text-green-800'
       },
       '异常': {

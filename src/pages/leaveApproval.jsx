@@ -288,7 +288,7 @@ export default function LeaveApproval(props) {
       case '待审批':
         return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case '已通过':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
       case '已驳回':
         return 'bg-red-100 text-red-800 border-red-300';
       default:
@@ -322,7 +322,7 @@ export default function LeaveApproval(props) {
               ...prev,
               page: 1
             }));
-          }} className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${activeTab === tab ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}>
+          }} className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${activeTab === tab ? 'bg-slate-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}>
                 {tab}
               </button>)}
           </div>
@@ -365,7 +365,7 @@ export default function LeaveApproval(props) {
             </div>
           </div>
           <div className="flex items-center space-x-3 mt-4">
-            <Button onClick={handleFilter} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleFilter} className="bg-slate-600 hover:bg-slate-700">
               <Filter className="w-4 h-4 mr-2" />
               筛选
             </Button>
@@ -382,7 +382,7 @@ export default function LeaveApproval(props) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
               <Input placeholder="搜索姓名、电话、部门..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSearch()} className="pl-10" />
             </div>
-            <Button onClick={handleSearch} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSearch} className="bg-slate-600 hover:bg-slate-700">
               <Search className="w-4 h-4 mr-2" />
               搜索
             </Button>
@@ -451,12 +451,12 @@ export default function LeaveApproval(props) {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => handleViewDetail(record)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                          <Button size="sm" variant="outline" onClick={() => handleViewDetail(record)} className="text-slate-600 hover:text-slate-700 hover:bg-slate-50">
                             <Eye className="w-4 h-4 mr-1" />
                             详情
                           </Button>
                           {record.approval_status === '待审批' && <>
-                              <Button size="sm" onClick={() => openApprovalModal(record, 'approve')} className="bg-green-600 hover:bg-green-700">
+                              <Button size="sm" onClick={() => openApprovalModal(record, 'approve')} className="bg-emerald-600 hover:bg-emerald-700">
                                 <Check className="w-4 h-4 mr-1" />
                                 通过
                               </Button>
@@ -535,7 +535,7 @@ export default function LeaveApproval(props) {
               <Textarea placeholder="请输入审批备注..." value={approvalRemark} onChange={e => setApprovalRemark(e.target.value)} className="mt-1 min-h-[100px]" />
             </div>
             <div className="flex space-x-3">
-              <Button onClick={handleApprovalSubmit} className={`flex-1 ${approvalAction === 'approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}>
+              <Button onClick={handleApprovalSubmit} className={`flex-1 ${approvalAction === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}`}>
                 {approvalAction === 'approve' ? '确认通过' : '确认驳回'}
               </Button>
               <Button variant="outline" onClick={() => setShowApprovalModal(false)} className="flex-1">

@@ -323,7 +323,7 @@ export default function AttendanceManagement(props) {
             </div>
           </div>
           <div className="flex gap-3 mt-4">
-            <Button onClick={loadData} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={loadData} className="bg-slate-600 hover:bg-slate-700">
               <Search className="w-4 h-4 mr-2" />
               查询
             </Button>
@@ -422,7 +422,7 @@ export default function AttendanceManagement(props) {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleViewDetail(record)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                      <Button variant="ghost" size="sm" onClick={() => handleViewDetail(record)} className="text-slate-600 hover:text-slate-700 hover:bg-slate-50">
                         <Eye className="w-4 h-4 mr-1" />
                         查看详情
                       </Button>

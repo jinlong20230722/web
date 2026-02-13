@@ -175,7 +175,7 @@ export default function AnnouncementManagement({
   const getStatusStyle = status => {
     switch (status) {
       case '已发布':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
       case '已下线':
         return 'bg-gray-100 text-gray-800 border-gray-300';
       default:
@@ -234,22 +234,22 @@ export default function AnnouncementManagement({
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                  <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors" onClick={() => handleSort('title')}>
+                <tr className="bg-gradient-to-r from-slate-700 to-slate-800 text-white">
+                  <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-slate-700 transition-colors" onClick={() => handleSort('title')}>
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
                       公告标题
                       {sortConfig.key === 'title' && <ArrowUpDown className="h-4 w-4" />}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors" onClick={() => handleSort('publisher')}>
+                  <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-slate-700 transition-colors" onClick={() => handleSort('publisher')}>
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
                       发布人
                       {sortConfig.key === 'publisher' && <ArrowUpDown className="h-4 w-4" />}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors" onClick={() => handleSort('publish_time')}>
+                  <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-slate-700 transition-colors" onClick={() => handleSort('publish_time')}>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       发布时间
@@ -295,10 +295,10 @@ export default function AnnouncementManagement({
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleView(announcement)} className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                          <Button size="sm" variant="outline" onClick={() => handleView(announcement)} className="text-slate-600 border-slate-600 hover:bg-slate-50">
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleEdit(announcement)} className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(announcement)} className="text-slate-600 border-slate-600 hover:bg-slate-50">
                             <Edit className="h-4 w-4" />
                           </Button>
                           {announcement.status === '已发布' && <Button size="sm" variant="outline" onClick={() => handleOffline(announcement)} className="text-orange-600 border-orange-600 hover:bg-orange-50">
@@ -342,7 +342,7 @@ export default function AnnouncementManagement({
           </DialogHeader>
           {selectedAnnouncement && <div className="space-y-6">
               {/* 基本信息 */}
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
                   <FileText className="h-5 w-5" />
                   基本信息

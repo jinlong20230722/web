@@ -126,7 +126,7 @@ export default function EventReportManagement(props) {
   const getEventTypeBadge = type => {
     const config = {
       '培训演习': {
-        bg: 'bg-blue-100',
+        bg: 'bg-slate-100',
         text: 'text-blue-800'
       },
       '治安事件': {
@@ -134,7 +134,7 @@ export default function EventReportManagement(props) {
         text: 'text-red-800'
       },
       '好人好事': {
-        bg: 'bg-green-100',
+        bg: 'bg-emerald-100',
         text: 'text-green-800'
       },
       '安全隐患': {
@@ -244,9 +244,9 @@ export default function EventReportManagement(props) {
           {/* 数据表格 */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <Table>
-              <TableHeader className="bg-gradient-to-r from-blue-600 to-blue-700">
+              <TableHeader className="bg-gradient-to-r from-slate-700 to-slate-800">
                 <TableRow>
-                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-blue-700" onClick={() => {
+                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-slate-700" onClick={() => {
                   if (sortField === 'name') {
                     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                   } else {
@@ -256,7 +256,7 @@ export default function EventReportManagement(props) {
                 }}>
                     上报人姓名 {sortField === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </TableHead>
-                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-blue-700" onClick={() => {
+                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-slate-700" onClick={() => {
                   if (sortField === 'event_type') {
                     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                   } else {
@@ -266,7 +266,7 @@ export default function EventReportManagement(props) {
                 }}>
                     事件类型 {sortField === 'event_type' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </TableHead>
-                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-blue-700" onClick={() => {
+                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-slate-700" onClick={() => {
                   if (sortField === 'event_time') {
                     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                   } else {
@@ -276,7 +276,7 @@ export default function EventReportManagement(props) {
                 }}>
                     上报时间 {sortField === 'event_time' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </TableHead>
-                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-blue-700" onClick={() => {
+                  <TableHead className="font-semibold text-white cursor-pointer hover:bg-slate-700" onClick={() => {
                   if (sortField === 'address') {
                     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                   } else {
@@ -368,7 +368,7 @@ export default function EventReportManagement(props) {
           </DialogHeader>
           {selectedRecord && <div className="space-y-6 py-4">
               {/* 基本信息 */}
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg p-4">
                 <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <User size={18} className="text-blue-600" />
                   基本信息

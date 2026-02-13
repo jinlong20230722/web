@@ -244,7 +244,7 @@ export default function Personnel(props) {
                   {departments.map(dept => <SelectItem key={dept} value={dept}>{dept}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {canAddPersonnel && <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsAddDialogOpen(true)}>
+              {canAddPersonnel && <Button className="bg-slate-600 hover:bg-slate-700" onClick={() => setIsAddDialogOpen(true)}>
                 <Plus className="mr-2" size={16} />
                 添加人员
               </Button>}
@@ -403,7 +403,7 @@ export default function Personnel(props) {
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               取消
             </Button>
-            <Button onClick={handleSaveEdit} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSaveEdit} className="bg-slate-600 hover:bg-slate-700">
               保存
             </Button>
           </DialogFooter>

@@ -94,7 +94,7 @@ export default function Home(props) {
         
         <main className="flex-1 p-6 overflow-auto">
           {/* 欢迎横幅 */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-6 mb-6 shadow-lg">
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 mb-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-2">
