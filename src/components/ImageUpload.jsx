@@ -46,21 +46,35 @@ export default function ImageUpload({
       }
       setLoadingPreviews(true);
       try {
-        console.log('ImageUpload - 获取云开发实例...');
-        const tcb = await $w.cloud.getCloudInstance();
-        if (!tcb) {
-          throw new Error('云开发实例获取失败');
-        }
-        const fileIds = Array.isArray(value) ? value : [value];
-        console.log('ImageUpload - fileIds:', fileIds);
+        let urls = [];
 
-        // 获取临时URL
-        console.log('ImageUpload - 调用getTempFileURL...');
-        const urlResult = await tcb.getTempFileURL({
-          fileList: fileIds
-        });
-        console.log('ImageUpload - getTempFileURL结果:', urlResult);
-        const urls = urlResult.fileList.map(item => item.tempFileURL);
+        // 处理图片对象数组
+        if (Array.isArray(value)) {
+          // 如果已经是图片对象数组
+          if (value.length > 0 && typeof value[0] === 'object' && value[0].url) {
+            urls = value.map(item => item.url);
+            console.log('ImageUpload - 使用图片对象中的URL:', urls);
+          } else {
+            // 如果是fileId数组
+            const fileIds = value.filter(item => item && typeof item === 'string');
+            if (fileIds.length > 0) {
+              console.log('ImageUpload - 获取fileIds的临时URL:', fileIds);
+              const tcb = await $w.cloud.getCloudInstance();
+              const urlResult = await tcb.getTempFileURL({
+                fileList: fileIds
+              });
+              urls = urlResult.fileList.map(item => item.tempFileURL);
+            }
+          }
+        } else if (typeof value === 'string' && value.length > 0) {
+          // 处理单个fileId
+          console.log('ImageUpload - 处理单个fileId:', value);
+          const tcb = await $w.cloud.getCloudInstance();
+          const urlResult = await tcb.getTempFileURL({
+            fileList: [value]
+          });
+          urls = [urlResult.fileList[0].tempFileURL];
+        }
         console.log('ImageUpload - 预览URL:', urls);
         setPreviewUrls(urls);
       } catch (error) {
@@ -71,11 +85,11 @@ export default function ImageUpload({
           stack: error.stack
         });
 
-        // 如果获取临时URL失败，尝试直接使用value（可能是URL）
-        console.log('ImageUpload - 尝试直接使用value作为URL');
+        // 如果获取临时URL失败，尝试直接使用value中的URL
         if (Array.isArray(value)) {
-          setPreviewUrls(value);
-        } else {
+          const fallbackUrls = value.map(item => typeof item === 'object' ? item.url : item).filter(url => url);
+          setPreviewUrls(fallbackUrls);
+        } else if (typeof value === 'string') {
           setPreviewUrls([value]);
         }
       } finally {
@@ -125,7 +139,7 @@ export default function ImageUpload({
         throw new Error('云开发实例获取失败');
       }
       console.log('云开发实例获取成功，开始上传文件...');
-      const uploadedUrls = [];
+      const uploadedFiles = [];
       const newPreviewUrls = [];
       for (const file of files) {
         console.log('正在上传文件:', file.name, '大小:', file.size, '类型:', file.type);
@@ -141,20 +155,30 @@ export default function ImageUpload({
           const fileUrl = await tcb.getTempFileURL({
             fileList: [result.fileID]
           });
-          console.log('临时URL获取成功:', fileUrl.fileList[0].tempFileURL);
-          uploadedUrls.push(result.fileID);
-          newPreviewUrls.push(fileUrl.fileList[0].tempFileURL);
+          const tempUrl = fileUrl.fileList[0].tempFileURL;
+          console.log('临时URL获取成功:', tempUrl);
+
+          // 创建图片对象，包含fileID和临时URL
+          const imageObject = {
+            fileId: result.fileID,
+            url: tempUrl,
+            name: file.name,
+            size: file.size,
+            type: file.type
+          };
+          uploadedFiles.push(imageObject);
+          newPreviewUrls.push(tempUrl);
         } catch (uploadError) {
           console.error(`文件 ${file.name} 上传失败:`, uploadError);
           throw new Error(`文件 ${file.name} 上传失败: ${uploadError.message || '未知错误'}`);
         }
       }
       setPreviewUrls(newPreviewUrls);
-      console.log('所有文件上传完成，文件ID:', uploadedUrls);
+      console.log('所有文件上传完成，图片对象:', uploadedFiles);
 
-      // 触发 onChange 回调，返回文件ID字符串或字符串数组
+      // 触发 onChange 回调，返回图片对象数组
       if (onChange) {
-        onChange(multiple ? uploadedUrls : uploadedUrls[0]);
+        onChange(uploadedFiles);
       }
     } catch (error) {
       console.error('文件上传失败:', error);

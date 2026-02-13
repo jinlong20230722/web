@@ -11,11 +11,35 @@
     "id_address": "北京市东城区某某街道1号",
     "gender": "男",
     "age": 35,
-    "id_card_front_image": "https://example.com/id-front-1.jpg",
-    "id_card_back_image": "https://example.com/id-back-1.jpg",
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-1.jpg",
+        "name": "身份证正面_张三.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-1.jpg",
+        "name": "身份证反面_张三.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
     "certificate_images": [
-      "https://example.com/cert-1-1.jpg",
-      "https://example.com/cert-1-2.jpg"
+      {
+        "url": "https://example.com/cert-1-1.jpg",
+        "name": "保安证_张三.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      },
+      {
+        "url": "https://example.com/cert-1-2.jpg",
+        "name": "健康证_张三.jpg",
+        "size": 153600,
+        "type": "image/jpeg"
+      }
     ],
     "register_time": 1738454400000,
     "employment_status": "在职",
@@ -34,12 +58,41 @@
     "id_address": "北京市西城区某某街道2号",
     "gender": "男",
     "age": 32,
-    "id_card_front_image": "https://example.com/id-front-2.jpg",
-    "id_card_back_image": "https://example.com/id-back-2.jpg",
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-2.jpg",
+        "name": "身份证正面_李四.jpg",
+        "size": 112640,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-2.jpg",
+        "name": "身份证反面_李四.jpg",
+        "size": 106496,
+        "type": "image/jpeg"
+      }
+    ],
     "certificate_images": [
-      "https://example.com/cert-2-1.jpg",
-      "https://example.com/cert-2-2.jpg",
-      "https://example.com/cert-2-3.jpg"
+      {
+        "url": "https://example.com/cert-2-1.jpg",
+        "name": "保安证_李四.jpg",
+        "size": 225280,
+        "type": "image/jpeg"
+      },
+      {
+        "url": "https://example.com/cert-2-2.jpg",
+        "name": "健康证_李四.jpg",
+        "size": 174080,
+        "type": "image/jpeg"
+      },
+      {
+        "url": "https://example.com/cert-2-3.jpg",
+        "name": "培训证书_李四.jpg",
+        "size": 196608,
+        "type": "image/jpeg"
+      }
     ],
     "register_time": 1738540800000,
     "employment_status": "在职",
@@ -50,21 +103,43 @@
     "_id": "3",
     "name": "王五",
     "phone": "13800138003",
-    "department": "人事部",
-    "position": "部长",
+    "department": "保安三部",
+    "position": "队长",
     "emergency_contact_name": "王妻",
     "emergency_contact_phone": "13900139003",
     "id_number": "110101199003031234",
     "id_address": "北京市朝阳区某某街道3号",
-    "gender": "女",
-    "age": 40,
-    "id_card_front_image": "https://example.com/id-front-3.jpg",
-    "id_card_back_image": "https://example.com/id-back-3.jpg",
+    "gender": "男",
+    "age": 38,
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-3.jpg",
+        "name": "身份证正面_王五.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-3.jpg",
+        "name": "身份证反面_王五.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
     "certificate_images": [
-      "https://example.com/cert-3-1.jpg",
-      "https://example.com/cert-3-2.jpg",
-      "https://example.com/cert-3-3.jpg",
-      "https://example.com/cert-3-4.jpg"
+      {
+        "url": "https://example.com/cert-3-1.jpg",
+        "name": "保安证_王五.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      },
+      {
+        "url": "https://example.com/cert-3-2.jpg",
+        "name": "健康证_王五.jpg",
+        "size": 153600,
+        "type": "image/jpeg"
+      }
     ],
     "register_time": 1738627200000,
     "employment_status": "在职",
@@ -75,18 +150,37 @@
     "_id": "4",
     "name": "赵六",
     "phone": "13800138004",
-    "department": "运营部",
-    "position": "办公室",
+    "department": "保安一部",
+    "position": "保安",
     "emergency_contact_name": "赵父",
     "emergency_contact_phone": "13900139004",
     "id_number": "110101199004041234",
     "id_address": "北京市海淀区某某街道4号",
     "gender": "男",
-    "age": 28,
-    "id_card_front_image": "https://example.com/id-front-4.jpg",
-    "id_card_back_image": "https://example.com/id-back-4.jpg",
+    "age": 29,
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-4.jpg",
+        "name": "身份证正面_赵六.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-4.jpg",
+        "name": "身份证反面_赵六.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
     "certificate_images": [
-      "https://example.com/cert-4-1.jpg"
+      {
+        "url": "https://example.com/cert-4-1.jpg",
+        "name": "保安证_赵六.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      }
     ],
     "register_time": 1738713600000,
     "employment_status": "在职",
@@ -97,26 +191,176 @@
     "_id": "5",
     "name": "孙七",
     "phone": "13800138005",
-    "department": "保安三部",
-    "position": "队长",
+    "department": "保安二部",
+    "position": "副班长",
     "emergency_contact_name": "孙母",
     "emergency_contact_phone": "13900139005",
     "id_number": "110101199005051234",
     "id_address": "北京市丰台区某某街道5号",
-    "gender": "男",
-    "age": 38,
-    "id_card_front_image": "https://example.com/id-front-5.jpg",
-    "id_card_back_image": "https://example.com/id-back-5.jpg",
+    "gender": "女",
+    "age": 31,
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-5.jpg",
+        "name": "身份证正面_孙七.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-5.jpg",
+        "name": "身份证反面_孙七.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
     "certificate_images": [
-      "https://example.com/cert-5-1.jpg",
-      "https://example.com/cert-5-2.jpg",
-      "https://example.com/cert-5-3.jpg",
-      "https://example.com/cert-5-4.jpg",
-      "https://example.com/cert-5-5.jpg"
+      {
+        "url": "https://example.com/cert-5-1.jpg",
+        "name": "保安证_孙七.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      },
+      {
+        "url": "https://example.com/cert-5-2.jpg",
+        "name": "健康证_孙七.jpg",
+        "size": 153600,
+        "type": "image/jpeg"
+      }
     ],
     "register_time": 1738800000000,
     "employment_status": "在职",
     "createdAt": 1738800000000,
     "updatedAt": 1738800000000
+  },
+  {
+    "_id": "6",
+    "name": "周八",
+    "phone": "13800138006",
+    "department": "保安三部",
+    "position": "保安",
+    "emergency_contact_name": "周父",
+    "emergency_contact_phone": "13900139006",
+    "id_number": "110101199006061234",
+    "id_address": "北京市石景山区某某街道6号",
+    "gender": "男",
+    "age": 33,
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-6.jpg",
+        "name": "身份证正面_周八.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-6.jpg",
+        "name": "身份证反面_周八.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
+    "certificate_images": [
+      {
+        "url": "https://example.com/cert-6-1.jpg",
+        "name": "保安证_周八.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      }
+    ],
+    "register_time": 1738886400000,
+    "employment_status": "在职",
+    "createdAt": 1738886400000,
+    "updatedAt": 1738886400000
+  },
+  {
+    "_id": "7",
+    "name": "吴九",
+    "phone": "13800138007",
+    "department": "保安一部",
+    "position": "保安",
+    "emergency_contact_name": "吴母",
+    "emergency_contact_phone": "13900139007",
+    "id_number": "110101199007071234",
+    "id_address": "北京市通州区某某街道7号",
+    "gender": "男",
+    "age": 30,
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-7.jpg",
+        "name": "身份证正面_吴九.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-7.jpg",
+        "name": "身份证反面_吴九.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
+    "certificate_images": [
+      {
+        "url": "https://example.com/cert-7-1.jpg",
+        "name": "保安证_吴九.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      }
+    ],
+    "register_time": 1738972800000,
+    "employment_status": "在职",
+    "createdAt": 1738972800000,
+    "updatedAt": 1738972800000
+  },
+  {
+    "_id": "8",
+    "name": "郑十",
+    "phone": "13800138008",
+    "department": "保安二部",
+    "position": "保安",
+    "emergency_contact_name": "郑父",
+    "emergency_contact_phone": "13900139008",
+    "id_number": "110101199008081234",
+    "id_address": "北京市大兴区某某街道8号",
+    "gender": "男",
+    "age": 28,
+    "id_card_front_image": [
+      {
+        "url": "https://example.com/id-front-8.jpg",
+        "name": "身份证正面_郑十.jpg",
+        "size": 102400,
+        "type": "image/jpeg"
+      }
+    ],
+    "id_card_back_image": [
+      {
+        "url": "https://example.com/id-back-8.jpg",
+        "name": "身份证反面_郑十.jpg",
+        "size": 98304,
+        "type": "image/jpeg"
+      }
+    ],
+    "certificate_images": [
+      {
+        "url": "https://example.com/cert-8-1.jpg",
+        "name": "保安证_郑十.jpg",
+        "size": 204800,
+        "type": "image/jpeg"
+      },
+      {
+        "url": "https://example.com/cert-8-2.jpg",
+        "name": "健康证_郑十.jpg",
+        "size": 153600,
+        "type": "image/jpeg"
+      }
+    ],
+    "register_time": 1739059200000,
+    "employment_status": "在职",
+    "createdAt": 1739059200000,
+    "updatedAt": 1739059200000
   }
 ]

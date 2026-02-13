@@ -64,8 +64,8 @@ export default function PersonnelEditModal({
         gender: record.gender || '',
         age: record.age || '',
         employment_status: record.employment_status || '在职',
-        id_card_front_image: record.id_card_front_image || '',
-        id_card_back_image: record.id_card_back_image || '',
+        id_card_front_image: record.id_card_front_image || [],
+        id_card_back_image: record.id_card_back_image || [],
         certificate_images: record.certificate_images || []
       });
     }

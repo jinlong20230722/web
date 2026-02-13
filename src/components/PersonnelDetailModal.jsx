@@ -27,19 +27,24 @@ export default function PersonnelDetailModal({
   };
 
   // 获取图片临时 URL
-  const getImageUrl = async fileId => {
-    if (!fileId) return null;
+  const getImageUrl = async imageData => {
+    if (!imageData) return null;
 
-    // 如果已经是完整的 URL，直接返回
-    if (typeof fileId === 'string' && (fileId.startsWith('http://') || fileId.startsWith('https://'))) {
-      return fileId;
+    // 如果是图片对象，直接返回URL
+    if (typeof imageData === 'object' && imageData.url) {
+      return imageData.url;
+    }
+
+    // 如果是完整的 URL，直接返回
+    if (typeof imageData === 'string' && (imageData.startsWith('http://') || imageData.startsWith('https://'))) {
+      return imageData;
     }
 
     // 如果是文件 ID，通过云存储 API 获取临时 URL
     try {
       const tcb = await $w.cloud.getCloudInstance();
       const result = await tcb.getTempFileURL({
-        fileList: [fileId]
+        fileList: [imageData]
       });
       if (result.fileList && result.fileList.length > 0) {
         return result.fileList[0].tempFileURL;
@@ -59,32 +64,36 @@ export default function PersonnelDetailModal({
         const images = [];
 
         // 身份证正面
-        if (record.id_card_front_image) {
-          images.push({
-            type: '身份证正面',
-            fileId: record.id_card_front_image,
-            url: null
+        if (record.id_card_front_image && Array.isArray(record.id_card_front_image)) {
+          record.id_card_front_image.forEach((img, index) => {
+            images.push({
+              type: `身份证正面${index > 0 ? index + 1 : ''}`,
+              fileId: img,
+              url: null
+            });
           });
         }
 
         // 身份证反面
-        if (record.id_card_back_image) {
-          images.push({
-            type: '身份证反面',
-            fileId: record.id_card_back_image,
-            url: null
+        if (record.id_card_back_image && Array.isArray(record.id_card_back_image)) {
+          record.id_card_back_image.forEach((img, index) => {
+            images.push({
+              type: `身份证反面${index > 0 ? index + 1 : ''}`,
+              fileId: img,
+              url: null
+            });
           });
         }
 
         // 证件图片
         if (record.certificate_images && Array.isArray(record.certificate_images)) {
-          for (let i = 0; i < record.certificate_images.length; i++) {
+          record.certificate_images.forEach((img, index) => {
             images.push({
-              type: `证件${i + 1}`,
-              fileId: record.certificate_images[i],
+              type: `证件${index + 1}`,
+              fileId: img,
               url: null
             });
-          }
+          });
         }
         setAllImages(images);
 

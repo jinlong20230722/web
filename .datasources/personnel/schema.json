@@ -55,19 +55,25 @@
     {
       "name": "id_card_front_image",
       "title": "身份证正面照片",
-      "type": "File"
+      "type": "Array",
+      "items": {
+        "type": "Object"
+      }
     },
     {
       "name": "id_card_back_image",
       "title": "身份证反面照片",
-      "type": "File"
+      "type": "Array",
+      "items": {
+        "type": "Object"
+      }
     },
     {
       "name": "certificate_images",
       "title": "相关证件图片",
       "type": "Array",
       "items": {
-        "type": "File"
+        "type": "Object"
       }
     },
     {
