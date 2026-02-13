@@ -68,30 +68,6 @@ export const hasPermission = (currentUser, permission) => {
     return managerPermissions.includes(permission);
   }
   
-  // 部门经理的权限
-  if (role === 'manager') {
-    const managerPermissions = [
-      'view:personnel',
-      'view:attendance',
-      'view:leave',
-      'view:event',
-      'view:feedback',
-      'view:announcement',
-      'approve:leave',
-      'view:personnel_detail',
-      'view:leave_detail',
-      'view:event_detail',
-      'view:feedback_detail',
-      'view:announcement_detail',
-      'add:personnel',
-      'edit:personnel',
-      'create:announcement',
-      'edit:announcement',
-      'delete:announcement'
-    ];
-    return managerPermissions.includes(permission);
-  }
-  
   // 普通员工的权限
   if (role === 'staff') {
     const staffPermissions = [
