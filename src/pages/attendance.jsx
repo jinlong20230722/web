@@ -136,11 +136,11 @@ export default function Attendance(props) {
       if (searchKeyword) {
         filter.$or = [{
           name: {
-            $search: searchKeyword
+            $regex: searchKeyword
           }
         }, {
           phone: {
-            $search: searchKeyword
+            $regex: searchKeyword
           }
         }];
       }

@@ -135,11 +135,11 @@ export default function Event(props) {
       if (searchKeyword) {
         filter.$or = [{
           name: {
-            $search: searchKeyword
+            $regex: searchKeyword
           }
         }, {
           address: {
-            $search: searchKeyword
+            $regex: searchKeyword
           }
         }];
       }

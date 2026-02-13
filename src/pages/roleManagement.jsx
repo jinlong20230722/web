@@ -37,11 +37,28 @@ export default function RoleManagement(props) {
   const loadUserList = async () => {
     setLoading(true);
     try {
+      // 构建查询条件
+      const where = {};
+      if (searchKeyword) {
+        where.$or = [{
+          name: {
+            $regex: searchKeyword
+          }
+        }, {
+          phone: {
+            $regex: searchKeyword
+          }
+        }];
+      }
+
       // 从 personnel 表获取用户列表
       const result = await props.$w.cloud.callDataSource({
         dataSourceName: 'personnel',
         methodName: 'wedaGetRecordsV2',
         params: {
+          filter: {
+            where
+          },
           select: {
             $master: true
           },
@@ -125,9 +142,6 @@ export default function RoleManagement(props) {
         {getRoleDisplayName(role)}
       </span>;
   };
-
-  // 过滤用户列表
-  const filteredUsers = userList.filter(user => user.name && user.name.includes(searchKeyword) || user.phone && user.phone.includes(searchKeyword));
   return <div className="flex min-h-screen bg-gray-100">
       <Sidebar currentPage="roleManagement" $w={props.$w} />
       <div className="flex-1 flex flex-col">

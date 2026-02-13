@@ -43,6 +43,19 @@ export default function Leave(props) {
         };
       }
 
+      // 添加搜索条件到后端筛选
+      if (searchKeyword) {
+        filter.$or = [{
+          name: {
+            $regex: searchKeyword
+          }
+        }, {
+          phone: {
+            $regex: searchKeyword
+          }
+        }];
+      }
+
       // 加载请假数据
       const result = await props.$w.cloud.callDataSource({
         dataSourceName: 'leave_request',
@@ -83,13 +96,7 @@ export default function Leave(props) {
         position: 'position',
         phone: 'phone'
       });
-
-      // 姓名或手机号筛选
-      let filteredData = mergedData;
-      if (searchKeyword) {
-        filteredData = mergedData.filter(record => record.name && record.name.includes(searchKeyword) || record.phone && record.phone.includes(searchKeyword));
-      }
-      setLeaveList(filteredData);
+      setLeaveList(mergedData);
       setPagination(prev => ({
         ...prev,
         total: result.total || 0

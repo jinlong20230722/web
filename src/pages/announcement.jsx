@@ -51,11 +51,11 @@ export default function Announcement(props) {
       if (searchKeyword) {
         filter.$or = [{
           title: {
-            $search: searchKeyword
+            $regex: searchKeyword
           }
         }, {
           content: {
-            $search: searchKeyword
+            $regex: searchKeyword
           }
         }];
       }

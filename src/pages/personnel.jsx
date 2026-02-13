@@ -53,11 +53,11 @@ export default function Personnel(props) {
             where: searchKeyword ? {
               $or: [{
                 name: {
-                  $search: searchKeyword
+                  $regex: searchKeyword
                 }
               }, {
                 phone: {
-                  $search: searchKeyword
+                  $regex: searchKeyword
                 }
               }]
             } : selectedDepartment !== 'all' ? {

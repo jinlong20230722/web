@@ -42,6 +42,18 @@ export default function Feedback(props) {
       }
 
       // 加载反馈数据
+      // 添加搜索条件到后端筛选
+      if (searchKeyword) {
+        filter.$or = [{
+          content: {
+            $regex: searchKeyword
+          }
+        }, {
+          phone: {
+            $regex: searchKeyword
+          }
+        }];
+      }
       const result = await props.$w.cloud.callDataSource({
         dataSourceName: 'feedback',
         methodName: 'wedaGetRecordsV2',
@@ -79,13 +91,7 @@ export default function Feedback(props) {
         name: 'name',
         department: 'department'
       });
-
-      // 内容或手机号筛选
-      let filteredData = mergedData;
-      if (searchKeyword) {
-        filteredData = mergedData.filter(record => record.content && record.content.includes(searchKeyword) || record.phone && record.phone.includes(searchKeyword) || record.name && record.name.includes(searchKeyword));
-      }
-      setFeedbackList(filteredData);
+      setFeedbackList(mergedData);
       setPagination(prev => ({
         ...prev,
         total: result.total || 0

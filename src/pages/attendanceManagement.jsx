@@ -62,6 +62,45 @@ export default function AttendanceManagement(props) {
         }];
       }
 
+      // 如果有姓名或部门筛选，先获取匹配的personnel_id列表
+      let personnelIdFilter = null;
+      if (filters.name || filters.department) {
+        const personnelWhere = {};
+        if (filters.name) {
+          personnelWhere.name = {
+            $regex: filters.name
+          };
+        }
+        if (filters.department) {
+          personnelWhere.department = {
+            $regex: filters.department
+          };
+        }
+        const personnelResult = await props.$w.cloud.callDataSource({
+          dataSourceName: 'personnel',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            filter: {
+              where: personnelWhere
+            },
+            select: {
+              _id: true
+            },
+            pageSize: 1000
+          }
+        });
+        const personnelIds = personnelResult.records?.map(p => p._id) || [];
+        if (personnelIds.length > 0) {
+          where.personnel_id = {
+            $in: personnelIds
+          };
+        } else {
+          where.personnel_id = {
+            $in: ['nonexistent_id']
+          };
+        }
+      }
+
       // 加载打卡签到数据
       const result = await props.$w.cloud.callDataSource({
         dataSourceName: 'attendance',
@@ -101,18 +140,7 @@ export default function AttendanceManagement(props) {
         phone: 'phone',
         department: 'department'
       });
-
-      // 姓名筛选
-      let filteredData = mergedData;
-      if (filters.name) {
-        filteredData = mergedData.filter(record => record.name && record.name.includes(filters.name));
-      }
-
-      // 部门筛选
-      if (filters.department) {
-        filteredData = filteredData.filter(record => record.department && record.department.includes(filters.department));
-      }
-      setData(filteredData);
+      setData(mergedData);
       setPagination(prev => ({
         ...prev,
         total: result.total || 0
@@ -148,6 +176,44 @@ export default function AttendanceManagement(props) {
         const endDate = new Date(filters.endDate);
         endDate.setHours(23, 59, 59, 999);
         where.check_in_time.$lte = endDate.getTime();
+      }
+
+      // 如果有姓名或部门筛选，先获取匹配的personnel_id列表
+      if (filters.name || filters.department) {
+        const personnelWhere = {};
+        if (filters.name) {
+          personnelWhere.name = {
+            $regex: filters.name
+          };
+        }
+        if (filters.department) {
+          personnelWhere.department = {
+            $regex: filters.department
+          };
+        }
+        const personnelResult = await props.$w.cloud.callDataSource({
+          dataSourceName: 'personnel',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            filter: {
+              where: personnelWhere
+            },
+            select: {
+              _id: true
+            },
+            pageSize: 1000
+          }
+        });
+        const personnelIds = personnelResult.records?.map(p => p._id) || [];
+        if (personnelIds.length > 0) {
+          where.personnel_id = {
+            $in: personnelIds
+          };
+        } else {
+          where.personnel_id = {
+            $in: ['nonexistent_id']
+          };
+        }
       }
       const result = await props.$w.cloud.callDataSource({
         dataSourceName: 'attendance',
@@ -187,17 +253,6 @@ export default function AttendanceManagement(props) {
         phone: 'phone',
         department: 'department'
       });
-
-      // 姓名筛选
-      let filteredRecords = mergedRecords;
-      if (filters.name) {
-        filteredRecords = mergedRecords.filter(record => record.name && record.name.includes(filters.name));
-      }
-
-      // 部门筛选
-      if (filters.department) {
-        filteredRecords = filteredRecords.filter(record => record.department && record.department.includes(filters.department));
-      }
 
       // 构建 Excel 数据
       const excelData = filteredRecords.map(record => ({
