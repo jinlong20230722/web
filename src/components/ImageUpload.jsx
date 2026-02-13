@@ -28,30 +28,68 @@ export default function ImageUpload({
   }, [value]);
   const handleFileSelect = async e => {
     const files = Array.from(e.target.files);
+
+    // 验证文件数量
     if (multiple && files.length > maxCount) {
       alert(`最多只能上传 ${maxCount} 张图片`);
       return;
     }
+
+    // 验证文件大小（最大5MB）
+    const maxSize = 5 * 1024 * 1024;
+    for (const file of files) {
+      if (file.size > maxSize) {
+        alert(`文件 ${file.name} 超过5MB限制`);
+        return;
+      }
+    }
+
+    // 验证文件类型
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    for (const file of files) {
+      if (!validTypes.includes(file.type)) {
+        alert(`文件 ${file.name} 格式不支持，请上传图片文件`);
+        return;
+      }
+    }
+    if (!$w) {
+      alert('系统错误：缺少云开发实例');
+      return;
+    }
     setUploading(true);
     try {
+      console.log('开始获取云开发实例...');
       const tcb = await $w.cloud.getCloudInstance();
+      if (!tcb) {
+        throw new Error('云开发实例获取失败');
+      }
+      console.log('云开发实例获取成功，开始上传文件...');
       const uploadedUrls = [];
       const newPreviewUrls = [];
       for (const file of files) {
-        // 上传文件到云存储
-        const result = await tcb.uploadFile({
-          cloudPath: `personnel/${Date.now()}_${file.name}`,
-          fileContent: file
-        });
+        console.log('正在上传文件:', file.name, '大小:', file.size, '类型:', file.type);
+        try {
+          // 上传文件到云存储
+          const result = await tcb.uploadFile({
+            cloudPath: `personnel/${Date.now()}_${file.name}`,
+            fileContent: file
+          });
+          console.log('文件上传成功，fileID:', result.fileID);
 
-        // 获取文件下载URL
-        const fileUrl = await tcb.getTempFileURL({
-          fileList: [result.fileID]
-        });
-        uploadedUrls.push(result.fileID);
-        newPreviewUrls.push(fileUrl.fileList[0].tempFileURL);
+          // 获取文件下载URL
+          const fileUrl = await tcb.getTempFileURL({
+            fileList: [result.fileID]
+          });
+          console.log('临时URL获取成功:', fileUrl.fileList[0].tempFileURL);
+          uploadedUrls.push(result.fileID);
+          newPreviewUrls.push(fileUrl.fileList[0].tempFileURL);
+        } catch (uploadError) {
+          console.error(`文件 ${file.name} 上传失败:`, uploadError);
+          throw new Error(`文件 ${file.name} 上传失败: ${uploadError.message || '未知错误'}`);
+        }
       }
       setPreviewUrls(newPreviewUrls);
+      console.log('所有文件上传完成，文件ID:', uploadedUrls);
 
       // 触发 onChange 回调，返回文件ID字符串或字符串数组
       if (onChange) {
@@ -59,7 +97,12 @@ export default function ImageUpload({
       }
     } catch (error) {
       console.error('文件上传失败:', error);
-      alert('文件上传失败，请重试');
+      console.error('错误详情:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      alert(`文件上传失败：${error.message || '未知错误'}`);
     } finally {
       setUploading(false);
     }
@@ -94,7 +137,7 @@ export default function ImageUpload({
               <Upload className="w-8 h-8 text-gray-400 mb-2" />
               <p className="text-sm text-gray-600">点击上传图片</p>
               <p className="text-xs text-gray-400 mt-1">
-                {multiple ? `最多 ${maxCount} 张` : '单张图片'}
+                {multiple ? `最多 ${maxCount} 张` : '单张图片'} · 支持JPG/PNG/GIF · 最大5MB
               </p>
             </>}
         </label>

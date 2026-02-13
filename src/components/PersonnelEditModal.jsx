@@ -77,28 +77,66 @@ export default function PersonnelEditModal({
     if (!validateForm()) {
       return;
     }
+
+    // 检查图片数据格式
+    console.log('提交前的图片数据:', {
+      id_card_front_image: formData.id_card_front_image,
+      id_card_back_image: formData.id_card_back_image,
+      certificate_images: formData.certificate_images
+    });
+
+    // 验证图片数据格式
+    if (typeof formData.id_card_front_image !== 'string' && formData.id_card_front_image !== '') {
+      console.error('身份证正面照片格式错误:', typeof formData.id_card_front_image);
+      toast({
+        title: '数据错误',
+        description: '身份证正面照片格式不正确',
+        variant: 'destructive'
+      });
+      return;
+    }
+    if (typeof formData.id_card_back_image !== 'string' && formData.id_card_back_image !== '') {
+      console.error('身份证反面照片格式错误:', typeof formData.id_card_back_image);
+      toast({
+        title: '数据错误',
+        description: '身份证反面照片格式不正确',
+        variant: 'destructive'
+      });
+      return;
+    }
+    if (!Array.isArray(formData.certificate_images)) {
+      console.error('证书照片格式错误:', typeof formData.certificate_images);
+      toast({
+        title: '数据错误',
+        description: '证书照片格式不正确',
+        variant: 'destructive'
+      });
+      return;
+    }
     setLoading(true);
     try {
+      const submitData = {
+        name: formData.name,
+        phone: formData.phone,
+        department: formData.department,
+        position: formData.position,
+        emergency_contact_name: formData.emergency_contact_name,
+        emergency_contact_phone: formData.emergency_contact_phone,
+        id_number: formData.id_number,
+        id_address: formData.id_address,
+        gender: formData.gender,
+        age: formData.age ? Number(formData.age) : null,
+        employment_status: formData.employment_status,
+        id_card_front_image: formData.id_card_front_image || '',
+        id_card_back_image: formData.id_card_back_image || '',
+        certificate_images: formData.certificate_images || []
+      };
+      console.log('提交数据:', submitData);
       const result = await $w.cloud.callDataSource({
         dataSourceName: 'personnel',
         methodName: 'wedaUpdateV2',
         params: {
-          data: {
-            name: formData.name,
-            phone: formData.phone,
-            department: formData.department,
-            position: formData.position,
-            emergency_contact_name: formData.emergency_contact_name,
-            emergency_contact_phone: formData.emergency_contact_phone,
-            id_number: formData.id_number,
-            id_address: formData.id_address,
-            gender: formData.gender,
-            age: formData.age ? Number(formData.age) : null,
-            employment_status: formData.employment_status,
-            id_card_front_image: formData.id_card_front_image,
-            id_card_back_image: formData.id_card_back_image,
-            certificate_images: formData.certificate_images
-          },
+          data: submitData,
           filter: {
             where: {
               $and: [{
@@ -110,6 +148,7 @@ export default function PersonnelEditModal({
           }
         }
       });
+      console.log('更新成功:', result);
       if (result.count > 0) {
         toast({
           title: '保存成功',
@@ -125,9 +164,20 @@ export default function PersonnelEditModal({
       }
     } catch (error) {
       console.error('保存失败:', error);
+      console.error('错误详情:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      let errorMessage = error.message || '保存失败，请重试';
+
+      // 尝试解析更详细的错误信息
+      if (error.message && error.message.includes('数据格式校验失败')) {
+        errorMessage = '数据格式校验失败，请检查图片上传是否完成';
+      }
       toast({
         title: '保存失败',
-        description: error.message || '保存失败，请重试',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
