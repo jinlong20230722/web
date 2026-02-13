@@ -8,6 +8,7 @@ import { Search, Eye, Calendar, User, Building, Briefcase, CheckCircle, XCircle 
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { Pagination } from '@/components/Pagination';
+import { mergeDataWithReference } from '@/lib/utils.js';
 import { hasPermission, getUserRole } from '@/lib/permissions';
 export default function Leave(props) {
   const [leaveList, setLeaveList] = useState([]);
@@ -75,23 +76,12 @@ export default function Leave(props) {
       });
       setPersonnelData(personnelResult.records || []);
 
-      // 关联数据：将 personnel 表的姓名、部门、职务关联到 leave_request 数据
-      const leaveRecords = result.records || [];
-      const mergedData = leaveRecords.map(record => {
-        // 尝试通过 _id 匹配
-        let personnel = personnelResult.records.find(p => p._id === record.personnel_id);
-
-        // 如果没找到，尝试通过字符串转换匹配
-        if (!personnel) {
-          personnel = personnelResult.records.find(p => String(p._id) === String(record.personnel_id));
-        }
-        return {
-          ...record,
-          name: personnel?.name || record.name || '未知',
-          department: personnel?.department || record.department || '未知',
-          position: personnel?.position || record.position || '未知',
-          phone: personnel?.phone || record.phone || '未知'
-        };
+      // 使用优化后的数据关联函数
+      const mergedData = mergeDataWithReference(result.records || [], personnelResult.records || [], 'personnel_id', '_id', {
+        name: 'name',
+        department: 'department',
+        position: 'position',
+        phone: 'phone'
       });
 
       // 姓名或手机号筛选

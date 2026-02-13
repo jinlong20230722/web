@@ -6,6 +6,7 @@ import { Search, Calendar, Filter, Download, Eye, MapPin, Clock, User, Phone } f
 import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Dialog, DialogContent, DialogHeader, DialogTitle, useToast } from '@/components/ui';
 
 import { AttendanceDetailModal } from '@/components/AttendanceDetailModal';
+import { mergeDataWithReference } from '@/lib/utils.js';
 export default function AttendanceManagement(props) {
   const {
     toast
@@ -92,16 +93,11 @@ export default function AttendanceManagement(props) {
       });
       setPersonnelData(personnelResult.records || []);
 
-      // 关联数据：将 personnel 表的姓名和手机号关联到 attendance 数据
-      const attendanceRecords = result.records || [];
-      const mergedData = attendanceRecords.map(record => {
-        const personnel = personnelResult.records.find(p => p._id === record.personnel_id);
-        return {
-          ...record,
-          name: personnel?.name || record.name || '未知',
-          phone: personnel?.phone || record.phone || '未知',
-          department: personnel?.department || '未知'
-        };
+      // 使用优化后的数据关联函数
+      const mergedData = mergeDataWithReference(result.records || [], personnelResult.records || [], 'personnel_id', '_id', {
+        name: 'name',
+        phone: 'phone',
+        department: 'department'
       });
 
       // 姓名筛选
@@ -181,15 +177,11 @@ export default function AttendanceManagement(props) {
       });
       const records = result.records || [];
 
-      // 关联数据：将 personnel 表的姓名和手机号关联到 attendance 数据
-      const mergedRecords = records.map(record => {
-        const personnel = personnelResult.records.find(p => p._id === record.personnel_id);
-        return {
-          ...record,
-          name: personnel?.name || record.name || '未知',
-          phone: personnel?.phone || record.phone || '未知',
-          department: personnel?.department || '未知'
-        };
+      // 使用优化后的数据关联函数
+      const mergedRecords = mergeDataWithReference(records, personnelData, 'personnel_id', '_id', {
+        name: 'name',
+        phone: 'phone',
+        department: 'department'
       });
 
       // 姓名筛选
