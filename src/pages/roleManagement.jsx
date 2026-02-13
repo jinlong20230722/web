@@ -81,7 +81,7 @@ export default function RoleManagement(props) {
     try {
       await props.$w.cloud.callDataSource({
         dataSourceName: 'personnel',
-        methodName: 'wedaUpdateRecord',
+        methodName: 'wedaUpdateV2',
         params: {
           data: {
             _id: selectedUser._id,
