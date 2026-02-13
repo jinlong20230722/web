@@ -17,15 +17,40 @@ export default function ImageUpload({
 }) {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [loadingPreviews, setLoadingPreviews] = useState(false);
 
   // 初始化预览URL
   React.useEffect(() => {
-    if (value && value.length > 0) {
-      setPreviewUrls(Array.isArray(value) ? value : [value]);
-    } else {
-      setPreviewUrls([]);
-    }
-  }, [value]);
+    const loadPreviews = async () => {
+      if (!value || typeof value === 'string' && value.length === 0 || Array.isArray(value) && value.length === 0) {
+        setPreviewUrls([]);
+        return;
+      }
+      setLoadingPreviews(true);
+      try {
+        const tcb = await $w.cloud.getCloudInstance();
+        const fileIds = Array.isArray(value) ? value : [value];
+
+        // 获取临时URL
+        const urlResult = await tcb.getTempFileURL({
+          fileList: fileIds
+        });
+        const urls = urlResult.fileList.map(item => item.tempFileURL);
+        setPreviewUrls(urls);
+      } catch (error) {
+        console.error('加载预览失败:', error);
+        // 如果获取临时URL失败，尝试直接使用value（可能是URL）
+        if (Array.isArray(value)) {
+          setPreviewUrls(value);
+        } else {
+          setPreviewUrls([value]);
+        }
+      } finally {
+        setLoadingPreviews(false);
+      }
+    };
+    loadPreviews();
+  }, [value, $w]);
   const handleFileSelect = async e => {
     const files = Array.from(e.target.files);
 
@@ -144,9 +169,17 @@ export default function ImageUpload({
       </div>
 
       {/* 预览区域 */}
-      {previewUrls.length > 0 && <div className="grid grid-cols-3 gap-2 mt-2">
+      {loadingPreviews && <div className="grid grid-cols-3 gap-2 mt-2">
+          {[1, 2, 3].map(i => <div key={i} className="w-full h-24 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+            </div>)}
+        </div>}
+      
+      {previewUrls.length > 0 && !loadingPreviews && <div className="grid grid-cols-3 gap-2 mt-2">
           {previewUrls.map((url, index) => <div key={index} className="relative group">
-              <img src={url} alt={`预览 ${index + 1}`} className="w-full h-24 object-cover rounded-lg border border-gray-200" />
+              <img src={url} alt={`预览 ${index + 1}`} className="w-full h-24 object-cover rounded-lg border border-gray-200" onError={e => {
+          e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-size="12"%3E加载失败%3C/text%3E%3C/svg%3E';
+        }} />
               <button type="button" onClick={() => handleRemove(index)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
                 <X size={14} />
               </button>
