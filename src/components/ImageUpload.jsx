@@ -22,24 +22,57 @@ export default function ImageUpload({
   // 初始化预览URL
   React.useEffect(() => {
     const loadPreviews = async () => {
-      if (!value || typeof value === 'string' && value.length === 0 || Array.isArray(value) && value.length === 0) {
+      console.log('ImageUpload - 开始加载预览, value:', value, 'type:', typeof value);
+
+      // 检查value是否为空
+      if (!value) {
+        console.log('ImageUpload - value为空，清空预览');
+        setPreviewUrls([]);
+        return;
+      }
+
+      // 检查value是否为空字符串
+      if (typeof value === 'string' && value.length === 0) {
+        console.log('ImageUpload - value为空字符串，清空预览');
+        setPreviewUrls([]);
+        return;
+      }
+
+      // 检查value是否为空数组
+      if (Array.isArray(value) && value.length === 0) {
+        console.log('ImageUpload - value为空数组，清空预览');
         setPreviewUrls([]);
         return;
       }
       setLoadingPreviews(true);
       try {
+        console.log('ImageUpload - 获取云开发实例...');
         const tcb = await $w.cloud.getCloudInstance();
+        if (!tcb) {
+          throw new Error('云开发实例获取失败');
+        }
         const fileIds = Array.isArray(value) ? value : [value];
+        console.log('ImageUpload - fileIds:', fileIds);
 
         // 获取临时URL
+        console.log('ImageUpload - 调用getTempFileURL...');
         const urlResult = await tcb.getTempFileURL({
           fileList: fileIds
         });
+        console.log('ImageUpload - getTempFileURL结果:', urlResult);
         const urls = urlResult.fileList.map(item => item.tempFileURL);
+        console.log('ImageUpload - 预览URL:', urls);
         setPreviewUrls(urls);
       } catch (error) {
-        console.error('加载预览失败:', error);
+        console.error('ImageUpload - 加载预览失败:', error);
+        console.error('ImageUpload - 错误详情:', {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+
         // 如果获取临时URL失败，尝试直接使用value（可能是URL）
+        console.log('ImageUpload - 尝试直接使用value作为URL');
         if (Array.isArray(value)) {
           setPreviewUrls(value);
         } else {
@@ -49,7 +82,10 @@ export default function ImageUpload({
         setLoadingPreviews(false);
       }
     };
-    loadPreviews();
+
+    // 添加防抖，避免频繁调用
+    const timeoutId = setTimeout(loadPreviews, 100);
+    return () => clearTimeout(timeoutId);
   }, [value, $w]);
   const handleFileSelect = async e => {
     const files = Array.from(e.target.files);
@@ -177,13 +213,22 @@ export default function ImageUpload({
       
       {previewUrls.length > 0 && !loadingPreviews && <div className="grid grid-cols-3 gap-2 mt-2">
           {previewUrls.map((url, index) => <div key={index} className="relative group">
-              <img src={url} alt={`预览 ${index + 1}`} className="w-full h-24 object-cover rounded-lg border border-gray-200" onError={e => {
+              <img src={url} alt={`预览 ${index + 1}`} className="w-full h-24 object-cover rounded-lg border border-gray-200" onLoad={() => console.log(`ImageUpload - 图片 ${index + 1} 加载成功:`, url)} onError={e => {
+          console.error(`ImageUpload - 图片 ${index + 1} 加载失败:`, url);
           e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-size="12"%3E加载失败%3C/text%3E%3C/svg%3E';
         }} />
               <button type="button" onClick={() => handleRemove(index)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
                 <X size={14} />
               </button>
             </div>)}
+        </div>}
+      
+      {/* 调试信息 */}
+      {process.env.NODE_ENV === 'development' && <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+          <div>Value: {JSON.stringify(value)}</div>
+          <div>Preview URLs: {previewUrls.length} 个</div>
+          <div>Loading: {uploading ? '是' : '否'}</div>
+          <div>Loading Previews: {loadingPreviews ? '是' : '否'}</div>
         </div>}
     </div>;
 }
